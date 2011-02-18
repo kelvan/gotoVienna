@@ -20,14 +20,14 @@ class WienerLinienQt(QtGui.QMainWindow, Ui_MainWindow):
         self.connect(self.btnSearch, QtCore.SIGNAL("clicked()"), self.search)
 
     def search(self):
-        start = self.editStart.currentText()
-        target = self.editTarget.currentText()
-        if not start and target:
+        origin = self.editOrigin.currentText()
+        destination = self.editDestination.currentText()
+        if not origin and destination:
             self.btnSearch.setText("Search - Missing input")
         else:
-            s = Search(start, target, \
-                       origin_type=self.types[self.comboStart.currentIndex()], \
-                       destination_type=self.types[self.comboTarget.currentIndex()])
+            s = Search(origin, destination, \
+                       origin_type=self.types[self.comboOrigin.currentIndex()], \
+                       destination_type=self.types[self.comboDestination.currentIndex()])
             try:
                 s.open_browser()
             except webbrowser.Error:
