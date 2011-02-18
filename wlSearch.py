@@ -3,30 +3,29 @@ import sys
 from datetime import datetime
 import settings
 import webbrowser
+import urllib2
 
 
 class Search:
 
-    def __init__(self, origin, destination, origin_type='stop', destination_type='stop', dtime=datetime.now()):
+    def __init__(self, origin, destination, origin_type='stop', destination_type='stop'):
         self.origin = origin
         self.destination = destination
-        self.datetime = dtime
         self.origin_type = origin_type
         self.destination_type = destination_type
 
-    def open_browser(self):
-        webbrowser.open('%s?%s' % (settings.action, self.parameter))
+    def get_html(self, dtime=datetime.now()):
+        return urllib2.urlopen('%s?%s' % (settings.action, self.get_parameter(dtime)))
 
-    @property
-    def time(self):
-        return self.datetime.strftime('%H:%M')
+    def open_browser(self, dtime=datetime.now()):
+        webbrowser.open('%s?%s' % (settings.action, self.get_parameter(dtime)))
 
-    @property
-    def date(self):
-        return self.datetime.strftime('%d.%m.%Y')
+    def get_datetime(self, dtime):
+        return (dtime.strftime('%d.%m.%Y'), dtime.strftime('%H:%M'))
 
-    @property
-    def parameter(self):
+    def get_parameter(self, dtime):
+        date, time = self.get_datetime(dtime)
+
         post = {'language': 'de',
             'sessionID': 0,
             'requestID': 0,
@@ -54,8 +53,8 @@ class Search:
             'anyType_destination': '',
             'name_destination': self.destination,
             'itdTripDateTimeDepArr': 'dep',
-            'itdDateDayMonthYear': self.date, # DD.MM.YYYY
-            'itdTime': self.time, # HH:MM
+            'itdDateDayMonthYear': date, # DD.MM.YYYY
+            'itdTime': time, # HH:MM
             'submitbutton': 'SUCHEN'
         }
 
