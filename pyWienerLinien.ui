@@ -81,6 +81,12 @@
     </item>
     <item row="2" column="1">
      <widget class="QComboBox" name="editOrigin">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="editable">
        <bool>true</bool>
       </property>
@@ -91,6 +97,12 @@
     </item>
     <item row="4" column="1">
      <widget class="QComboBox" name="editDestination">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="editable">
        <bool>true</bool>
       </property>

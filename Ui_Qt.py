@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'pyWienerLinien.ui'
 #
-# Created: Fri Feb 18 20:11:09 2011
+# Created: Sun Feb 20 21:09:29 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -53,11 +53,21 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName("label_2")
         self.gridLayout_3.addWidget(self.label_2, 3, 0, 2, 1)
         self.editOrigin = QtGui.QComboBox(self.centralwidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.editOrigin.sizePolicy().hasHeightForWidth())
+        self.editOrigin.setSizePolicy(sizePolicy)
         self.editOrigin.setEditable(True)
         self.editOrigin.setInsertPolicy(QtGui.QComboBox.NoInsert)
         self.editOrigin.setObjectName("editOrigin")
         self.gridLayout_3.addWidget(self.editOrigin, 2, 1, 1, 1)
         self.editDestination = QtGui.QComboBox(self.centralwidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.editDestination.sizePolicy().hasHeightForWidth())
+        self.editDestination.setSizePolicy(sizePolicy)
         self.editDestination.setEditable(True)
         self.editDestination.setInsertPolicy(QtGui.QComboBox.NoInsert)
         self.editDestination.setObjectName("editDestination")
