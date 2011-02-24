@@ -31,8 +31,13 @@ class WienerLinienQt(QtGui.QMainWindow, Ui_MainWindow):
         self.history.insert(0, origin)
         self.history.insert(0, destination)
 
-        self.editOrigin.insertItems(1, self.history)
-        self.editDestination.insertItems(1, self.history)
+        if not origin in self.history:
+            self.editOrigin.insertItems(0, origin)
+            self.editDestination.insertItems(0, origin)
+
+        if not destination in self.history:
+            self.editOrigin.insertItems(0, destination)
+            self.editDestination.insertItems(0, destination)
 
         if not origin and destination:
             self.btnSearch.setText("Search - Missing input")

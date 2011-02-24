@@ -9,7 +9,7 @@ class History(list):
             f.close()
             self._file = open(hist_file, 'a')
         else:
-            self._file = open(hist_file, 'w')
+            self._file = open(hist_file, 'a')
             h = []
 
         list.__init__(self, h, *args, **kwargs)
@@ -17,18 +17,18 @@ class History(list):
     def __add__(self, item):
         if not item in self:
             super(History, self).__add__(item)
-            self._file.writelines(map(lambda x: x + '\n', self))
+            self._file.write('%s\n' % item)
             self._file.flush()
 
     def insert(self, index, item):
         if not item in self:
             super(History, self).insert(index, item)
-            self._file.writelines(map(lambda x: x + '\n', self))
+            self._file.write('%s\n' % item)
             self._file.flush()
 
     def __delitem__(self, item):
         super(History, self).__deltitem(item)
-        self._file.writelines(map(lambda x: x + '\n', self))
+        self._file.write('%s\n' % item)
         self._file.flush()
         self._file.close()
 
