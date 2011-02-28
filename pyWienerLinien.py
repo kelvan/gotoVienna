@@ -1,24 +1,23 @@
 #!/usr/bin/env python
 
 import sys
-import os
-import time
-import logging
+import os.path
 import webbrowser
-from PySide import QtCore, QtGui
+from PySide.QtCore import SIGNAL
+from PySide.QtGui import QApplication, QMainWindow
 from Ui_Qt import Ui_MainWindow
 from wlSearch import Search
 from history import History
 import settings
 
 
-class WienerLinienQt(QtGui.QMainWindow, Ui_MainWindow):
+class WienerLinienQt(QMainWindow, Ui_MainWindow):
     types = ('stop', 'address', 'poi')
 
     def __init__(self):
-        QtGui.QMainWindow.__init__(self)
+        QMainWindow.__init__(self)
         self.setupUi(self)
-        self.connect(self.btnSearch, QtCore.SIGNAL("clicked()"), self.search)
+        self.connect(self.btnSearch, SIGNAL("clicked()"), self.search)
 
         self.history = History(settings.hist_file)
         self.editOrigin.addItems(self.history)
@@ -55,7 +54,7 @@ class WienerLinienQt(QtGui.QMainWindow, Ui_MainWindow):
 
 
 if __name__ == "__main__":
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     w = WienerLinienQt()
     w.show()
-    app.exec_()
+    sys.exit(app.exec_())
