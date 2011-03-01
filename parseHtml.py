@@ -2,6 +2,7 @@ from BeautifulSoup import BeautifulSoup, NavigableString
 import urllib2
 from datetime import time, datetime
 from textwrap import wrap
+import settings
 
 
 class Parser:
@@ -18,6 +19,7 @@ class Parser:
 
     def _parse_details(self):
         trips = map(lambda x: map(lambda x: {
+                                             # TODO kick out wrap
                         'time': map(lambda x: (time(*map(lambda x: int(x), x.split(':')))), wrap(x.find('td', {'class': 'col_time'}).text, 5)), # black magic appears
                         'station': map(lambda x: x[2:].strip(),
                                        filter(lambda x: type(x) == NavigableString, x.find('td', {'class': 'col_station'}).contents)), # filter non NaviStrings
@@ -71,6 +73,25 @@ class Parser:
 
 
 class iTipParser:
+    _stations = {}
+    _lines = []
 
     def __init__(self):
-        raise NotImplementedError
+        pass
+
+    def get_stations(self, letter):
+        if not self._stations.has_key(letter):
+            bs = BeautifulSoup(urllib2.urlopen(settings.stations % letter).read())
+            self._stations[letter] = map(lambda x: x['value'], bs.find('select', {'id': 'letter'}).findAll('option'))
+
+        return self._stations[letter]
+
+    def get_lines(self):
+        if not self._lines:
+            bs = BeautifulSoup(urllib2.urlopen(settings.line_overview).read())
+            # get tables
+            lines = bs.findAll('table', {'class': 'linie'})
+            # cut line parameter out of href
+            self._lines = map(lambda x: map(lambda x: x['href'][x['href'].find('=') + 1:], x.findAll('a')), lines)
+
+        return self._lines
