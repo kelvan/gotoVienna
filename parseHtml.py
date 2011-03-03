@@ -70,8 +70,8 @@ class Parser:
             overview = map(lambda x: {
                                'date': datetime.strptime(x.find('td', {'class': 'col_date'}).text, '%d.%m.%Y') # grab date
                                            if x.find('td', {'class': 'col_date'}).text else None, # if date is empty set to None
-                               'time': map(lambda x: time(*map(lambda x: int(x), x.split(':'))) if x else None, # extract times or set to None if empty
-                                           x.find('td', {'class': 'col_time'}).text.split('  - ')) if x.find('td', {'class': 'col_time'}) else [],
+                               'time': map(lambda x: time(*map(lambda x: int(x), x.strip().split(':'))) if x else None, # extract times or set to None if empty
+                                           x.find('td', {'class': 'col_time'}).text.split('-')) if x.find('td', {'class': 'col_time'}) else [],
                                'duration': time(*map(lambda x: int(x), x.find('td', {'class': 'col_duration'}).text.split(':'))), # grab duration
                                'change': int(x.find('td', {'class': 'col_change'}).text) # grab changes
                                            if x.find('td', {'class': 'col_change'}).text else 0, # if change is empty set to 0
