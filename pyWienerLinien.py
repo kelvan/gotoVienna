@@ -16,6 +16,10 @@ class WienerLinienQt(QMainWindow, Ui_MainWindow):
 
     def __init__(self):
         QMainWindow.__init__(self)
+        # _s is used to keep a reference to the Search object, so it does
+        # not get destroyed when it falls out of scope (the QML view is
+        # destroyed as soon as the Search object is destroyed!)
+        self._s = None
         self.setupUi(self)
         self.connect(self.btnSearch, SIGNAL("clicked()"), self.search)
 
@@ -41,15 +45,10 @@ class WienerLinienQt(QMainWindow, Ui_MainWindow):
         if not origin and destination:
             self.btnSearch.setText("Search - Missing input")
         else:
-            s = Search(origin, destination, \
+            self._s = Search(origin, destination, \
                        origin_type=self.types[self.comboOrigin.currentIndex()], \
                        destination_type=self.types[self.comboDestination.currentIndex()])
-            try:
-                s.open_browser()
-            except webbrowser.Error:
-                self.btnSearch.setText("Error starting webbrowser")
-                return False
-            self.btnSearch.setText("Search - Opening webbrowser")
+            self._s.open_qml()
             return True
 
 

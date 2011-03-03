@@ -1,9 +1,38 @@
+# -*- coding: utf-8 -*-
+
 import urllib
 import sys
 from datetime import datetime
 import settings
 import webbrowser
 import urllib2
+
+from parseHtml import Parser
+
+from PySide.QtDeclarative import QDeclarativeView
+
+def QMLModel(overview):
+    # Mapping from the "overview" data structure to a "plain" data
+    # structure to be used as model for the qml listview
+    r = []
+    for item in overview:
+        d = {
+                'date': item['date'].strftime('%d.%m.%Y') if item['date'] else u'Fußweg',
+                'duration': item['duration'].strftime('%H:%M'),
+                'price': item['price'],
+                'change': item['change'],
+        }
+
+        if len(item['time']) == 2 and all(x is not None for x in item['time']):
+            d.update({
+                'time_from': item['time'][0].strftime('%H:%M'),
+                'time_to': item['time'][1].strftime('%H:%M'),
+            })
+        else:
+            d.update({'time_from': '-', 'time_to': '-'})
+
+        r.append(d)
+    return r
 
 
 class Search:
@@ -13,12 +42,23 @@ class Search:
         self.destination = destination
         self.origin_type = origin_type
         self.destination_type = destination_type
+        self.view = None
+        self.qml_model = None
 
     def get_html(self, dtime=datetime.now()):
         return urllib2.urlopen('%s?%s' % (settings.action, self.get_parameter(dtime)))
 
     def open_browser(self, dtime=datetime.now()):
         webbrowser.open('%s?%s' % (settings.action, self.get_parameter(dtime)))
+
+    def open_qml(self, dtime=datetime.now()):
+        p = Parser(self.get_html(dtime))
+        self.qml_model = QMLModel(p.overview)
+        self.view = QDeclarativeView()
+        self.view.setResizeMode(QDeclarativeView.SizeRootObjectToView)
+        self.view.setSource('ui/Overview.qml')
+        self.view.rootObject().setProperty('model', self.qml_model)
+        self.view.show()
 
     def get_datetime(self, dtime):
         return (dtime.strftime('%d.%m.%Y'), dtime.strftime('%H:%M'))
