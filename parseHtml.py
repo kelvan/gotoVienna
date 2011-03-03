@@ -95,7 +95,11 @@ class Parser:
         price: float
         """
         if not self._overview:
-            self._overview = self._parse_overview()
+            try:
+                self._overview = self._parse_overview()
+            except AttributeError:
+                with open('DEBUG', 'w') as f:
+                    f.write(self.soup)
 
         return self._overview
 
