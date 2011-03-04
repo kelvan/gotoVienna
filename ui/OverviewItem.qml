@@ -1,10 +1,24 @@
 import Qt 4.7
 
 Rectangle {
+    id: row
+    property color textColor: 'white'
+
     anchors.left: parent.left
     anchors.right: parent.right
     height: 70
-    color: (index%2)?'#eee':'#ddd'
+
+    Image {
+        source: 'bg.png'
+        anchors.fill: parent
+    }
+
+    Rectangle {
+        color: '#267'
+        opacity: mouse.pressed?.4:0
+        anchors.fill: parent
+        Behavior on opacity { PropertyAnimation { duration: 200 } }
+    }
 
     signal showDetails(variant details)
 
@@ -19,10 +33,12 @@ Rectangle {
         anchors.leftMargin: 30
         anchors.rightMargin: 30
         width: parent.width * .2
+        color: row.textColor
     }
 
     Text {
         id: time_from
+        color: row.textColor
         anchors.left: datum.right
         anchors.bottom: parent.verticalCenter
         text: 'von ' + modelData.time_from
@@ -33,6 +49,7 @@ Rectangle {
 
     Text {
         id: time_to
+        color: row.textColor
         anchors.left: datum.right
         anchors.top: parent.verticalCenter
         text: 'bis ' + modelData.time_to
@@ -44,6 +61,7 @@ Rectangle {
 
     Text {
         id: dauer
+        color: row.textColor
         text: 'Dauer: ' + modelData.duration + ' (' + modelData.change + ' x umsteigen)'
         font.pixelSize: 17
         anchors.left: time_from.right
@@ -55,6 +73,7 @@ Rectangle {
 
     Text {
         id: price
+        color: row.textColor
         text: 'EUR ' + modelData.price
         anchors.right: parent.right
         anchors.top: parent.top
@@ -66,6 +85,7 @@ Rectangle {
     }
 
     MouseArea {
+        id: mouse
         anchors.fill: parent
         onClicked: parent.showDetails(modelData)
     }
