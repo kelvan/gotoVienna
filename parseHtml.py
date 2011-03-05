@@ -98,8 +98,9 @@ class Parser:
             try:
                 self._overview = self._parse_overview()
             except AttributeError:
-                with open('DEBUG', 'w') as f:
-                    f.write(self.soup)
+                f = open('DEBUG', 'w')
+                f.write(self.soup)
+                f.close()
 
         return self._overview
 
