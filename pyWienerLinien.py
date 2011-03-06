@@ -22,10 +22,14 @@ class WienerLinienQt(QMainWindow, Ui_MainWindow):
         self._s = None
         self.setupUi(self)
         self.connect(self.btnSearch, SIGNAL("clicked()"), self.search)
+        self.connect(self.actionToggle, SIGNAL("activated()"), self.toggle)
 
         self.history = History(settings.hist_file)
         self.editOrigin.addItems(self.history)
         self.editDestination.addItems(self.history)
+
+        self.editOrigin.clearEditText()
+        self.editDestination.clearEditText()
 
     def search(self):
         origin = self.editOrigin.currentText()
@@ -44,6 +48,7 @@ class WienerLinienQt(QMainWindow, Ui_MainWindow):
 
         if not origin and destination:
             self.btnSearch.setText("Search - Missing input")
+            return False
         else:
             self._s = Search(origin, destination, \
                        origin_type=self.types[self.comboOrigin.currentIndex()], \
@@ -51,6 +56,16 @@ class WienerLinienQt(QMainWindow, Ui_MainWindow):
             self._s.open_qml()
             return True
 
+    def toggle(self):
+        eo = self.editOrigin.currentText()
+        ed = self.editDestination.currentText()
+        self.editOrigin.setEditText(ed)
+        self.editDestination.setEditText(eo)
+
+        co = self.comboOrigin.currentIndex()
+        cd = self.comboDestination.currentIndex()
+        self.comboOrigin.setCurrentIndex(cd)
+        self.comboDestination.setCurrentIndex(co)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
