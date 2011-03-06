@@ -143,10 +143,17 @@
    </property>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="actionToggle"/>
+   </widget>
+   <addaction name="menuEdit"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionAbout">
@@ -154,7 +161,28 @@
     <string>About</string>
    </property>
   </action>
+  <action name="actionToggle">
+   <property name="text">
+    <string>Toggle</string>
+   </property>
+   <property name="iconText">
+    <string>Toggle</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
  </widget>
+ <tabstops>
+  <tabstop>editOrigin</tabstop>
+  <tabstop>comboOrigin</tabstop>
+  <tabstop>editDestination</tabstop>
+  <tabstop>comboDestination</tabstop>
+  <tabstop>btnSearch</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

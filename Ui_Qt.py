@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'pyWienerLinien.ui'
 #
-# Created: Sun Feb 20 21:09:29 2011
+# Created: Sun Mar  6 01:25:56 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -84,14 +84,24 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName("menubar")
         self.menuHelp = QtGui.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
+        self.menuEdit = QtGui.QMenu(self.menubar)
+        self.menuEdit.setObjectName("menuEdit")
         MainWindow.setMenuBar(self.menubar)
         self.actionAbout = QtGui.QAction(MainWindow)
         self.actionAbout.setObjectName("actionAbout")
+        self.actionToggle = QtGui.QAction(MainWindow)
+        self.actionToggle.setObjectName("actionToggle")
         self.menuHelp.addAction(self.actionAbout)
+        self.menuEdit.addAction(self.actionToggle)
+        self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        MainWindow.setTabOrder(self.editOrigin, self.comboOrigin)
+        MainWindow.setTabOrder(self.comboOrigin, self.editDestination)
+        MainWindow.setTabOrder(self.editDestination, self.comboDestination)
+        MainWindow.setTabOrder(self.comboDestination, self.btnSearch)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "pyWienerLinien", None, QtGui.QApplication.UnicodeUTF8))
@@ -104,6 +114,11 @@ class Ui_MainWindow(object):
         self.comboOrigin.setItemText(0, QtGui.QApplication.translate("MainWindow", "Haltestelle", None, QtGui.QApplication.UnicodeUTF8))
         self.comboOrigin.setItemText(1, QtGui.QApplication.translate("MainWindow", "Adresse", None, QtGui.QApplication.UnicodeUTF8))
         self.comboOrigin.setItemText(2, QtGui.QApplication.translate("MainWindow", "POI", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuEdit.setTitle(QtGui.QApplication.translate("MainWindow", "&Edit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout.setText(QtGui.QApplication.translate("MainWindow", "About", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionToggle.setText(QtGui.QApplication.translate("MainWindow", "Toggle", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionToggle.setIconText(QtGui.QApplication.translate("MainWindow", "Toggle", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionToggle.setToolTip(QtGui.QApplication.translate("MainWindow", "Toggle", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionToggle.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+T", None, QtGui.QApplication.UnicodeUTF8))
 
