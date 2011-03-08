@@ -112,7 +112,7 @@ class Parser:
         return self._current_state
 
 
-class iTipParser:
+class iParser:
     _stations = {}
     _lines = []
 
