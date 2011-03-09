@@ -3,7 +3,7 @@
 import sys
 import os.path
 import webbrowser
-from PySide.QtCore import SIGNAL
+from PySide.QtCore import SIGNAL, QTranslator, QObject
 from PySide.QtGui import QApplication, QMainWindow
 from Ui_Qt import Ui_MainWindow
 from wlSearch import Search
@@ -35,6 +35,10 @@ class WienerLinienQt(QMainWindow, Ui_MainWindow):
         origin = self.editOrigin.currentText()
         destination = self.editDestination.currentText()
 
+        if not (origin and destination):
+            self.btnSearch.setText(self.btnSearch.tr("Search - Missing input"))
+            return False
+
         self.history.insert(0, origin)
         self.history.insert(0, destination)
 
@@ -46,15 +50,11 @@ class WienerLinienQt(QMainWindow, Ui_MainWindow):
             self.editOrigin.insertItems(0, destination)
             self.editDestination.insertItems(0, destination)
 
-        if not origin and destination:
-            self.btnSearch.setText("Search - Missing input")
-            return False
-        else:
-            self._s = Search(origin, destination, \
-                       origin_type=self.types[self.comboOrigin.currentIndex()], \
-                       destination_type=self.types[self.comboDestination.currentIndex()])
-            self._s.open_qml()
-            return True
+        self._s = Search(origin, destination, \
+                   origin_type=self.types[self.comboOrigin.currentIndex()], \
+                   destination_type=self.types[self.comboDestination.currentIndex()])
+        self._s.open_qml()
+        return True
 
     def toggle(self):
         eo = self.editOrigin.currentText()
@@ -69,6 +69,9 @@ class WienerLinienQt(QMainWindow, Ui_MainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    t = QTranslator()
+    t.load('', directory='lang', suffix='po')
+    app.installTranslator(t)
     w = WienerLinienQt()
     w.show()
     sys.exit(app.exec_())

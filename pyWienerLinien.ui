@@ -38,12 +38,12 @@
      <widget class="QComboBox" name="comboDestination">
       <item>
        <property name="text">
-        <string>Haltestelle</string>
+        <string>Stop</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Adresse</string>
+        <string>Address</string>
        </property>
       </item>
       <item>
@@ -62,7 +62,7 @@
        </sizepolicy>
       </property>
       <property name="text">
-       <string>Start</string>
+       <string>Origin</string>
       </property>
      </widget>
     </item>
@@ -75,7 +75,7 @@
        </sizepolicy>
       </property>
       <property name="text">
-       <string>Ziel</string>
+       <string>Destination</string>
       </property>
      </widget>
     </item>
@@ -115,12 +115,12 @@
      <widget class="QComboBox" name="comboOrigin">
       <item>
        <property name="text">
-        <string>Haltestelle</string>
+        <string>Stop</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Adresse</string>
+        <string>Address</string>
        </property>
       </item>
       <item>

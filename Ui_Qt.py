@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'pyWienerLinien.ui'
 #
-# Created: Sun Mar  6 01:25:56 2011
+# Created: Tue Mar  8 22:48:01 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -106,13 +106,13 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "pyWienerLinien", None, QtGui.QApplication.UnicodeUTF8))
         self.btnSearch.setText(QtGui.QApplication.translate("MainWindow", "Search", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboDestination.setItemText(0, QtGui.QApplication.translate("MainWindow", "Haltestelle", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboDestination.setItemText(1, QtGui.QApplication.translate("MainWindow", "Adresse", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboDestination.setItemText(0, QtGui.QApplication.translate("MainWindow", "Stop", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboDestination.setItemText(1, QtGui.QApplication.translate("MainWindow", "Address", None, QtGui.QApplication.UnicodeUTF8))
         self.comboDestination.setItemText(2, QtGui.QApplication.translate("MainWindow", "POI", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("MainWindow", "Start", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("MainWindow", "Ziel", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboOrigin.setItemText(0, QtGui.QApplication.translate("MainWindow", "Haltestelle", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboOrigin.setItemText(1, QtGui.QApplication.translate("MainWindow", "Adresse", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("MainWindow", "Origin", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("MainWindow", "Destination", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboOrigin.setItemText(0, QtGui.QApplication.translate("MainWindow", "Stop", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboOrigin.setItemText(1, QtGui.QApplication.translate("MainWindow", "Address", None, QtGui.QApplication.UnicodeUTF8))
         self.comboOrigin.setItemText(2, QtGui.QApplication.translate("MainWindow", "POI", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.menuEdit.setTitle(QtGui.QApplication.translate("MainWindow", "&Edit", None, QtGui.QApplication.UnicodeUTF8))
