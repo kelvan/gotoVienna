@@ -35,7 +35,7 @@ class Parser:
 
         trips = map(lambda x: map(lambda x: {
                                              # TODO kick out wrap
-                        'time': map(lambda x: (time(*map(lambda x: int(x), x.split(':')))), wrap(x.find('td', {'class': 'col_time'}).text, 5)), # black magic appears
+                        'time': map(lambda x: (time(*map(int, x.split(':')))), wrap(x.find('td', {'class': 'col_time'}).text, 5)), # black magic appears
                         'station': map(lambda x: x[2:].strip(),
                                        filter(lambda x: type(x) == NavigableString, x.find('td', {'class': 'col_station'}).contents)), # filter non NaviStrings
                         'info': map(lambda x: x.strip(),
@@ -60,6 +60,30 @@ class Parser:
         return self._details
 
     def _parse_overview(self):
+        def get_tdtext(x, cl):
+            return x.find('td', {'class': cl}).text
+
+        def get_change(x):
+            y = get_tdtext(x, 'col_change')
+            if y:
+                return int(y)
+            else:
+                return 0
+
+        def get_price(x):
+            y = get_tdtext(x, 'col_price')
+            if y.find(','):
+                return float(y.replace(',', '.'))
+            else:
+                return 0.0
+
+        def get_date(x):
+            y = get_tdtext(x, 'col_date')
+            if y:
+                return datetime.strptime(y, '%d.%m.%Y').date()
+            else:
+                return None
+
         # get overview table
         table = self.soup.find('table', {'id': 'tbl_fahrten'})
 
@@ -68,15 +92,12 @@ class Parser:
             # get rows
             rows = table.findAll('tr')[1:] # cut off headline
             overview = map(lambda x: {
-                               'date': datetime.strptime(x.find('td', {'class': 'col_date'}).text, '%d.%m.%Y') # grab date
-                                           if x.find('td', {'class': 'col_date'}).text else None, # if date is empty set to None
-                               'time': map(lambda x: time(*map(lambda x: int(x), x.strip().split(':'))) if x else None, # extract times or set to None if empty
+                               'date': get_date(x),
+                               'time': map(lambda x: time(*map(int, x.strip().split(':'))) if x else None, # extract times or set to None if empty
                                            x.find('td', {'class': 'col_time'}).text.split('-')) if x.find('td', {'class': 'col_time'}) else [],
-                               'duration': time(*map(lambda x: int(x), x.find('td', {'class': 'col_duration'}).text.split(':'))), # grab duration
-                               'change': int(x.find('td', {'class': 'col_change'}).text) # grab changes
-                                           if x.find('td', {'class': 'col_change'}).text else 0, # if change is empty set to 0
-                               'price': float(x.find('td', {'class': 'col_price'}).text.replace(',', '.')) # grab price
-                                           if x.find('td', {'class': 'col_price'}).text.find(',') >= 0 else 0.0, # if price is empty set to 0.0
+                               'duration': time(*map(int, x.find('td', {'class': 'col_duration'}).text.split(':'))), # grab duration
+                               'change': get_change(x),
+                               'price': get_price(x),
                            },
                            rows)
         else:
