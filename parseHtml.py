@@ -13,16 +13,14 @@ class ParserError(Exception):
          return repr(self.value)
 
 class Parser:
-    _overview = None
-    _details = None
     STATE_ERROR = -1
-    STATE_START = 0
-    STATE_SEARCH = 1
-    STATE_RESULT = 2
-    _current_state = 0
+    STATE_START, STATE_SEARCH, STATE_RESULT = range(3)
 
     def __init__(self, html):
         self.soup = BeautifulSoup(html)
+        self._overview = None
+        self._details = None
+        self._current_state = 0
 
     def __iter__(self):
         for detail in self.details():
