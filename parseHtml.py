@@ -95,7 +95,7 @@ class Parser:
                                'date': get_date(x),
                                'time': map(lambda x: time(*map(int, x.strip().split(':'))) if x else None, # extract times or set to None if empty
                                            x.find('td', {'class': 'col_time'}).text.split('-')) if x.find('td', {'class': 'col_time'}) else [],
-                               'duration': time(*map(int, x.find('td', {'class': 'col_duration'}).text.split(':'))), # grab duration
+                               'duration': time(*map(int, get_tdtext(x, 'col_duration').split(':'))), # grab duration
                                'change': get_change(x),
                                'price': get_price(x),
                            },
