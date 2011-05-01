@@ -25,7 +25,6 @@ class Parser:
     def __iter__(self):
         for detail in self.details():
             yield detail
-        raise IndexError()
 
     def _parse_details(self):
         if self._current_state < 0:

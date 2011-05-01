@@ -64,6 +64,16 @@ Rectangle {
                 anchors.topMargin: 20
                 font.pixelSize: 30
             }
+            
+            Text {
+                id: detailsList
+
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: detailsTitle.buttom
+                horizontalAlignment: Text.AlignLeft
+                font.pixelSize: 20
+            }
 
             MouseArea {
                 anchors.fill: parent
@@ -72,7 +82,8 @@ Rectangle {
         }
 
         function showDetails(details) {
-            detailsTitle.text = 'FIXME - show details for ' + details.time_from
+            detailsTitle.text = 'Details for ' + details.time_from + '-' + details.time_to
+            detailsList.text = 'Station: ' + details.details[0].station
             lv.state = 'details'
         }
     }
