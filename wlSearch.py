@@ -9,6 +9,7 @@ import urllib2
 
 from parseHtml import Parser
 
+from PySide.QtCore import Qt
 from PySide.QtDeclarative import QDeclarativeView
 
 def QMLModel(overview):
@@ -37,11 +38,12 @@ def QMLModel(overview):
 
 class Search:
 
-    def __init__(self, origin, destination, origin_type='stop', destination_type='stop'):
+    def __init__(self, origin, destination, origin_type='stop', destination_type='stop', parent=None):
         self.origin = origin
         self.destination = destination
         self.origin_type = origin_type
         self.destination_type = destination_type
+        self.parent = parent
         self.view = None
         self.qml_model = None
 
@@ -54,7 +56,10 @@ class Search:
     def open_qml(self, dtime=datetime.now()):
         p = Parser(self.get_html(dtime))
         self.qml_model = QMLModel(p.overview)
-        self.view = QDeclarativeView()
+        self.view = QDeclarativeView(self.parent)
+        self.view.setWindowTitle('Search results')
+        self.view.setWindowFlags(Qt.Window)
+        self.view.setAttribute(Qt.WA_Maemo5StackedWindow)
         self.view.setResizeMode(QDeclarativeView.SizeRootObjectToView)
         self.view.setSource('ui/Overview.qml')
         self.view.rootObject().setProperty('model', self.qml_model)
