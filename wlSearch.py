@@ -58,11 +58,15 @@ class Search:
 
     def open_qml(self, dtime=datetime.now()):
         p = Parser(self.get_html(dtime))
-        self.qml_model = QMLModel(p.overview)
+        self.qml_model = QMLModel(p.overview, p.details)
         self.view = QDeclarativeView(self.parent)
         self.view.setWindowTitle('Search results')
         self.view.setWindowFlags(Qt.Window)
-        self.view.setAttribute(Qt.WA_Maemo5StackedWindow)
+        # quick & dirty workaround
+        try:
+            self.view.setAttribute(Qt.WA_Maemo5StackedWindow)
+        except:
+            pass
         self.view.setResizeMode(QDeclarativeView.SizeRootObjectToView)
         self.view.setSource('ui/Overview.qml')
         self.view.rootObject().setProperty('model', self.qml_model)

@@ -16,7 +16,11 @@ class WienerLinienQt(QMainWindow, Ui_MainWindow):
 
     def __init__(self):
         QMainWindow.__init__(self)
-        self.setAttribute(Qt.WA_Maemo5StackedWindow)
+        # quick&dirty workaround for non-maemo systems
+        try:
+            self.setAttribute(Qt.WA_Maemo5StackedWindow)
+        except:
+            pass
         # _s is used to keep a reference to the Search object, so it does
         # not get destroyed when it falls out of scope (the QML view is
         # destroyed as soon as the Search object is destroyed!)
