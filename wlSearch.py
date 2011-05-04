@@ -11,16 +11,18 @@ from parseHtml import Parser
 
 from PySide.QtDeclarative import QDeclarativeView
 
-def QMLModel(overview):
+def QMLModel(overview, details):
     # Mapping from the "overview" data structure to a "plain" data
     # structure to be used as model for the qml listview
     r = []
+    i = 0
     for item in overview:
         d = {
                 'date': item['date'].strftime('%d.%m.%Y') if item['date'] else u'Fußweg',
                 'duration': item['duration'].strftime('%H:%M'),
                 'price': item['price'],
                 'change': item['change'],
+                'details': details[i],
         }
 
         if len(item['time']) == 2 and all(x is not None for x in item['time']):
@@ -32,6 +34,7 @@ def QMLModel(overview):
             d.update({'time_from': '-', 'time_to': '-'})
 
         r.append(d)
+        i += 1
     return r
 
 
@@ -53,7 +56,7 @@ class Search:
 
     def open_qml(self, dtime=datetime.now()):
         p = Parser(self.get_html(dtime))
-        self.qml_model = QMLModel(p.overview)
+        self.qml_model = QMLModel(p.overview, p.details)
         self.view = QDeclarativeView()
         self.view.setResizeMode(QDeclarativeView.SizeRootObjectToView)
         self.view.setSource('ui/Overview.qml')
