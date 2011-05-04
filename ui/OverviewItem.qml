@@ -62,7 +62,7 @@ Rectangle {
     Text {
         id: dauer
         color: row.textColor
-        text: 'Dauer: ' + modelData.duration + ' (' + modelData.change + ' x umsteigen)'
+        text: 'Dauer: ' + modelData.duration + ((modelData.change > 0)?(' (' + modelData.change + ' x umsteigen)'):'')
         font.pixelSize: 17
         anchors.left: time_from.right
         anchors.top: parent.top

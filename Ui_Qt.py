@@ -104,7 +104,7 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.comboDestination, self.btnSearch)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "pyWienerLinien", None, QtGui.QApplication.UnicodeUTF8))
+        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "gotoVienna", None, QtGui.QApplication.UnicodeUTF8))
         self.btnSearch.setText(QtGui.QApplication.translate("MainWindow", "Search", None, QtGui.QApplication.UnicodeUTF8))
         self.comboDestination.setItemText(0, QtGui.QApplication.translate("MainWindow", "Stop", None, QtGui.QApplication.UnicodeUTF8))
         self.comboDestination.setItemText(1, QtGui.QApplication.translate("MainWindow", "Address", None, QtGui.QApplication.UnicodeUTF8))

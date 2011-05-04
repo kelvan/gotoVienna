@@ -3,7 +3,7 @@
 import sys
 import os.path
 import webbrowser
-from PySide.QtCore import SIGNAL, QTranslator, QObject
+from PySide.QtCore import SIGNAL, QTranslator, QObject, Qt
 from PySide.QtGui import QApplication, QMainWindow
 from Ui_Qt import Ui_MainWindow
 from wlSearch import Search
@@ -16,6 +16,7 @@ class WienerLinienQt(QMainWindow, Ui_MainWindow):
 
     def __init__(self):
         QMainWindow.__init__(self)
+        self.setAttribute(Qt.WA_Maemo5StackedWindow)
         # _s is used to keep a reference to the Search object, so it does
         # not get destroyed when it falls out of scope (the QML view is
         # destroyed as soon as the Search object is destroyed!)
@@ -52,7 +53,8 @@ class WienerLinienQt(QMainWindow, Ui_MainWindow):
 
         self._s = Search(origin, destination, \
                    origin_type=self.types[self.comboOrigin.currentIndex()], \
-                   destination_type=self.types[self.comboDestination.currentIndex()])
+                   destination_type=self.types[self.comboDestination.currentIndex()], \
+                   parent=self)
         self._s.open_qml()
         return True
 
