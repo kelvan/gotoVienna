@@ -3,6 +3,7 @@ import urllib2
 from datetime import time, datetime
 from textwrap import wrap
 import settings
+import wlSearch
 
 class ParserError(Exception):
      def __init__(self, value='', code=0):
@@ -22,6 +23,53 @@ class Parser:
         self._details = None
         self._current_state = 0
 
+    @classmethod
+    def get_tdtext(cls, x, cl):
+            return x.find('td', {'class': cl}).text
+    
+    @classmethod
+    def get_change(cls, x):
+        y = Parser.get_tdtext(x, 'col_change')
+        if y:
+            return int(y)
+        else:
+            return 0
+
+    @classmethod
+    def get_price(cls, x):
+        y = Parser.get_tdtext(x, 'col_price')
+        if y.find(','):
+            return float(y.replace(',', '.'))
+        else:
+            return 0.0
+
+    @classmethod
+    def get_date(cls, x):
+        y = Parser.get_tdtext(x, 'col_date')
+        if y:
+            return datetime.strptime(y, '%d.%m.%Y').date()
+        else:
+            return None
+        
+    @classmethod
+    def get_time(cls, x):
+        y = Parser.get_tdtext(x, 'col_time')
+        if y:
+            if (y.find("-") > 0):
+                return map(lambda z: time(*map(int, z.split(':'))), y.split('-'))
+            else:
+                return map(lambda z: time(*map(int, z.split(':'))), wrap(y, 5))
+        else:
+            return []
+        
+    @classmethod
+    def get_duration(cls, x):
+        y = Parser.get_tdtext(x, 'col_duration')
+        if y:
+            return time(*map(int, y.split(":")))
+        else:
+            return None
+
     def __iter__(self):
         for detail in self.details():
             yield detail
@@ -30,15 +78,16 @@ class Parser:
         if self._current_state < 0:
             raise ParserError('Unable to parse details while in error state')
 
-        trips = map(lambda x: map(lambda x: {
-                                             # TODO kick out wrap
-                        'time': map(lambda x: (time(*map(int, x.split(':')))), wrap(x.find('td', {'class': 'col_time'}).text, 5)), # black magic appears
-                        'station': map(lambda x: x[2:].strip(),
-                                       filter(lambda x: type(x) == NavigableString, x.find('td', {'class': 'col_station'}).contents)), # filter non NaviStrings
+        tours = self.soup.findAll('div', {'class': 'data_table tourdetail'})
+
+        trips = map(lambda x: map(lambda y: {
+                        'time': Parser.get_time(y),
+                        'station': map(lambda z: z[2:].strip(),
+                                       filter(lambda x: type(x) == NavigableString, y.find('td', {'class': 'col_station'}).contents)), # filter non NaviStrings
                         'info': map(lambda x: x.strip(),
-                                    filter(lambda x: type(x) == NavigableString, x.find('td', {'class': 'col_info'}).contents)),
+                                    filter(lambda z: type(z) == NavigableString, y.find('td', {'class': 'col_info'}).contents)),
                     }, x.find('tbody').findAll('tr')),
-                    self.soup.findAll('div', {'class': 'data_table tourdetail'})) # all routes
+                    tours) # all routes
         return trips
 
     @property
@@ -57,29 +106,6 @@ class Parser:
         return self._details
 
     def _parse_overview(self):
-        def get_tdtext(x, cl):
-            return x.find('td', {'class': cl}).text
-
-        def get_change(x):
-            y = get_tdtext(x, 'col_change')
-            if y:
-                return int(y)
-            else:
-                return 0
-
-        def get_price(x):
-            y = get_tdtext(x, 'col_price')
-            if y.find(','):
-                return float(y.replace(',', '.'))
-            else:
-                return 0.0
-
-        def get_date(x):
-            y = get_tdtext(x, 'col_date')
-            if y:
-                return datetime.strptime(y, '%d.%m.%Y').date()
-            else:
-                return None
 
         # get overview table
         table = self.soup.find('table', {'id': 'tbl_fahrten'})
@@ -88,18 +114,18 @@ class Parser:
         if table and table.findAll('tr'):
             # get rows
             rows = table.findAll('tr')[1:] # cut off headline
+            
             overview = map(lambda x: {
-                               'date': get_date(x),
-                               'time': map(lambda x: time(*map(int, x.strip().split(':'))) if x else None, # extract times or set to None if empty
-                                           x.find('td', {'class': 'col_time'}).text.split('-')) if x.find('td', {'class': 'col_time'}) else [],
-                               'duration': time(*map(int, get_tdtext(x, 'col_duration').split(':'))), # grab duration
-                               'change': get_change(x),
-                               'price': get_price(x),
+                               'date': Parser.get_date(x),
+                               'time': Parser.get_time(x),
+                               'duration': Parser.get_duration(x), # grab duration
+                               'change': Parser.get_change(x), 
+                               'price': Parser.get_price(x),
                            },
                            rows)
         else:
-            self._current_state = self.STATE_ERROR
-            raise ParserError('Unable to parse details while in error state')
+            #self._current_state = self.STATE_ERROR
+            raise ParserError('Unable to parse details')
 
         return overview
 
