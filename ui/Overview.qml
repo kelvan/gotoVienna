@@ -70,7 +70,7 @@ Rectangle {
 
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.top: detailsTitle.buttom
+                anchors.top: detailsTitle.bottom
                 horizontalAlignment: Text.AlignLeft
                 font.pixelSize: 20
             }
@@ -83,7 +83,12 @@ Rectangle {
 
         function showDetails(details) {
             detailsTitle.text = 'Details for ' + details.time_from + '-' + details.time_to
-            detailsList.text = 'Station: ' + details.details[0].station
+            detailsList.text = ''
+            for(var k=0; k < details.details.length; k++) {
+            	if (details.details[k].station != '') {
+            		detailsList.text += 'Station: ' + details.details[k].station + '\n' + details.details[k].info + '\n'
+            	}
+            }
             lv.state = 'details'
         }
     }
