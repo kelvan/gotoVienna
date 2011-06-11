@@ -50,13 +50,21 @@ class Search:
         self.view = None
         self.qml_model = None
 
-    def get_html(self, dtime=datetime.now()):
+    def get_html(self, dtime=None):
+        if not dtime:
+            dtime = datetime.now()
+        #FIXME replace with logger
+        print "get_html (%s:%s:%s)" % tuple(dtime.timetuple())[3:6]
         return urllib2.urlopen('%s?%s' % (settings.action, self.get_parameter(dtime)))
 
     def open_browser(self, dtime=datetime.now()):
         webbrowser.open('%s?%s' % (settings.action, self.get_parameter(dtime)))
 
-    def open_qml(self, dtime=datetime.now()):
+    def open_qml(self, dtime=None):
+        if not dtime:
+            dtime = datetime.now()
+        #FIXME replace with logger
+        print "open_qml (%s:%s:%s)" % tuple(dtime.timetuple())[3:6]
         p = Parser(self.get_html(dtime))
         self.qml_model = QMLModel(p.overview, p.details)
         self.view = QDeclarativeView(self.parent)
