@@ -8,9 +8,11 @@ import webbrowser
 import urllib2
 
 from parseHtml import Parser
+import parseCorrection
 
 from PySide.QtCore import Qt
 from PySide.QtDeclarative import QDeclarativeView
+from BeautifulSoup import BeautifulSoup
 
 def QMLModel(overview, details):
     # Mapping from the "overview" data structure to a "plain" data
@@ -65,7 +67,16 @@ class Search:
             dtime = datetime.now()
         #FIXME replace with logger
         print "open_qml (%s:%s:%s)" % tuple(dtime.timetuple())[3:6]
-        p = Parser(self.get_html(dtime))
+        html = self.get_html(dtime)
+        if BeautifulSoup(html).find('form', {'id': 'form_fahrplanauskunft'}):
+            cor = parseCorrection.Parser(html)
+            if p.origins:
+                # TODO: Show selection
+                pass
+            if p.destinations:
+                # TODO: Show selection
+                pass
+        p = Parser(html)
         self.qml_model = QMLModel(p.overview, p.details)
         self.view = QDeclarativeView(self.parent)
         self.view.setWindowTitle('Search results')

@@ -3,7 +3,6 @@ import urllib2
 from datetime import time, datetime
 from textwrap import wrap
 import settings
-import wlSearch
 
 class ParserError(Exception):
      def __init__(self, value='', code=0):
@@ -14,14 +13,11 @@ class ParserError(Exception):
          return repr(self.value)
 
 class Parser:
-    STATE_ERROR = -1
-    STATE_START, STATE_SEARCH, STATE_RESULT = range(3)
 
     def __init__(self, html):
         self.soup = BeautifulSoup(html)
         self._overview = None
         self._details = None
-        self._current_state = 0
 
     @classmethod
     def get_tdtext(cls, x, cl):
@@ -154,27 +150,3 @@ class Parser:
     @property
     def request_state(self):
         return self._current_state
-
-
-class iParser:
-
-    def __init__(self):
-        self._stations = {}
-        self._lines = []
-
-    def get_stations(self, letter):
-        if not self._stations.has_key(letter):
-            bs = BeautifulSoup(urllib2.urlopen(settings.stations % letter))
-            self._stations[letter] = map(lambda x: x['value'], bs.find('select', {'id': 'letter'}).findAll('option'))
-
-        return self._stations[letter]
-
-    def get_lines(self):
-        if not self._lines:
-            bs = BeautifulSoup(urllib2.urlopen(settings.line_overview))
-            # get tables
-            lines = bs.findAll('table', {'class': 'linie'})
-            # cut line parameter out of href
-            self._lines = map(lambda x: map(lambda x: x['href'][x['href'].find('=') + 1:], x.findAll('a')), lines)
-
-        return self._lines
