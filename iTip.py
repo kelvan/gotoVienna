@@ -2,6 +2,7 @@ from BeautifulSoup import BeautifulSoup
 from urllib2 import urlopen
 import settings
 from datetime import time
+import argparse
 
 class iParser:
 
@@ -21,11 +22,11 @@ class iParser:
             
             bs = BeautifulSoup(urlopen(self.lines[name]))
             tables = bs.findAll('table', {'class': 'text_10pix'})
-            for i in range (2):
+            for i in range(2):
                 dir = tables[i].div.contents[-1].strip('&nbsp;')
                 
                 sta = []
-                for tr in tables[0].findAll('tr', {'onmouseout': 'obj_unhighlight(this);'}):
+                for tr in tables[i].findAll('tr', {'onmouseout': 'obj_unhighlight(this);'}):
                     if tr.a:
                         sta.append((tr.a.text, settings.line_overview + tr.a['href']))
                     else:
@@ -97,3 +98,31 @@ class iParser:
                     print "[DEBUG] Invalid data:\n%s" % time
                 
         return dep
+    
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Get realtime public transport information for Vienna')
+    parser.add_argument('-l', metavar='name', type=str, help='line name', required=True)
+    parser.add_argument('-s', metavar='name', type=str, help='station name')   
+
+    args = parser.parse_args()
+    
+    itip = iParser()
+    lines = itip.lines
+    l = args.l.upper()
+    s = args.s
+    
+    if l and l in lines:
+        stations = itip.get_stations(l)
+        for key in stations.keys():
+            if not s:
+                print '* %s:' % key
+            for station in stations[key]:
+                if s:
+                    if s.startswith(station[0]) or station[0].startswith(s):
+                        # FIXME
+                        print '* %s\n  %s .....' % (key, station[0]), itip.get_departures(station[1])
+                else:
+                    print '    %s' % station[0]
+    
+    elif l:
+        print 'Line "%s" not found' % args.l
