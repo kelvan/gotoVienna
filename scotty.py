@@ -4,6 +4,7 @@ from urllib import urlencode
 import settings
 from datetime import datetime, time
 from textwrap import wrap
+import argparse
 
 POSITION_TYPES = ('stop', 'address', 'poi')
 
@@ -207,3 +208,6 @@ class rParser:
                 f.close()
 
         return self._overview
+
+if __name__ == '__main__':
+    pass

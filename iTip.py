@@ -3,6 +3,7 @@ from urllib2 import urlopen
 import settings
 from datetime import time
 import argparse
+import re
 
 class iParser:
 
@@ -83,7 +84,9 @@ class iParser:
             
             time = time[1]
             
-            if time.isdigit():
+            if time.find('rze...') >= 0:
+                    dep.append(0)
+            elif time.isdigit():
                 # if time to next departure in cell convert to int
                 dep.append(int(time))
             else:
@@ -101,14 +104,17 @@ class iParser:
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Get realtime public transport information for Vienna')
-    parser.add_argument('-l', metavar='name', type=str, help='line name', required=True)
+    parser.add_argument('-l', metavar='name', type=str, help='line name')
     parser.add_argument('-s', metavar='name', type=str, help='station name')   
 
     args = parser.parse_args()
     
     itip = iParser()
     lines = itip.lines
-    l = args.l.upper()
+    if args.l:
+        l = args.l.upper()
+    else:
+        l = None
     s = args.s
     
     if l and l in lines:
@@ -124,5 +130,22 @@ if __name__ == '__main__':
                 else:
                     print '    %s' % station[0]
     
-    elif l:
-        print 'Line "%s" not found' % args.l
+    elif not l:
+        line = {'U-Bahn': '|', 'Strassenbahn': '|', 'Bus': '|', 'Andere': '|', 'Nightline': '|'}
+        lines_sorted = lines.keys()
+        lines_sorted.sort()
+        for li in lines_sorted:
+            if li.isdigit():
+                type = 'Strassenbahn'
+            elif li.endswith('A') or li.endswith('B') and li[1].isdigit():
+                type = 'Bus'
+            elif li.startswith('U'):
+                type = 'U-Bahn'
+            elif li.startswith('N'):
+                type = 'Nightline'
+            else:
+                type = 'Andere'
+                
+            line[type] += ' %s |' % li
+        for kv in line.items():
+            print "%s:\n%s" % kv
