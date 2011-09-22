@@ -8,9 +8,9 @@ import argparse
 
 POSITION_TYPES = ('stop', 'address', 'poi')
 
-class ParserException(Exception):
+class ParserError(Exception):
     
-    def __init__(self, msg = 'Parser error'):
+    def __init__(self, msg='Parser error'):
         self.message = msg
 
 class PageType:
@@ -28,7 +28,7 @@ def search(origin_tuple, destination_tuple, dtime=None):
     destination, destination_type = destination_tuple
     if not origin_type in POSITION_TYPES or\
         not destination_type in POSITION_TYPES:
-        raise ParserException('Invalid position type')
+        raise ParserError('Invalid position type')
         
     post = settings.search_post
     post['name_origin'] = origin
@@ -38,7 +38,11 @@ def search(origin_tuple, destination_tuple, dtime=None):
     post['itdDateDayMonthYear'] = dtime.strftime('%d.%m.%Y')
     post['itdTime'] = dtime.strftime('%H:%M')
     params = urlencode(post)
-    return urlopen('%s?%s' % (settings.action, params))
+    url = '%s?%s' % (settings.action, params)
+    
+    print "\nurl %s url\n\n%s\n\nurl %s url\n" % ('~'*100, url, '~'*100)
+    
+    return urlopen(url)
 
 
 class sParser:
@@ -46,36 +50,37 @@ class sParser:
     """
 
     def __init__(self, html):
-        self.bs = BeautifulSoup(html)
+        self.soup = BeautifulSoup(html)
     
     def check_page(self):
-        if self.bs.find('form', {'id': 'form_efaresults'}):
+        if self.soup.find('form', {'id': 'form_efaresults'}):
             return PageType.RESULT
         
-        if self.bs.find('div', {'class':'form_error'}):
+        if self.soup.find('div', {'class':'form_error'}):
             return PageType.CORRECTION
         
         return PageType.UNKNOWN
     
     def get_correction(self):
-        nlo = self.bs.find('select', {'id': 'nameList_origin'})
-        nld = self.bs.find('select', {'id': 'nameList_destination'})
+        nlo = self.soup.find('select', {'id': 'nameList_origin'})
+        nld = self.soup.find('select', {'id': 'nameList_destination'})
         
-        if not nlo or not nld:
+        if not nlo and not nld:
             raise ParserError('Unable to parse html')
         
-        origin = nlo.findAll('option')
-        destination = nld.findAll('option')
-        
-        if not origin:
+        if nlo:
+            origin = map(lambda x: x.text, nlo.findAll('option'))
+        else:
             origin = []
-        if not destination:
+        if nld:
+            destination = map(lambda x: x.text, nld.findAll('option'))
+        else:
             destination = []
         
         return (origin, destination)
     
     def get_result(self):
-        return rParser(str(self.bs))
+        return rParser(str(self.soup))
         
         
         
@@ -181,12 +186,12 @@ class rParser:
                                'date': rParser.get_date(x),
                                'time': rParser.get_time(x),
                                'duration': rParser.get_duration(x), # grab duration
-                               'change': rParser.get_change(x), 
+                               'change': rParser.get_change(x),
                                'price': rParser.get_price(x),
                            },
                            rows)
         else:
-            raise ParserError('Unable to parse details')
+            raise ParserError('Unable to parse overview')
 
         return overview
 
@@ -210,4 +215,39 @@ class rParser:
         return self._overview
 
 if __name__ == '__main__':
-    pass
+    parser = argparse.ArgumentParser(description='Get public transport route for Vienna')
+    parser.add_argument('-o', metavar='name', type=str, help='origin', required=True)
+    parser.add_argument('-d', metavar='name', type=str, help='destination', required=True)
+    parser.add_argument('-ot', metavar='type', type=str, help='origin type: %s' % ' | '.join(POSITION_TYPES), default='stop')
+    parser.add_argument('-dt', metavar='type', type=str, help='destination type: %s' % ' | '.join(POSITION_TYPES), default='stop')
+
+    args = parser.parse_args()
+    
+    html = search((args.o, args.ot), (args.d, args.dt)).read()
+    
+    parser = sParser(html)
+    state = parser.check_page()
+    
+    if state == PageType.RESULT:
+        parser = rParser(html)
+        try:
+            overviews = parser.overview
+            for overview in overviews:
+                print '[%s] %s-%s (%s)' % (overview['date'], overview['time'][0], overview['time'][1], overview['duration'])
+        except ParserError as e:
+            print e.message
+    elif state == PageType.CORRECTION:
+        try:
+            cor = parser.get_correction()
+            if cor[0]:
+                print
+                print '* Origin ambiguous:'
+                print '', '\n '.join(cor[0])
+            if cor[1]:
+                print
+                print '* Destination ambiguous:'
+                print '', '\n '.join(cor[1])
+        except ParserError:
+            print 'PANIC at correction page'
+    elif state == PageType.UNKNOWN:
+        print 'PANIC unknown result'
