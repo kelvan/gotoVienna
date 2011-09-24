@@ -8,6 +8,7 @@ import argparse
 import sys
 
 POSITION_TYPES = ('stop', 'address', 'poi')
+TIMEFORMAT = '%H:%M'
 
 class ParserError(Exception):
     
@@ -41,7 +42,7 @@ def search(origin_tuple, destination_tuple, dtime=None):
     params = urlencode(post)
     url = '%s?%s' % (settings.action, params)
     
-    print "\nurl %s url\n\n%s\n\nurl %s url\n" % ('~'*100, url, '~'*100)
+    print "\nurl %s url\n\n%s\n\nurl %s url\n" % ('~' * 100, url, '~' * 100)
     
     return urlopen(url)
 
@@ -244,7 +245,7 @@ if __name__ == '__main__':
                         i += 1
                     lo = sys.stdin.readline().strip()
                 
-                args.o = cor[0][int(lo)-1]
+                args.o = cor[0][int(lo) - 1]
                 
             if cor[1]:
                 print
@@ -256,7 +257,7 @@ if __name__ == '__main__':
                         j += 1
                     ld = sys.stdin.readline().strip()
                     
-                args.d = cor[1][int(ld)-1]
+                args.d = cor[1][int(ld) - 1]
             
             html = search((args.o.encode('UTF-8'), args.ot), (args.d.encode('UTF-8'), args.dt)).read()
     
@@ -270,8 +271,24 @@ if __name__ == '__main__':
         parser = rParser(html)
         try:
             overviews = parser.overview
-            for overview in overviews:
-                print '[%s] %s-%s (%s)' % (overview['date'], overview['time'][0], overview['time'][1], overview['duration'])
+            details = parser.details
+            l = ''
+            while not l == 'q':
+                for r in range(len(overviews)):
+                    print '%d. [%s] %s-%s (%s)' % (r + 1, overviews[r]['date'], overviews[r]['time'][0], overviews[r]['time'][1], overviews[r]['duration'])
+                print 'q. Quit'
+                l = sys.stdin.readline().strip()
+                
+                if l.isdigit() and int(l) <= len(details):
+                    for detail in details[int(l) - 1]:
+                        if detail['time'] and detail['station']:
+                            time = '%s - %s' % (detail['time'][0].strftime(TIMEFORMAT), detail['time'][1].strftime(TIMEFORMAT))
+                            print '[%s] %s\n%s' % (time, ' -> '.join(detail['station']), '\n'.join(detail['info']))
+                        else:
+                            print '\n'.join(detail['info'])
+                        print '-' * 100
+                print
+                
         except ParserError:
             print 'parsererror'
             
