@@ -237,7 +237,6 @@ if __name__ == '__main__':
                 print
                 print '* Origin ambiguous:'
                 lo = None
-                ld = None
                 while not lo or not lo.isdigit() or int(lo) > len(cor[0]):
                     i = 1
                     for c in cor[0]:
@@ -250,6 +249,7 @@ if __name__ == '__main__':
             if cor[1]:
                 print
                 print '* Destination ambiguous:'
+                ld = None
                 while not ld or not ld.isdigit() or int(ld) > len(cor[1]):
                     j = 1
                     for c in cor[1]:
@@ -278,6 +278,8 @@ if __name__ == '__main__':
                     print '%d. [%s] %s-%s (%s)' % (r + 1, overviews[r]['date'], overviews[r]['time'][0], overviews[r]['time'][1], overviews[r]['duration'])
                 print 'q. Quit'
                 l = sys.stdin.readline().strip()
+                print
+                print '~' * 100
                 
                 if l.isdigit() and int(l) <= len(details):
                     for detail in details[int(l) - 1]:
