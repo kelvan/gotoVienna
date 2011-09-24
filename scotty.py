@@ -5,6 +5,7 @@ import settings
 from datetime import datetime, time
 from textwrap import wrap
 import argparse
+import sys
 
 POSITION_TYPES = ('stop', 'address', 'poi')
 
@@ -218,16 +219,53 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Get public transport route for Vienna')
     parser.add_argument('-o', metavar='name', type=str, help='origin', required=True)
     parser.add_argument('-d', metavar='name', type=str, help='destination', required=True)
-    parser.add_argument('-ot', metavar='type', type=str, help='origin type: %s' % ' | '.join(POSITION_TYPES), default='stop')
-    parser.add_argument('-dt', metavar='type', type=str, help='destination type: %s' % ' | '.join(POSITION_TYPES), default='stop')
+    parser.add_argument('-ot', metavar='type', type=str, help='origin type: %s' % ' | '.join(POSITION_TYPES), default='stop', choices=POSITION_TYPES)
+    parser.add_argument('-dt', metavar='type', type=str, help='destination type: %s' % ' | '.join(POSITION_TYPES), default='stop', choices=POSITION_TYPES)
 
     args = parser.parse_args()
     
-    html = search((args.o, args.ot), (args.d, args.dt)).read()
+    html = search((args.o.encode('UTF-8'), args.ot), (args.d.encode('UTF-8'), args.dt)).read()
     
     parser = sParser(html)
     state = parser.check_page()
     
+    if state == PageType.CORRECTION:
+        try:
+            cor = parser.get_correction()
+            if cor[0]:
+                print
+                print '* Origin ambiguous:'
+                lo = None
+                ld = None
+                while not lo or not lo.isdigit() or int(lo) > len(cor[0]):
+                    i = 1
+                    for c in cor[0]:
+                        print '%d. %s' % (i, c)
+                        i += 1
+                    lo = sys.stdin.readline().strip()
+                
+                args.o = cor[0][int(lo)-1]
+                
+            if cor[1]:
+                print
+                print '* Destination ambiguous:'
+                while not ld or not ld.isdigit() or int(ld) > len(cor[1]):
+                    j = 1
+                    for c in cor[1]:
+                        print '%d. %s' % (j, c)
+                        j += 1
+                    ld = sys.stdin.readline().strip()
+                    
+                args.d = cor[1][int(ld)-1]
+            
+            html = search((args.o.encode('UTF-8'), args.ot), (args.d.encode('UTF-8'), args.dt)).read()
+    
+            parser = sParser(html)
+            state = parser.check_page()
+            
+        except ParserError:
+            print 'PANIC at correction page'
+            
     if state == PageType.RESULT:
         parser = rParser(html)
         try:
@@ -236,18 +274,6 @@ if __name__ == '__main__':
                 print '[%s] %s-%s (%s)' % (overview['date'], overview['time'][0], overview['time'][1], overview['duration'])
         except ParserError:
             print 'parsererror'
-    elif state == PageType.CORRECTION:
-        try:
-            cor = parser.get_correction()
-            if cor[0]:
-                print
-                print '* Origin ambiguous:'
-                print '', '\n '.join(cor[0])
-            if cor[1]:
-                print
-                print '* Destination ambiguous:'
-                print '', '\n '.join(cor[1])
-        except ParserError:
-            print 'PANIC at correction page'
+            
     elif state == PageType.UNKNOWN:
         print 'PANIC unknown result'
