@@ -234,8 +234,8 @@ if __name__ == '__main__':
             overviews = parser.overview
             for overview in overviews:
                 print '[%s] %s-%s (%s)' % (overview['date'], overview['time'][0], overview['time'][1], overview['duration'])
-        except ParserError as e:
-            print e.message
+        except ParserError:
+            print 'parsererror'
     elif state == PageType.CORRECTION:
         try:
             cor = parser.get_correction()
