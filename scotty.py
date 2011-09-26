@@ -6,9 +6,11 @@ from datetime import datetime, time
 from textwrap import wrap
 import argparse
 import sys
+import os.path
 
 POSITION_TYPES = ('stop', 'address', 'poi')
 TIMEFORMAT = '%H:%M'
+DEBUGLOG = os.path.expanduser('~/gotoVienna.debug')
 
 class ParserError(Exception):
     
@@ -42,7 +44,12 @@ def search(origin_tuple, destination_tuple, dtime=None):
     params = urlencode(post)
     url = '%s?%s' % (settings.action, params)
     
-    print "\nurl %s url\n\n%s\n\nurl %s url\n" % ('~' * 100, url, '~' * 100)
+    try:
+        f = open(DEBUGLOG, 'a')
+        f.write(url + '\n')
+        f.close()
+    except:
+        print 'Unable to write to DEBUGLOG: %s' % DEBUGLOG
     
     return urlopen(url)
 
@@ -210,7 +217,7 @@ class rParser:
             try:
                 self._overview = self._parse_overview()
             except AttributeError:
-                f = open('DEBUG', 'w')
+                f = open(DEBUGLOG, 'w')
                 f.write(str(self.soup))
                 f.close()
 
@@ -224,7 +231,6 @@ if __name__ == '__main__':
     parser.add_argument('-dt', metavar='type', type=str, help='destination type: %s' % ' | '.join(POSITION_TYPES), default='stop', choices=POSITION_TYPES)
 
     args = parser.parse_args()
-    print args.o
     html = search((args.o, args.ot), (args.d, args.dt)).read()
     
     parser = sParser(html)
