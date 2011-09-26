@@ -224,8 +224,8 @@ if __name__ == '__main__':
     parser.add_argument('-dt', metavar='type', type=str, help='destination type: %s' % ' | '.join(POSITION_TYPES), default='stop', choices=POSITION_TYPES)
 
     args = parser.parse_args()
-    
-    html = search((args.o.encode('UTF-8'), args.ot), (args.d.encode('UTF-8'), args.dt)).read()
+    print args.o
+    html = search((args.o, args.ot), (args.d, args.dt)).read()
     
     parser = sParser(html)
     state = parser.check_page()

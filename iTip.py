@@ -115,7 +115,7 @@ if __name__ == '__main__':
         l = args.l.upper()
     else:
         l = None
-    s = args.s.encode('UTF-8')
+    s = args.s.decode('UTF-8')
     
     if l and l in lines:
         stations = itip.get_stations(l)
