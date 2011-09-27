@@ -65,6 +65,10 @@ class iParser:
         
         #TODO parse line name and direction for station site parsing
         
+        if not url:
+            # FIXME prevent from calling this method with None
+            return []
+
         bs = BeautifulSoup(urlopen(url))
         result_lines = bs.findAll('table')[-1].findAll('tr')
         
