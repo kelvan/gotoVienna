@@ -230,13 +230,13 @@ class rParser:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Get public transport route for Vienna')
-    parser.add_argument('-o', metavar='name', type=str, help='origin', required=True)
-    parser.add_argument('-d', metavar='name', type=str, help='destination', required=True)
     parser.add_argument('-ot', metavar='type', type=str, help='origin type: %s' % ' | '.join(POSITION_TYPES), default='stop', choices=POSITION_TYPES)
     parser.add_argument('-dt', metavar='type', type=str, help='destination type: %s' % ' | '.join(POSITION_TYPES), default='stop', choices=POSITION_TYPES)
+    parser.add_argument('origin')
+    parser.add_argument('destination')
 
     args = parser.parse_args()
-    html = search((args.o, args.ot), (args.d, args.dt)).read()
+    html = search((args.origin, args.ot), (args.destination, args.dt)).read()
     
     parser = sParser(html)
     state = parser.check_page()
