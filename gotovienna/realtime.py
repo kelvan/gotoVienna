@@ -2,10 +2,12 @@
 
 from BeautifulSoup import BeautifulSoup
 from urllib2 import urlopen
-import settings
 from datetime import time
 import argparse
 import re
+import collections
+
+from gotovienna import defaults
 
 class ITipParser:
     def __init__(self):
@@ -30,7 +32,7 @@ class ITipParser:
                 sta = []
                 for tr in tables[i].findAll('tr', {'onmouseout': 'obj_unhighlight(this);'}):
                     if tr.a:
-                        sta.append((tr.a.text, settings.line_overview + tr.a['href']))
+                        sta.append((tr.a.text, defaults.line_overview + tr.a['href']))
                     else:
                         sta.append((tr.text.strip('&nbsp;'), None))
 
@@ -44,13 +46,13 @@ class ITipParser:
         """ Dictionary of Line names with url as value
         """
         if not self._lines:
-            bs = BeautifulSoup(urlopen(settings.line_overview))
+            bs = BeautifulSoup(urlopen(defaults.line_overview))
             # get tables
             lines = bs.findAll('td', {'class': 'linie'})
 
             for line in lines:
                 if line.a:
-                    href = settings.line_overview + line.a['href']
+                    href = defaults.line_overview + line.a['href']
                     if line.text:
                         self._lines[line.text] = href
                     elif line.img:
@@ -106,4 +108,64 @@ class ITipParser:
                     print "[DEBUG] Invalid data:\n%s" % time
 
         return dep
+
+
+UBAHN, TRAM, BUS, NIGHTLINE, OTHER = range(5)
+LINE_TYPE_NAMES = ['U-Bahn', 'Strassenbahn', 'Bus', 'Nightline', 'Andere']
+
+def get_line_sort_key(name):
+    """Return a sort key for a line name
+
+    >>> get_line_sort_key('U6')
+    ('U', 6)
+
+    >>> get_line_sort_key('D')
+    ('D', 0)
+
+    >>> get_line_sort_key('59A')
+    ('A', 59)
+    """
+    txt = ''.join(x for x in name if not x.isdigit())
+    num = ''.join(x for x in name if x.isdigit()) or '0'
+
+    return (txt, int(num))
+
+def get_line_type(name):
+    """Get the type of line for the given name
+
+    >>> get_line_type('U1')
+    UBAHN
+    >>> get_line_type('59A')
+    BUS
+    """
+    if name.isdigit():
+        return TRAM
+    elif name.endswith('A') or name.endswith('B') and name[1].isdigit():
+        return BUS
+    elif name.startswith('U'):
+        return UBAHN
+    elif name.startswith('N'):
+        return NIGHTLINE
+    elif name in ('D', 'O', 'VRT', 'WLB'):
+        return TRAM
+
+    return OTHER
+
+def categorize_lines(lines):
+    """Return a categorized version of a list of line names
+
+    >>> categorize_lines(['U4', 'U3', '59A'])
+    [('U-Bahn', ['U3', 'U4']), ('Bus', ['59A'])]
+    """
+    categorized_lines = collections.defaultdict(list)
+
+    for line in sorted(lines):
+        line_type = get_line_type(line)
+        categorized_lines[line_type].append(line)
+
+    for lines in categorized_lines.values():
+        lines.sort(key=get_line_sort_key)
+
+    return [(LINE_TYPE_NAMES[key], categorized_lines[key])
+            for key in sorted(categorized_lines)]
 
