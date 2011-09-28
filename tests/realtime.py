@@ -20,3 +20,6 @@ class ParseTest(unittest.TestCase):
         for line in lines:
             s.append(parser.get_stations(line[0]))
         self.assertTrue(s)
+
+if __name__ == '__main__':
+    unittest.main()

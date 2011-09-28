@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
 from BeautifulSoup import BeautifulSoup
 from urllib2 import urlopen
 import settings

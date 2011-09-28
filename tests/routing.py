@@ -1,38 +1,50 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 import unittest
-from wlSearch import Search
+from scotty import search, ParserError, sParser, rParser, PageType
 from datetime import datetime
-from parseHtml import Parser, iParser, ParserError
 from BeautifulSoup import BeautifulSoup
 
-origin = 'Karlsplatz'
-destination = 'Handelskai'
 dtime = datetime.now()
 dtime = dtime.replace(hour=15, minute=0)
-search = Search(origin, destination)
-bs = BeautifulSoup(search.get_html(dtime))
 
-class FetchTest(unittest.TestCase):
+origin = u'Börse'.encode('UTF-8')
+destination = 'Handelskai'
+s = search((origin, 'stop'), (destination, 'stop'), dtime).read()
+parser = sParser(s)
+p = rParser(s)
 
-    def test_overview(self):
-        self.assertEquals(1, len(bs.findAll('table', {'id': 'tbl_fahrten'})))
 
-    def test_details(self):
-        self.assertTrue(len(bs.findAll('div', {'class': 'data_table tourdetail'})) > 0)
+originc = 'Simmeri'
+destinationc = 'Karlspla'
+sc = search((originc, 'stop'), (destinationc, 'stop'), dtime).read()
+parserc = sParser(sc)
 
-origin = 'Zwicklgasse 1'
-destination = 'Himmelstrasse 1'
+
+origina = 'Zwicklgasse 1'
+destinationa = 'Himmelstrasse 1'
 ot = dt = 'address'
-s = Search(origin, destination, origin_type=ot, destination_type=dt)
-p = Parser(s.get_html(dtime))
-
-origin = 'Foobar Strasse 123'
-destination = 'Bazgasse 321'
-s = Search(origin, destination, origin_type=ot, destination_type=dt)
-invalid_parser = Parser(s.get_html(dtime))
 
 
-class ParseTest(unittest.TestCase):
+originac = 'Foobar Strasse 123'
+destinationac = 'Bazgasse 321'
 
+
+class SearchTest(unittest.TestCase):
+
+    def test_state(self):
+        state = parser.check_page()
+        statec = parserc.check_page()
+        
+        self.assertEqual(PageType.RESULT, state)
+        self.assertEqual(PageType.CORRECTION, statec)
+        
+    def test_correction(self):
+        cor = parserc.get_correction()
+        s = search((cor[0][0], 'stop'), (cor[1][0], 'stop'), dtime).read()
+        parser = sParser(s)
+        self.assertEqual(PageType.RESULT, parser.check_page())
+    
     def test_overview_shouldFindMultipleItems(self):
         # TODO Replace with assertGreater in new python version
         self.assertTrue(len(p.overview) > 1)
@@ -47,10 +59,6 @@ class ParseTest(unittest.TestCase):
 
     def test_parser_overviewAndDetailsShouldHaveSameLength(self):
         self.assertEqual(len(p.details), len(p.overview))
-
-    def test_parser_shouldRaiseError(self):
-        # TODO Replace with expectedFailure decorator in new python version
-        self.assertRaises(ParserError, invalid_parser._parse_overview)
 
     def test_parser_shouldFindMoreThanOneChange(self):
         self.assertTrue(p.overview[0]['change'] > 0)
