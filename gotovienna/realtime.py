@@ -2,10 +2,11 @@
 
 from BeautifulSoup import BeautifulSoup
 from urllib2 import urlopen
-import settings
 from datetime import time
 import argparse
 import re
+
+from gotovienna import defaults
 
 class ITipParser:
     def __init__(self):
@@ -30,7 +31,7 @@ class ITipParser:
                 sta = []
                 for tr in tables[i].findAll('tr', {'onmouseout': 'obj_unhighlight(this);'}):
                     if tr.a:
-                        sta.append((tr.a.text, settings.line_overview + tr.a['href']))
+                        sta.append((tr.a.text, defaults.line_overview + tr.a['href']))
                     else:
                         sta.append((tr.text.strip('&nbsp;'), None))
 
@@ -44,13 +45,13 @@ class ITipParser:
         """ Dictionary of Line names with url as value
         """
         if not self._lines:
-            bs = BeautifulSoup(urlopen(settings.line_overview))
+            bs = BeautifulSoup(urlopen(defaults.line_overview))
             # get tables
             lines = bs.findAll('td', {'class': 'linie'})
 
             for line in lines:
                 if line.a:
-                    href = settings.line_overview + line.a['href']
+                    href = defaults.line_overview + line.a['href']
                     if line.text:
                         self._lines[line.text] = href
                     elif line.img:

@@ -4,12 +4,13 @@
 from BeautifulSoup import BeautifulSoup, NavigableString
 from urllib2 import urlopen
 from urllib import urlencode
-import settings
 from datetime import datetime, time
 from textwrap import wrap
 import argparse
 import sys
 import os.path
+
+from gotovienna import defaults
 
 POSITION_TYPES = ('stop', 'address', 'poi')
 TIMEFORMAT = '%H:%M'
@@ -37,7 +38,7 @@ def search(origin_tuple, destination_tuple, dtime=None):
         not destination_type in POSITION_TYPES:
         raise ParserError('Invalid position type')
 
-    post = settings.search_post
+    post = defaults.search_post
     post['name_origin'] = origin
     post['type_origin'] = origin_type
     post['name_destination'] = destination
@@ -45,7 +46,7 @@ def search(origin_tuple, destination_tuple, dtime=None):
     post['itdDateDayMonthYear'] = dtime.strftime('%d.%m.%Y')
     post['itdTime'] = dtime.strftime('%H:%M')
     params = urlencode(post)
-    url = '%s?%s' % (settings.action, params)
+    url = '%s?%s' % (defaults.action, params)
 
     try:
         f = open(DEBUGLOG, 'a')
