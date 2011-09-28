@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 
 from BeautifulSoup import BeautifulSoup
 from urllib2 import urlopen
@@ -8,8 +7,7 @@ from datetime import time
 import argparse
 import re
 
-class iParser:
-
+class ITipParser:
     def __init__(self):
         self._stations = {}
         self._lines = {}
@@ -108,54 +106,4 @@ class iParser:
                     print "[DEBUG] Invalid data:\n%s" % time
                 
         return dep
-    
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Get realtime public transport information for Vienna')
-    parser.add_argument('-l', metavar='name', type=str, help='line name')
-    parser.add_argument('-s', metavar='name', type=str, help='station name')   
 
-    args = parser.parse_args()
-    
-    itip = iParser()
-    lines = itip.lines
-    if args.l:
-        l = args.l.upper()
-    else:
-        l = None
-    if args.s:
-        s = args.s.decode('UTF-8')
-    else:
-        s = ''
-    
-    if l and l in lines:
-        stations = itip.get_stations(l)
-        for key in stations.keys():
-            if not s:
-                print '* %s:' % key
-            for station in stations[key]:
-                if s:
-                    if s.startswith(station[0]) or station[0].startswith(s):
-                        # FIXME
-                        print '* %s\n  %s .....' % (key, station[0]), itip.get_departures(station[1])
-                else:
-                    print '    %s' % station[0]
-    
-    elif not l:
-        line = {'U-Bahn': '|', 'Strassenbahn': '|', 'Bus': '|', 'Andere': '|', 'Nightline': '|'}
-        lines_sorted = lines.keys()
-        lines_sorted.sort()
-        for li in lines_sorted:
-            if li.isdigit():
-                type = 'Strassenbahn'
-            elif li.endswith('A') or li.endswith('B') and li[1].isdigit():
-                type = 'Bus'
-            elif li.startswith('U'):
-                type = 'U-Bahn'
-            elif li.startswith('N'):
-                type = 'Nightline'
-            else:
-                type = 'Andere'
-                
-            line[type] += ' %s |' % li
-        for kv in line.items():
-            print "%s:\n%s" % kv
