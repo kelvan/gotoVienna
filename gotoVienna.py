@@ -6,7 +6,7 @@ import webbrowser
 from PySide.QtCore import SIGNAL, QTranslator, QObject, Qt
 from PySide.QtGui import QApplication, QMainWindow
 from Ui_Qt import Ui_MainWindow
-from wlSearch import Search
+from scotty import search
 from history import History
 import settings
 
