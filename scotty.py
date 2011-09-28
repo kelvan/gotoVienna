@@ -255,7 +255,7 @@ if __name__ == '__main__':
                         i += 1
                     lo = sys.stdin.readline().strip()
                 
-                args.o = cor[0][int(lo) - 1]
+                args.origin = cor[0][int(lo) - 1]
                 
             if cor[1]:
                 print
@@ -268,9 +268,9 @@ if __name__ == '__main__':
                         j += 1
                     ld = sys.stdin.readline().strip()
                     
-                args.d = cor[1][int(ld) - 1]
+                args.destination = cor[1][int(ld) - 1]
             
-            html = search((args.o.encode('UTF-8'), args.ot), (args.d.encode('UTF-8'), args.dt)).read()
+            html = search((args.origin.encode('UTF-8'), args.ot), (args.destination.encode('UTF-8'), args.dt)).read()
     
             parser = sParser(html)
             state = parser.check_page()
