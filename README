@@ -4,3 +4,8 @@ Using qml gui to show results
 Show next bus/tram/underground departures.
 
 This program ist unofficial.
+
+Running unit tests:
+
+$ python -m gotovienna.tests.runner
+

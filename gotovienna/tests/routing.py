@@ -1,9 +1,9 @@
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
+
 import unittest
-from scotty import search, ParserError, sParser, rParser, PageType
 from datetime import datetime
-from BeautifulSoup import BeautifulSoup
+
+from gotovienna.routing import *
 
 dtime = datetime.now()
 dtime = dtime.replace(hour=15, minute=0)
