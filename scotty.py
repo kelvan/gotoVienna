@@ -120,6 +120,8 @@ class rParser:
     @classmethod
     def get_price(cls, x):
         y = rParser.get_tdtext(x, 'col_price')
+        if y == '*':
+            return 0.0
         if y.find(','):
             return float(y.replace(',', '.'))
         else:
@@ -283,8 +285,16 @@ if __name__ == '__main__':
             details = parser.details
             l = ''
             while not l == 'q':
-                for r in range(len(overviews)):
-                    print '%d. [%s] %s-%s (%s)' % (r + 1, overviews[r]['date'], overviews[r]['time'][0], overviews[r]['time'][1], overviews[r]['duration'])
+                for idx, overview in enumerate(overviews):
+                    if not overview['date'] or not overview['time']:
+                        # XXX: Bogus data for e.g. Pilgramgasse->Karlsplatz?!
+                        continue
+
+                    print '%d. [%s] %s-%s (%s)' % (idx + 1,
+                            overview['date'],
+                            overview['time'][0],
+                            overview['time'][1],
+                            overview['duration'])
                 print 'q. Quit'
                 l = sys.stdin.readline().strip()
                 print
