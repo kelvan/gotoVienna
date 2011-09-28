@@ -16,11 +16,20 @@ from gotovienna.routing import *
 parser = argparse.ArgumentParser(description='Get public transport route for Vienna')
 parser.add_argument('-ot', metavar='type', type=str, help='origin type: %s' % ' | '.join(POSITION_TYPES), default='stop', choices=POSITION_TYPES)
 parser.add_argument('-dt', metavar='type', type=str, help='destination type: %s' % ' | '.join(POSITION_TYPES), default='stop', choices=POSITION_TYPES)
-parser.add_argument('origin')
-parser.add_argument('destination')
+parser.add_argument('origin', nargs='?')
+parser.add_argument('destination', nargs='?')
 
 args = parser.parse_args()
+
+if not args.origin:
+    args.origin = raw_input('Origin: ')
+
+if not args.destination:
+    args.destination = raw_input('Destination: ')
+
+print >>sys.stderr, 'Searching...',
 html = search((args.origin, args.ot), (args.destination, args.dt)).read()
+print >>sys.stderr, 'done.'
 
 parser = sParser(html)
 state = parser.check_page()
