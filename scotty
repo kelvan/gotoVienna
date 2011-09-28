@@ -35,11 +35,8 @@ while not finished:
     if state == PageType.CORRECTION:
         try:
             cor = parser.get_correction()
-            print "A", args.origin, args.destination
             origin, origin_place = split_station(args.origin)
             destination, destination_place = split_station(args.destination)
-            
-            print "B", origin, origin_place, destination, destination_place
             
             # FIXME refactoring
             
@@ -95,7 +92,6 @@ while not finished:
     
                 destination_place = cor['destination_place'][int(l) - 1]
                 
-            print origin, origin_place, destination, destination_place
             args.origin = '%s, %s' % (origin, origin_place)
             args.destination = '%s, %s' %(destination, destination_place)
             

@@ -54,7 +54,6 @@ def split_station(station):
     >>> split_station('Karlsplatz')
     ('Karlsplatz', 'Wien')
     """
-    print "split:", station
     if len(station.split(',')) > 1:
         return (station[:station.rindex(',')].strip(), station.split(',')[-1].strip())
     else:
@@ -192,6 +191,7 @@ class rParser:
             if (y.find("-") > 0):
                 return map(lambda z: time(*map(int, z.split(':'))), y.split('-'))
             else:
+                # FIXME Error if date in line (dateLineCross)
                 return map(lambda z: time(*map(int, z.split(':'))), wrap(y, 5))
         else:
             return []
