@@ -38,9 +38,9 @@ if state == PageType.CORRECTION:
                     print '%d. %s' % (i, c)
                     i += 1
                 lo = sys.stdin.readline().strip()
-            
+
             args.origin = cor[0][int(lo) - 1]
-            
+
         if cor[1]:
             print
             print '* Destination ambiguous:'
@@ -51,17 +51,17 @@ if state == PageType.CORRECTION:
                     print '%d. %s' % (j, c)
                     j += 1
                 ld = sys.stdin.readline().strip()
-                
+
             args.destination = cor[1][int(ld) - 1]
-        
+
         html = search((args.origin.encode('UTF-8'), args.ot), (args.destination.encode('UTF-8'), args.dt)).read()
 
         parser = sParser(html)
         state = parser.check_page()
-        
+
     except ParserError:
         print 'PANIC at correction page'
-        
+
 if state == PageType.RESULT:
     parser = rParser(html)
     try:
@@ -83,7 +83,7 @@ if state == PageType.RESULT:
             l = sys.stdin.readline().strip()
             print
             print '~' * 100
-            
+
             if l.isdigit() and int(l) <= len(details):
                 for detail in details[int(l) - 1]:
                     if detail['time'] and detail['station']:
@@ -93,9 +93,9 @@ if state == PageType.RESULT:
                         print '\n'.join(detail['info'])
                     print '-' * 100
             print
-            
+
     except ParserError:
         print 'parsererror'
-        
+
 elif state == PageType.UNKNOWN:
     print 'PANIC unknown result'

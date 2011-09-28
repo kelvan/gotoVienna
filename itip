@@ -13,7 +13,7 @@ from gotovienna.realtime import ITipParser
 
 parser = argparse.ArgumentParser(description='Get realtime public transport information for Vienna')
 parser.add_argument('-l', metavar='name', type=str, help='line name')
-parser.add_argument('-s', metavar='name', type=str, help='station name')   
+parser.add_argument('-s', metavar='name', type=str, help='station name')
 
 args = parser.parse_args()
 
@@ -56,7 +56,7 @@ elif not l:
             type = 'Nightline'
         else:
             type = 'Andere'
-            
+
         line[type] += ' %s |' % li
     for kv in line.items():
         print "%s:\n%s" % kv

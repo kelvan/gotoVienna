@@ -16,13 +16,13 @@ TIMEFORMAT = '%H:%M'
 DEBUGLOG = os.path.expanduser('~/gotoVienna.debug')
 
 class ParserError(Exception):
-    
+
     def __init__(self, msg='Parser error'):
         self.message = msg
 
 class PageType:
     UNKNOWN, CORRECTION, RESULT = range(3)
-    
+
 
 def search(origin_tuple, destination_tuple, dtime=None):
     """ build route request
@@ -30,13 +30,13 @@ def search(origin_tuple, destination_tuple, dtime=None):
     """
     if not dtime:
         dtime = datetime.now()
-    
+
     origin, origin_type = origin_tuple
     destination, destination_type = destination_tuple
     if not origin_type in POSITION_TYPES or\
         not destination_type in POSITION_TYPES:
         raise ParserError('Invalid position type')
-        
+
     post = settings.search_post
     post['name_origin'] = origin
     post['type_origin'] = origin_type
@@ -46,14 +46,14 @@ def search(origin_tuple, destination_tuple, dtime=None):
     post['itdTime'] = dtime.strftime('%H:%M')
     params = urlencode(post)
     url = '%s?%s' % (settings.action, params)
-    
+
     try:
         f = open(DEBUGLOG, 'a')
         f.write(url + '\n')
         f.close()
     except:
         print 'Unable to write to DEBUGLOG: %s' % DEBUGLOG
-    
+
     return urlopen(url)
 
 
@@ -63,23 +63,23 @@ class sParser:
 
     def __init__(self, html):
         self.soup = BeautifulSoup(html)
-    
+
     def check_page(self):
         if self.soup.find('form', {'id': 'form_efaresults'}):
             return PageType.RESULT
-        
+
         if self.soup.find('div', {'class':'form_error'}):
             return PageType.CORRECTION
-        
+
         return PageType.UNKNOWN
-    
+
     def get_correction(self):
         nlo = self.soup.find('select', {'id': 'nameList_origin'})
         nld = self.soup.find('select', {'id': 'nameList_destination'})
-        
+
         if not nlo and not nld:
             raise ParserError('Unable to parse html')
-        
+
         if nlo:
             origin = map(lambda x: x.text, nlo.findAll('option'))
         else:
@@ -88,14 +88,14 @@ class sParser:
             destination = map(lambda x: x.text, nld.findAll('option'))
         else:
             destination = []
-        
+
         return (origin, destination)
-    
+
     def get_result(self):
         return rParser(str(self.soup))
-        
-        
-        
+
+
+
 class rParser:
     """ Parser for routing results
     """
@@ -108,7 +108,7 @@ class rParser:
     @classmethod
     def get_tdtext(cls, x, cl):
             return x.find('td', {'class': cl}).text
-    
+
     @classmethod
     def get_change(cls, x):
         y = rParser.get_tdtext(x, 'col_change')
@@ -134,7 +134,7 @@ class rParser:
             return datetime.strptime(y, '%d.%m.%Y').date()
         else:
             return None
-        
+
     @classmethod
     def get_time(cls, x):
         y = rParser.get_tdtext(x, 'col_time')
@@ -145,7 +145,7 @@ class rParser:
                 return map(lambda z: time(*map(int, z.split(':'))), wrap(y, 5))
         else:
             return []
-        
+
     @classmethod
     def get_duration(cls, x):
         y = rParser.get_tdtext(x, 'col_duration')
@@ -177,7 +177,7 @@ class rParser:
         [ [ { 'time': [datetime.time, datetime.time] if time else [],
               'station': [u'start', u'end'] if station else [],
               'info': [u'start station' if station else u'details for walking', u'end station' if station else u'walking duration']
-            }, ... # next trip step 
+            }, ... # next trip step
           ], ... # next trip possibility
         ]
         """
@@ -195,7 +195,7 @@ class rParser:
         if table and table.findAll('tr'):
             # get rows
             rows = table.findAll('tr')[1:] # cut off headline
-            
+
             overview = map(lambda x: {
                                'date': rParser.get_date(x),
                                'time': rParser.get_time(x),
