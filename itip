@@ -35,23 +35,21 @@ if l and l in lines:
                     print '* %s\n  %s .....' % (key, station[0]), itip.get_departures(station[1])
             else:
                 print '    %s' % station[0]
-
 elif not l:
-    line = {'U-Bahn': '|', 'Strassenbahn': '|', 'Bus': '|', 'Andere': '|', 'Nightline': '|'}
-    lines_sorted = lines.keys()
-    lines_sorted.sort()
-    for li in lines_sorted:
-        if li.isdigit():
-            type = 'Strassenbahn'
-        elif li.endswith('A') or li.endswith('B') and li[1].isdigit():
-            type = 'Bus'
-        elif li.startswith('U'):
-            type = 'U-Bahn'
-        elif li.startswith('N'):
-            type = 'Nightline'
-        else:
-            type = 'Andere'
+    ITEMS_PER_LINE = 12
+    ITEM_WIDTH = 5
+    LINE_WIDTH = (ITEMS_PER_LINE*ITEM_WIDTH + ITEMS_PER_LINE)
 
-        line[type] += ' %s |' % li
-    for kv in line.items():
-        print "%s:\n%s" % kv
+    print
+    for label, remaining in categorize_lines(lines.keys()):
+        prefix, fill, postfix = '|== ', '=', '==- -'
+        before, after = prefix+label+' ', postfix
+        padding = LINE_WIDTH - len(before+after)
+        print ''.join((before, fill*padding, after))
+
+        while remaining:
+            this_row = [remaining.pop(0) for _ in
+                    range(min(len(remaining), ITEMS_PER_LINE))]
+            print ' '.join(('%%%ds' % ITEM_WIDTH) % x for x in this_row)
+
+        print
