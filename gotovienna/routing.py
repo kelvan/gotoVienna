@@ -24,6 +24,41 @@ class PageType:
     UNKNOWN, CORRECTION, RESULT = range(3)
 
 
+def extract_city(station):
+    """ Extract city from string if present,
+    else return default city
+    
+    >>> extract_city('Karlsplatz, Wien')
+    'Wien'
+    """
+    if len(station.split(',')) > 1:
+        return station.split(',')[-1].strip()
+    else:
+        return 'Wien'
+        
+def extract_station(station):
+    """ Remove city from string
+    
+    >>> extract_station('Karlsplatz, Wien')
+    'Karlsplatz'
+    """
+    if len(station.split(',')) > 1:
+        return station[:station.rindex(',')].strip()
+    else:
+        return station
+    
+def split_station(station):
+    """ >>> split_station('Karlsplatz, Wien')
+    ('Karlsplatz', 'Wien')
+    >>> split_station('Karlsplatz')
+    ('Karlsplatz', 'Wien')
+    """
+    print "split:", station
+    if len(station.split(',')) > 1:
+        return (station[:station.rindex(',')].strip(), station.split(',')[-1].strip())
+    else:
+        return (station, 'Wien')
+
 def search(origin_tuple, destination_tuple, dtime=None):
     """ build route request
     returns html result (as urllib response)
@@ -32,7 +67,12 @@ def search(origin_tuple, destination_tuple, dtime=None):
         dtime = datetime.now()
 
     origin, origin_type = origin_tuple
+    origin, origin_city = split_station(origin)
+    
     destination, destination_type = destination_tuple
+    destination, destination_city = split_station(destination)
+
+
     if not origin_type in POSITION_TYPES or\
         not destination_type in POSITION_TYPES:
         raise ParserError('Invalid position type')
@@ -44,6 +84,8 @@ def search(origin_tuple, destination_tuple, dtime=None):
     post['type_destination'] = destination_type
     post['itdDateDayMonthYear'] = dtime.strftime('%d.%m.%Y')
     post['itdTime'] = dtime.strftime('%H:%M')
+    post['place_origin'] = origin_city
+    post['place_destination'] = destination_city
     params = urlencode(post)
     url = '%s?%s' % (settings.action, params)
 
@@ -74,22 +116,29 @@ class sParser:
         return PageType.UNKNOWN
 
     def get_correction(self):
-        nlo = self.soup.find('select', {'id': 'nameList_origin'})
-        nld = self.soup.find('select', {'id': 'nameList_destination'})
+        names_origin = self.soup.find('select', {'id': 'nameList_origin'})
+        names_destination = self.soup.find('select', {'id': 'nameList_destination'})
+        places_origin = self.soup.find('select', {'id': 'placeList_origin'})
+        places_destination = self.soup.find('select', {'id': 'placeList_destination'})
+        
 
-        if not nlo and not nld:
+        if names_origin or names_destination or places_origin or places_destination:
+            dict = {}
+            
+            if names_origin:
+                dict['origin'] = map(lambda x: x.text, names_origin.findAll('option'))
+            if names_destination:
+                dict['destination'] = map(lambda x: x.text, names_destination.findAll('option'))
+                
+            if places_origin:
+                dict['place_origin'] = map(lambda x: x.text, names_origin.findAll('option'))
+            if names_destination:
+                dict['place_destination'] = map(lambda x: x.text, names_destination.findAll('option'))
+    
+            return dict
+        
+        else:
             raise ParserError('Unable to parse html')
-
-        if nlo:
-            origin = map(lambda x: x.text, nlo.findAll('option'))
-        else:
-            origin = []
-        if nld:
-            destination = map(lambda x: x.text, nld.findAll('option'))
-        else:
-            destination = []
-
-        return (origin, destination)
 
     def get_result(self):
         return rParser(str(self.soup))
