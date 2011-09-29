@@ -5,46 +5,108 @@ import argparse
 
 from gotovienna.realtime import *
 
+def inred(x):
+    return '\033[91m' + x + '\033[0m'
+
+def ingreen(x):
+    return '\033[92m' + x + '\033[0m'
+
+def inblue(x):
+    return '\033[94m' + x + '\033[0m'
 
 parser = argparse.ArgumentParser(description='Get realtime public transport information for Vienna')
-parser.add_argument('-l', metavar='name', type=str, help='line name')
-parser.add_argument('-s', metavar='name', type=str, help='station name')
+parser.add_argument('line', nargs='?')
+parser.add_argument('station', nargs='?')
 
 args = parser.parse_args()
 
 itip = ITipParser()
-lines = itip.lines
-if args.l:
-    l = args.l.upper()
-else:
-    l = None
-if args.s:
-    s = args.s.decode('UTF-8')
-else:
-    s = ''
 
-if l and l in lines:
-    stations = itip.get_stations(l)
-    for key in stations.keys():
-        if not s:
-            print '* %s:' % key
-        for station in stations[key]:
-            if s:
-                if s.startswith(station[0]) or station[0].startswith(s):
-                    # FIXME
-                    print '* %s\n  %s .....' % (key, station[0]), itip.get_departures(station[1])
-            else:
-                print '    %s' % station[0]
-elif not l:
+if args.line:
+    # Convert line name to uppercase (e.g. 'u4' -> 'U4')
+    args.line = args.line.upper()
+
+if args.station:
+    args.station = args.station.decode('utf-8')
+
+if args.line in itip.lines:
+    ITEM_WIDTH = 33
+    ITEM_SPACING = 4
+
+    # FIXME: change get_stations() to return (headers, stations) directly
+    stations = sorted(itip.get_stations(args.line).items())
+    headers, stations = zip(*stations)
+
+    maxlength = max(len(stops) for stops in stations)
+    for stops in stations:
+        # Pad station list with empty items for printing, so that
+        # different-sized lists aren't truncated (with zip below)
+        stops.extend([('', '')]*(maxlength-len(stops)))
+
+    stations_table = zip(*stations)
+    fmt = '%%-%ds' % ITEM_WIDTH
+    spacer = ' ' * ITEM_SPACING
+
+    print
+    print spacer, spacer.join(inblue(fmt % ('Richtung %s' % name))
+            for name in headers)
+    print spacer, spacer.join('-'*ITEM_WIDTH for name in headers)
+
+    def match_station(query, station):
+        return query and station and (query.lower() in station.lower())
+
+    for row in stations_table:
+        print spacer, spacer.join(ingreen(fmt%name)
+                if match_station(args.station, name)
+                else fmt%name
+                for name, url in row)
+    print
+
+    # Get matching stations
+    stations = zip(headers, stations)
+    details = [(direction, name, url) for direction, stops in stations
+            for name, url in stops if match_station(args.station, name)]
+
+    # User entered a station, but no matches were found
+    if args.station and not details:
+        print inred('No station matched your query.')
+        print
+
+    # Format a departure time (in minutes from now) for display
+    def format_departure(minutes):
+        if minutes == 0:
+            return inred('now')
+        elif minutes == 1:
+            return inblue('1') + ' min'
+        else:
+            return inblue('%d' % minutes) + ' mins'
+
+    # Print the departure times for all matched stations
+    for direction, name, url in details:
+        print ingreen(name), '->', inblue(direction)
+
+        departures = itip.get_departures(url)
+        if departures:
+            print '  Next departures:', ', '.join(format_departure(x)
+                    for x in departures)
+        else:
+            print '  No departure information.'
+        print
+else:
     ITEMS_PER_LINE = 12
     ITEM_WIDTH = 5
     LINE_WIDTH = (ITEMS_PER_LINE*ITEM_WIDTH + ITEMS_PER_LINE)
 
+    if args.line:
+        print
+        print inred('The given line was not found. Valid lines:')
+
     print
-    for label, remaining in categorize_lines(lines.keys()):
+    for label, remaining in categorize_lines(itip.lines):
         prefix, fill, postfix = '|== ', '=', '==- -'
         before, after = prefix+label+' ', postfix
         padding = LINE_WIDTH - len(before+after)
+        before = before.replace(label, inblue(label))
         print ''.join((before, fill*padding, after))
 
         while remaining:
