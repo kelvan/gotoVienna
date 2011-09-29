@@ -25,6 +25,38 @@ class PageType:
     UNKNOWN, CORRECTION, RESULT = range(3)
 
 
+def guess_location_type(location):
+    """Guess type (stop, address, poi) of a location
+
+    >>> guess_location_type('pilgramgasse')
+    'stop'
+
+    >>> guess_location_type('karlsplatz 14')
+    'address'
+
+    >>> guess_location_type('reumannplatz 12/34')
+    'address'
+    """
+    parts = location.split()
+    first_part = parts[0]
+    last_part = parts[-1]
+
+    # Assume all single-word locations are stops
+    if len(parts) == 1:
+        return 'stop'
+
+    # If the last part is numeric, assume address
+    if last_part.isdigit() and len(parts) > 1:
+        return 'address'
+
+    # Addresses with door number (e.g. "12/34")
+    if all(x.isdigit() or x == '/' for x in last_part):
+        return 'address'
+
+    # Sane default - assume it's a stop/station name
+    return 'stop'
+
+
 def search(origin_tuple, destination_tuple, dtime=None):
     """ build route request
     returns html result (as urllib response)
@@ -36,10 +68,12 @@ def search(origin_tuple, destination_tuple, dtime=None):
     destination, destination_type = destination_tuple
 
     if origin_type is None:
-        origin_type = 'stop'
+        origin_type = guess_location_type(origin)
+        print 'Guessed origin type:', origin_type
 
     if destination_type is None:
-        destination_type = 'stop'
+        destination_type = guess_location_type(destination)
+        print 'Guessed destination type:', destination_type
 
     if (origin_type not in POSITION_TYPES or
             destination_type not in POSITION_TYPES):
