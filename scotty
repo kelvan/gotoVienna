@@ -4,6 +4,7 @@
 import argparse
 import sys
 
+from gotovienna.utils import *
 from gotovienna.routing import *
 
 parser = argparse.ArgumentParser(description='Get public transport route for Vienna')
@@ -20,84 +21,78 @@ if not args.origin:
 if not args.destination:
     args.destination = raw_input('Destination: ')
 
+def do_search(args):
+    if isinstance(args.origin, unicode):
+        args.origin = args.origin.encode('utf-8', 'ignore')
+    elif isinstance(args.destination, unicode):
+        args.destination = args.destination.encode('utf-8', 'ignore')
+
+    result = search((args.origin, args.ot),
+            (args.destination, args.dt))
+
+    return sParser(result.read())
+
 print >>sys.stderr, 'Searching...',
-html = search((args.origin, args.ot), (args.destination, args.dt)).read()
+parser = do_search(args)
 print >>sys.stderr, 'done.'
 
-parser = sParser(html)
-state = parser.check_page()
+while parser.state == PageType.CORRECTION:
+    origin_corr, destination_corr = parser.get_correction()
 
-if state == PageType.CORRECTION:
-    try:
-        cor = parser.get_correction()
-        if cor[0]:
-            print
-            print '* Origin ambiguous:'
-            lo = None
-            while not lo or not lo.isdigit() or int(lo) > len(cor[0]):
-                i = 1
-                for c in cor[0]:
-                    print '%d. %s' % (i, c)
-                    i += 1
-                lo = sys.stdin.readline().strip()
+    if origin_corr:
+        print
+        print '* Origin ambiguous:'
+        lo = None
+        while not lo or not lo.isdigit() or int(lo) > len(origin_corr):
+            for idx, correction in enumerate(origin_corr):
+                print '%3d. %s' % (idx+1, correction)
+            lo = sys.stdin.readline().strip()
 
-            args.origin = cor[0][int(lo) - 1]
+        args.origin = origin_corr[int(lo) - 1]
 
-        if cor[1]:
-            print
-            print '* Destination ambiguous:'
-            ld = None
-            while not ld or not ld.isdigit() or int(ld) > len(cor[1]):
-                j = 1
-                for c in cor[1]:
-                    print '%d. %s' % (j, c)
-                    j += 1
-                ld = sys.stdin.readline().strip()
+    if destination_corr:
+        print
+        print '* Destination ambiguous:'
+        ld = None
+        while not ld or not ld.isdigit() or int(ld) > len(destination_corr):
+            for idx, correction in enumerate(destination_corr):
+                print '%3d. %s' % (idx+1, correction)
+            ld = sys.stdin.readline().strip()
 
-            args.destination = cor[1][int(ld) - 1]
+        args.destination = destination_corr[int(ld) - 1]
 
-        html = search((args.origin.encode('UTF-8'), args.ot), (args.destination.encode('UTF-8'), args.dt)).read()
+    parser = do_search(args)
 
-        parser = sParser(html)
-        state = parser.check_page()
+if parser.state == PageType.RESULT:
+    parser = parser.get_result()
+    overviews = parser.overview
+    details = parser.details
+    l = ''
+    while not l == 'q':
+        for idx, overview in enumerate(overviews):
+            if not overview['date'] or not overview['time']:
+                # XXX: Bogus data for e.g. Pilgramgasse->Karlsplatz?!
+                continue
 
-    except ParserError:
-        print 'PANIC at correction page'
+            print '%d. [%s] %s-%s (%s)' % (idx + 1,
+                    overview['date'],
+                    overview['time'][0],
+                    overview['time'][1],
+                    overview['duration'])
+        print 'q. Quit'
+        l = sys.stdin.readline().strip()
+        print
+        print '~' * 100
 
-if state == PageType.RESULT:
-    parser = rParser(html)
-    try:
-        overviews = parser.overview
-        details = parser.details
-        l = ''
-        while not l == 'q':
-            for idx, overview in enumerate(overviews):
-                if not overview['date'] or not overview['time']:
-                    # XXX: Bogus data for e.g. Pilgramgasse->Karlsplatz?!
-                    continue
+        if l.isdigit() and int(l) <= len(details):
+            for detail in details[int(l) - 1]:
+                if detail['time'] and detail['station']:
+                    time = '%s - %s' % (detail['time'][0].strftime(TIMEFORMAT), detail['time'][1].strftime(TIMEFORMAT))
+                    print '[%s] %s\n%s' % (time, ' -> '.join(detail['station']), '\n'.join(detail['info']))
+                else:
+                    print '\n'.join(detail['info'])
+                print '-' * 100
+        print
+else:
+    print 'Error - unknown page returned.'
 
-                print '%d. [%s] %s-%s (%s)' % (idx + 1,
-                        overview['date'],
-                        overview['time'][0],
-                        overview['time'][1],
-                        overview['duration'])
-            print 'q. Quit'
-            l = sys.stdin.readline().strip()
-            print
-            print '~' * 100
-
-            if l.isdigit() and int(l) <= len(details):
-                for detail in details[int(l) - 1]:
-                    if detail['time'] and detail['station']:
-                        time = '%s - %s' % (detail['time'][0].strftime(TIMEFORMAT), detail['time'][1].strftime(TIMEFORMAT))
-                        print '[%s] %s\n%s' % (time, ' -> '.join(detail['station']), '\n'.join(detail['info']))
-                    else:
-                        print '\n'.join(detail['info'])
-                    print '-' * 100
-            print
-
-    except ParserError:
-        print 'parsererror'
-
-elif state == PageType.UNKNOWN:
-    print 'PANIC unknown result'

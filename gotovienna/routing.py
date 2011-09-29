@@ -74,6 +74,8 @@ class sParser:
 
         return PageType.UNKNOWN
 
+    state = property(check_page)
+
     def get_correction(self):
         nlo = self.soup.find('select', {'id': 'nameList_origin'})
         nld = self.soup.find('select', {'id': 'nameList_destination'})

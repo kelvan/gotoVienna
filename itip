@@ -3,16 +3,8 @@
 
 import argparse
 
+from gotovienna.utils import *
 from gotovienna.realtime import *
-
-def inred(x):
-    return '\033[91m' + x + '\033[0m'
-
-def ingreen(x):
-    return '\033[92m' + x + '\033[0m'
-
-def inblue(x):
-    return '\033[94m' + x + '\033[0m'
 
 parser = argparse.ArgumentParser(description='Get realtime public transport information for Vienna')
 parser.add_argument('line', nargs='?', help='line name (e.g. 59A)')
