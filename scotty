@@ -9,8 +9,8 @@ from gotovienna.routing import *
 parser = argparse.ArgumentParser(description='Get public transport route for Vienna')
 parser.add_argument('-ot', metavar='type', type=str, help='origin type: %s' % ' | '.join(POSITION_TYPES), default='stop', choices=POSITION_TYPES)
 parser.add_argument('-dt', metavar='type', type=str, help='destination type: %s' % ' | '.join(POSITION_TYPES), default='stop', choices=POSITION_TYPES)
-parser.add_argument('origin', nargs='?')
-parser.add_argument('destination', nargs='?')
+parser.add_argument('origin', nargs='?', help='origin station name')
+parser.add_argument('destination', nargs='?', help='destination station name')
 
 args = parser.parse_args()
 

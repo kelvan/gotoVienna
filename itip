@@ -15,8 +15,8 @@ def inblue(x):
     return '\033[94m' + x + '\033[0m'
 
 parser = argparse.ArgumentParser(description='Get realtime public transport information for Vienna')
-parser.add_argument('line', nargs='?')
-parser.add_argument('station', nargs='?')
+parser.add_argument('line', nargs='?', help='line name (e.g. 59A)')
+parser.add_argument('station', nargs='?', help='station name (e.g. Karlsplatz)')
 
 args = parser.parse_args()
 
