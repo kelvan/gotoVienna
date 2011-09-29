@@ -34,8 +34,15 @@ def search(origin_tuple, destination_tuple, dtime=None):
 
     origin, origin_type = origin_tuple
     destination, destination_type = destination_tuple
-    if not origin_type in POSITION_TYPES or\
-        not destination_type in POSITION_TYPES:
+
+    if origin_type is None:
+        origin_type = 'stop'
+
+    if destination_type is None:
+        destination_type = 'stop'
+
+    if (origin_type not in POSITION_TYPES or
+            destination_type not in POSITION_TYPES):
         raise ParserError('Invalid position type')
 
     post = defaults.search_post
