@@ -32,7 +32,7 @@ def do_search(args):
 
     return sParser(result.read())
 
-print >>sys.stderr, 'Searching...',
+print >>sys.stderr, 'Searching...\n',
 parser = do_search(args)
 print >>sys.stderr, 'done.'
 
