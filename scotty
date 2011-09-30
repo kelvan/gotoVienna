@@ -82,7 +82,7 @@ if parser.state == PageType.RESULT:
         print 'q. Quit'
         l = sys.stdin.readline().strip()
         print
-        print '~' * 80
+        print '~' * 79
 
         if l.isdigit() and int(l) <= len(details):
             for detail in details[int(l) - 1]:
@@ -91,7 +91,7 @@ if parser.state == PageType.RESULT:
                     print '[%s] %s\n%s' % (time, ' -> '.join(detail['station']), '\n'.join(detail['info']))
                 else:
                     print '\n'.join(detail['info'])
-                print '-' * 80
+                print '-' * 79
         print
 else:
     print 'Error - unknown page returned.'
