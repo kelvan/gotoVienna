@@ -4,11 +4,12 @@
 from BeautifulSoup import BeautifulSoup, NavigableString
 from urllib2 import urlopen
 from urllib import urlencode
-from datetime import datetime, time, combine, timedelta
+from datetime import datetime, time, timedelta
 from textwrap import wrap
 import argparse
 import sys
 import os.path
+import re
 
 from gotovienna import defaults
 
@@ -192,26 +193,43 @@ class rParser:
                 # overview mode
                 times = map(lambda z: time(*map(int, z.split(':'))), y.split('-'))
                 d = rParser.get_date(x)
-                from_dtime = combine(d, times[0])
+                from_dtime = datetime.combine(d, times[0])
                 if times[0] > times[1]:
                     # dateline crossing
-                    to_dtime = combine(d + timedelta(1), times[1])
+                    to_dtime = datetime.combine(d + timedelta(1), times[1])
                 else:
-                    to_dtime = combine(d, times[1])
-                return datetimes
+                    to_dtime = datetime.combine(d, times[1])
+                    
+                return [from_dtime, to_dtime]
+            
             else:
+                dtregex = {'date' : '\d\d\.\d\d',
+                           'time': '\d\d:\d\d'}
+                
+                regex = "\s*(?P<date1>{date})?\s*(?P<time1>{time})\s*(?P<date2>{date})?\s*(?P<time2>{time})\s*".format(**dtregex)
+                ma = re.match(regex, y)
+                
+                if not ma:
+                    return []
+                
+                gr = ma.groupdict()
+                
+                def extract_datetime(gr, n):
+                    if 'date%d' % n in gr and gr['date%d' % n]:
+                        from_dtime = datetime.strptime(str(datetime.today().year) + gr['date%d' % n] + gr['time%d' % n], '%Y%d.%m.%H:%M')
+                    else:
+                        t = datetime.strptime(gr['time%d' % n], '%H:%M').time()
+                        d = datetime.today().date()
+                        return datetime.combine(d, t)
+                
                 # detail mode
-                return map(lambda z: time(*map(int, z.split(':'))), wrap(y, 5))
+                from_dtime = extract_datetime(gr, 1)
+                to_dtime = extract_datetime(gr, 2)
+                
+                return [from_dtime, to_dtime]
+                
         else:
             return []
-
-    @classmethod
-    def get_duration(cls, x):
-        y = rParser.get_tdtext(x, 'col_duration')
-        if y:
-            return time(*map(int, y.split(":")))
-        else:
-            return None
 
     def __iter__(self):
         for detail in self.details():
@@ -221,7 +239,7 @@ class rParser:
         tours = self.soup.findAll('div', {'class': 'data_table tourdetail'})
 
         trips = map(lambda x: map(lambda y: {
-                        'time': rParser.get_time(y),
+                        'timespan': rParser.get_datetime(y),
                         'station': map(lambda z: z[2:].strip(),
                                        filter(lambda x: type(x) == NavigableString, y.find('td', {'class': 'col_station'}).contents)), # filter non NaviStrings
                         'info': map(lambda x: x.strip(),
@@ -256,8 +274,7 @@ class rParser:
             rows = table.findAll('tr')[1:] # cut off headline
 
             overview = map(lambda x: {
-                               'time': rParser.get_datetime(x),
-                               'duration': rParser.get_duration(x), # grab duration
+                               'timespan': rParser.get_datetime(x),
                                'change': rParser.get_change(x),
                                'price': rParser.get_price(x),
                            },
