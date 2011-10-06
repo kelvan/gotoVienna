@@ -4,7 +4,7 @@
 from BeautifulSoup import BeautifulSoup, NavigableString
 from urllib2 import urlopen
 from urllib import urlencode
-from datetime import datetime, time
+from datetime import datetime, time, combine, timedelta
 from textwrap import wrap
 import argparse
 import sys
@@ -185,13 +185,22 @@ class rParser:
             return None
 
     @classmethod
-    def get_time(cls, x):
+    def get_datetime(cls, x):
         y = rParser.get_tdtext(x, 'col_time')
         if y:
             if (y.find("-") > 0):
-                return map(lambda z: time(*map(int, z.split(':'))), y.split('-'))
+                # overview mode
+                times = map(lambda z: time(*map(int, z.split(':'))), y.split('-'))
+                d = rParser.get_date(x)
+                from_dtime = combine(d, times[0])
+                if times[0] > times[1]:
+                    # dateline crossing
+                    to_dtime = combine(d + timedelta(1), times[1])
+                else:
+                    to_dtime = combine(d, times[1])
+                return datetimes
             else:
-                # FIXME Error if date in line (dateLineCross)
+                # detail mode
                 return map(lambda z: time(*map(int, z.split(':'))), wrap(y, 5))
         else:
             return []
@@ -247,8 +256,7 @@ class rParser:
             rows = table.findAll('tr')[1:] # cut off headline
 
             overview = map(lambda x: {
-                               'date': rParser.get_date(x),
-                               'time': rParser.get_time(x),
+                               'time': rParser.get_datetime(x),
                                'duration': rParser.get_duration(x), # grab duration
                                'change': rParser.get_change(x),
                                'price': rParser.get_price(x),
