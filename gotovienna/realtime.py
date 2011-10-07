@@ -86,7 +86,8 @@ class ITipParser:
             # parse time
             time = th[-2].text.split(' ')
             if len(time) < 2:
-                print 'Invalid time: %s' % time
+                #print 'Invalid time: %s' % time
+                # TODO: Issue a warning OR convert "HH:MM" format to countdown
                 continue
 
             time = time[1]

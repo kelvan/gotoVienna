@@ -4,13 +4,14 @@
 import argparse
 import sys
 
+from gotovienna.utils import *
 from gotovienna.routing import *
 
 parser = argparse.ArgumentParser(description='Get public transport route for Vienna')
-parser.add_argument('-ot', metavar='type', type=str, help='origin type: %s' % ' | '.join(POSITION_TYPES), default='stop', choices=POSITION_TYPES)
-parser.add_argument('-dt', metavar='type', type=str, help='destination type: %s' % ' | '.join(POSITION_TYPES), default='stop', choices=POSITION_TYPES)
-parser.add_argument('origin', nargs='?')
-parser.add_argument('destination', nargs='?')
+parser.add_argument('-ot', metavar='type', type=str, help='origin type: %s' % ' | '.join(POSITION_TYPES), default=None, choices=POSITION_TYPES)
+parser.add_argument('-dt', metavar='type', type=str, help='destination type: %s' % ' | '.join(POSITION_TYPES), default=None, choices=POSITION_TYPES)
+parser.add_argument('origin', nargs='?', help='origin station name')
+parser.add_argument('destination', nargs='?', help='destination station name')
 
 args = parser.parse_args()
 
@@ -20,8 +21,19 @@ if not args.origin:
 if not args.destination:
     args.destination = raw_input('Destination: ')
 
-print >>sys.stderr, 'Searching...',
-html = search((args.origin, args.ot), (args.destination, args.dt)).read()
+def do_search(args):
+    if isinstance(args.origin, unicode):
+        args.origin = args.origin.encode('utf-8', 'ignore')
+    elif isinstance(args.destination, unicode):
+        args.destination = args.destination.encode('utf-8', 'ignore')
+
+    result = search((args.origin, args.ot),
+            (args.destination, args.dt))
+
+    return sParser(result.read())
+
+print >>sys.stderr, 'Searching...\n',
+parser = do_search(args)
 print >>sys.stderr, 'done.'
 
 finished = False
@@ -140,3 +152,64 @@ while not finished:
     
     elif state == PageType.UNKNOWN:
         print 'PANIC unknown result'
+
+while parser.state == PageType.CORRECTION:
+    origin_corr, destination_corr = parser.get_correction()
+
+    if origin_corr:
+        print
+        print '* Origin ambiguous:'
+        lo = None
+        while not lo or not lo.isdigit() or int(lo) > len(origin_corr):
+            for idx, correction in enumerate(origin_corr):
+                print '%3d. %s' % (idx+1, correction)
+            lo = sys.stdin.readline().strip()
+
+        args.origin = origin_corr[int(lo) - 1]
+
+    if destination_corr:
+        print
+        print '* Destination ambiguous:'
+        ld = None
+        while not ld or not ld.isdigit() or int(ld) > len(destination_corr):
+            for idx, correction in enumerate(destination_corr):
+                print '%3d. %s' % (idx+1, correction)
+            ld = sys.stdin.readline().strip()
+
+        args.destination = destination_corr[int(ld) - 1]
+
+    parser = do_search(args)
+
+if parser.state == PageType.RESULT:
+    parser = parser.get_result()
+    overviews = parser.overview
+    details = parser.details
+    l = ''
+    while not l == 'q':
+        for idx, overview in enumerate(overviews):
+            if not overview['date'] or not overview['time']:
+                # XXX: Bogus data for e.g. Pilgramgasse->Karlsplatz?!
+                continue
+
+            print '%d. [%s] %s-%s (%s)' % (idx + 1,
+                    overview['date'],
+                    overview['time'][0],
+                    overview['time'][1],
+                    overview['duration'])
+        print 'q. Quit'
+        l = sys.stdin.readline().strip()
+        print
+        print '~' * 79
+
+        if l.isdigit() and int(l) <= len(details):
+            for detail in details[int(l) - 1]:
+                if detail['time'] and detail['station']:
+                    time = '%s - %s' % (detail['time'][0].strftime(TIMEFORMAT), detail['time'][1].strftime(TIMEFORMAT))
+                    print '[%s] %s\n%s' % (time, ' -> '.join(detail['station']), '\n'.join(detail['info']))
+                else:
+                    print '\n'.join(detail['info'])
+                print '-' * 79
+        print
+else:
+    print 'Error - unknown page returned.'
+
