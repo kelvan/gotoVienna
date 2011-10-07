@@ -31,6 +31,9 @@ if l and l in lines:
         for station in stations[key]:
             if s:
                 if s.startswith(station[0]) or station[0].startswith(s):
+                    if station[0] == key:
+                        # skip station if destination
+                        continue
                     # FIXME
                     print '* %s\n  %s .....' % (key, station[0]), itip.get_departures(station[1])
             else:
