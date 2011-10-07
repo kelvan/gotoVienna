@@ -36,123 +36,6 @@ print >>sys.stderr, 'Searching...\n',
 parser = do_search(args)
 print >>sys.stderr, 'done.'
 
-finished = False
-while not finished:
-
-    html = search((args.origin, args.ot), (args.destination, args.dt)).read()
-    
-    parser = sParser(html)
-    state = parser.check_page()
-
-    if state == PageType.CORRECTION:
-        try:
-            cor = parser.get_correction()
-            origin, origin_place = split_station(args.origin)
-            destination, destination_place = split_station(args.destination)
-            
-            # FIXME refactoring
-            
-            if cor.has_key('origin'):
-                print
-                print '* Origin ambiguous:'
-                l = None
-                while not l or not l.isdigit() or int(l) > len(cor['origin']):
-                    i = 1
-                    for c in cor['origin']:
-                        print '%d. %s' % (i, c)
-                        i += 1
-                    l = sys.stdin.readline().strip()
-    
-                origin = cor['origin'][int(l) - 1]
-    
-            if cor.has_key('destination'):
-                print
-                print '* Destination ambiguous:'
-                l = None
-                while not l or not l.isdigit() or int(l) > len(cor['destination']):
-                    i = 1
-                    for c in cor['destination']:
-                        print '%d. %s' % (i, c)
-                        i += 1
-                    l = sys.stdin.readline().strip()
-    
-                destination = cor['destination'][int(l) - 1]
-                
-            if cor.has_key('origin_place'):
-                print
-                print '* Origin place ambiguous:'
-                l = None
-                while not l or not l.isdigit() or int(l) > len(cor['origin_place']):
-                    i = 1
-                    for c in cor['origin_place']:
-                        print '%d. %s' % (i, c)
-                        i += 1
-                    l = sys.stdin.readline().strip()
-    
-                origin_place = cor['origin_place'][int(l) - 1]
-    
-            if cor.has_key('destination_place'):
-                print
-                print '* Destination place ambiguous:'
-                l = None
-                while not l or not l.isdigit() or int(l) > len(cor['destination_place']):
-                    i = 1
-                    for c in cor['destination_place']:
-                        print '%d. %s' % (i, c)
-                        i += 1
-                    l = sys.stdin.readline().strip()
-    
-                destination_place = cor['destination_place'][int(l) - 1]
-                
-            args.origin = '%s, %s' % (origin, origin_place)
-            args.destination = '%s, %s' %(destination, destination_place)
-            
-        except ParserError:
-            print 'PANIC at correction page'
-            finished = True
-    
-    elif state == PageType.RESULT:
-        parser = rParser(html)
-        try:
-            overviews = parser.overview
-            details = parser.details
-            l = ''
-            while not l == 'q':
-                for idx, overview in enumerate(overviews):
-                    timespan = overview['timespan']
-                    if not timespan:
-                        # XXX: Bogus data for e.g. Pilgramgasse->Karlsplatz?!
-                        continue
-                    
-                    str_timespan = timespan[0].strftime('[%y-%d-%m] %H:%M')
-                    str_timespan += '-' + timespan[1].strftime('%H:%M')
-                    timedelta = timespan[1] - timespan[0]
-                    print '%d. %s (%s)' % (idx + 1,
-                            str_timespan,
-                            timedelta)
-                print 'q. Quit'
-                l = sys.stdin.readline().strip()
-                print
-                print '~' * 80
-    
-                if l.isdigit() and int(l) <= len(details):
-                    for detail in details[int(l) - 1]:
-                        if detail['timespan'] and detail['station']:
-                            time = '%s - %s' % (detail['timespan'][0].strftime(TIMEFORMAT), detail['timespan'][1].strftime(TIMEFORMAT))
-                            print '[%s] %s\n%s' % (time, ' -> '.join(detail['station']), '\n'.join(detail['info']))
-                        else:
-                            print '\n'.join(detail['info'])
-                        print '-' * 80
-                print
-        
-            finished = True
-        
-        except ParserError:
-            print 'parsererror'
-    
-    elif state == PageType.UNKNOWN:
-        print 'PANIC unknown result'
-
 while parser.state == PageType.CORRECTION:
     origin_corr, destination_corr = parser.get_correction()
 
@@ -187,15 +70,18 @@ if parser.state == PageType.RESULT:
     l = ''
     while not l == 'q':
         for idx, overview in enumerate(overviews):
-            if not overview['date'] or not overview['time']:
+            timespan = overview['timespan']
+            if not timespan:
                 # XXX: Bogus data for e.g. Pilgramgasse->Karlsplatz?!
                 continue
-
-            print '%d. [%s] %s-%s (%s)' % (idx + 1,
-                    overview['date'],
-                    overview['time'][0],
-                    overview['time'][1],
-                    overview['duration'])
+            
+            str_timespan = timespan[0].strftime('[%Y-%d-%m] %H:%M')
+            str_timespan += '-' + timespan[1].strftime('%H:%M')
+            timedelta = timespan[1] - timespan[0]
+            print '%d. %s (%s)' % (idx + 1,
+                    str_timespan,
+                    timedelta)
+        
         print 'q. Quit'
         l = sys.stdin.readline().strip()
         print
@@ -203,8 +89,8 @@ if parser.state == PageType.RESULT:
 
         if l.isdigit() and int(l) <= len(details):
             for detail in details[int(l) - 1]:
-                if detail['time'] and detail['station']:
-                    time = '%s - %s' % (detail['time'][0].strftime(TIMEFORMAT), detail['time'][1].strftime(TIMEFORMAT))
+                if detail['timespan'] and detail['station']:
+                    time = '%s - %s' % (detail['timespan'][0].strftime(TIMEFORMAT), detail['timespan'][1].strftime(TIMEFORMAT))
                     print '[%s] %s\n%s' % (time, ' -> '.join(detail['station']), '\n'.join(detail['info']))
                 else:
                     print '\n'.join(detail['info'])
@@ -212,4 +98,3 @@ if parser.state == PageType.RESULT:
         print
 else:
     print 'Error - unknown page returned.'
-

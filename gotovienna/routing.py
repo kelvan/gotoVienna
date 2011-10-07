@@ -105,9 +105,6 @@ def search(origin_tuple, destination_tuple, dtime=None):
     destination, destination_city = split_station(destination)
 
 
-    if not origin_type in POSITION_TYPES or\
-        not destination_type in POSITION_TYPES:
-
     if origin_type is None:
         origin_type = guess_location_type(origin)
         print 'Guessed origin type:', origin_type

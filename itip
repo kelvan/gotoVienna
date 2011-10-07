@@ -85,24 +85,6 @@ if args.line in itip.lines:
             print '  No departure information.'
         print
 else:
-    s = ''
-
-if l and l in lines:
-    stations = itip.get_stations(l)
-    for key in stations.keys():
-        if not s:
-            print '* %s:' % key
-        for station in stations[key]:
-            if s:
-                if s.startswith(station[0]) or station[0].startswith(s):
-                    if station[0] == key:
-                        # skip station if destination
-                        continue
-                    # FIXME
-                    print '* %s\n  %s .....' % (key, station[0]), itip.get_departures(station[1])
-            else:
-                print '    %s' % station[0]
-elif not l:
     ITEMS_PER_LINE = 12
     ITEM_WIDTH = 5
     LINE_WIDTH = (ITEMS_PER_LINE*ITEM_WIDTH + ITEMS_PER_LINE)
