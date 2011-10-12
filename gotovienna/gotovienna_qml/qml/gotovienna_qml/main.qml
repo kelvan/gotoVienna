@@ -30,7 +30,6 @@ PageStackWindow {
         id: menu
         visualParent: pageStack
         MenuLayout {
-            MenuItem { text: qsTr("Sample menu item") }
             MenuItem { text: "Test"; onClicked: pageStack.push(Qt.resolvedUrl("test.qml")) }
         }
     }
