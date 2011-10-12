@@ -7,10 +7,9 @@ Page {
     tools: commonTools
 
     TextField {
-        placeholderText: 'origin'
+        placeholderText: 'Line'
 
-        id: origin
-        text: "Test"
+        id: gline
         anchors {
             top: parent.top
             left: parent.left
@@ -19,11 +18,10 @@ Page {
             rightMargin: 10
         }
         width: parent.width - 20
-        //width: parent.width - anchors.leftMargin - anchors.rightMargin
 
          MouseArea {
              anchors.fill: parent
-             drag.target: origin
+             drag.target: gline
              drag.axis: Drag.YAxis
              drag.minimumY: 0
              drag.maximumY: parent.height
@@ -31,10 +29,10 @@ Page {
     }
 
     TextField {
-        placeholderText: 'destination'
-        id: destination
+        placeholderText: 'Station'
+        id: gstation
         anchors {
-            top: origin.bottom
+            top: gline.bottom
             left: parent.left
             right: parent.right
             topMargin: 10
@@ -43,18 +41,20 @@ Page {
         }
     }
 
+    ResultRealtime { id: resu }
+
     Button {
         id: btnSearch
         text: 'Search'
         anchors {
-            top: destination.bottom
+            top: gstation.bottom
             topMargin: 10
             horizontalCenter: parent.horizontalCenter
         }
         onClicked: {
-            console.debug("Origin: " + origin.text)
-            console.debug("Destination: " + destination.text)
-            pageStack.push(Qt.resolvedUrl("test.qml"))
+            resu.gline = gline.text
+            resu.gstation = gstation.text
+            pageStack.push(resu)
         }
     }
 }

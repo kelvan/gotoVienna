@@ -7,6 +7,9 @@ import "ExtrasConstants.js" as ExtrasConstants
 Page {
     tools: commonTools
 
+    property string gline : ""
+    property string gstation : ""
+
     Component {
          id: departureDelegate
 
@@ -85,9 +88,33 @@ Page {
          }
      }
 
+    Component {
+             id: heading
+             Rectangle {
+                 width: parent.width
+                 height: childrenRect.height + 2*UIConstants.DEFAULT_MARGIN
+                 color: "lightsteelblue"
+
+                 Text {
+                     anchors {
+                         top: parent.top
+                         left: parent.left
+                         margins: UIConstants.DEFAULT_MARGIN
+                     }
+
+                     text: gstation + " [" + gline + "]"
+                     font.bold: true
+                     font.family: ExtrasConstants.FONT_FAMILY_LIGHT
+                     font.pixelSize: UIConstants.FONT_LSMALL
+                 }
+             }
+         }
+
      ListView {
          id: list
          width: parent.width; height: parent.height
+
+         header: heading
 
          model: ListModel {
             ListElement {
@@ -184,11 +211,11 @@ Page {
          platformStyle: ScrollDecoratorStyle {}
      }
 
-     BusyIndicator {
+     /*BusyIndicator {
          id: busyIndicator
          visible: true
          running: true
          platformStyle: BusyIndicatorStyle { size: 'large' }
          anchors.centerIn: parent
-     }
+     }*/
 }
