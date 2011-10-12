@@ -1,12 +1,35 @@
 #!/usr/env/python
 
 from PySide import QtCore, QtGui, QtDeclarative
+from gotovienna.utils import *
+from gotovienna.realtime import *
+import urllib2
 
-class iTip(QtCore.QObject):
+
+class Gui(QtCore.QObject):
     @QtCore.Slot(str, str)
     def search(self, line, station):
-        print line
-        print station
+        line = line.upper()
+        station = station.decode('utf-8')
+        print line, station
+        
+        itip = ITipParser()
+        print itip.lines
+        if not line in itip.lines:
+            return "Invalid line"
+        
+        try:
+            stations = sorted(itip.get_stations(line).items())
+            print stations
+            headers, stations = zip(*stations)
+            print headers
+            print stations
+            details = [(direction, name, url) for direction, stops in stations
+                        for name, url in stops if match_station(station, name)]
+            print details
+        except urllib2.URLError as e:
+            print e.message
+            return e.message
 
 if __name__ == '__main__':
     import sys
@@ -16,7 +39,7 @@ if __name__ == '__main__':
     view = QtDeclarative.QDeclarativeView()
 
     # instantiate the Python object
-    itip = iTip()
+    itip = Gui()
 
     # expose the object to QML
     context = view.rootContext()
