@@ -55,6 +55,8 @@ Page {
             resu.gline = gline.text
             resu.gstation = gstation.text
             pageStack.push(resu)
+            itip.search("Test")
+            resu.busy = false
         }
     }
 }

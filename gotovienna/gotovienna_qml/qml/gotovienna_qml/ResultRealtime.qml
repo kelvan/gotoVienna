@@ -9,6 +9,7 @@ Page {
 
     property string gline : ""
     property string gstation : ""
+    property bool busy : true
 
     Component {
          id: departureDelegate
@@ -211,11 +212,11 @@ Page {
          platformStyle: ScrollDecoratorStyle {}
      }
 
-     /*BusyIndicator {
+     BusyIndicator {
          id: busyIndicator
-         visible: true
+         visible: busy
          running: true
          platformStyle: BusyIndicatorStyle { size: 'large' }
          anchors.centerIn: parent
-     }*/
+     }
 }
