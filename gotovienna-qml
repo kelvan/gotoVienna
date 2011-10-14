@@ -17,6 +17,7 @@ from gotovienna.realtime import *
 import urllib2
 import os
 import sys
+import threading
 
 class GotoViennaListModel(QAbstractListModel):
     def __init__(self, objects=None):
@@ -54,6 +55,37 @@ class Gui(QObject):
         # Read line names in categorized/sorted order
         for _, lines in categorize_lines(self.itip.lines):
             self.lines.extend(lines)
+
+        self.current_line = ''
+        self.current_stations = []
+
+    @Slot(int, result=str)
+    def get_direction(self, idx):
+        return self.current_stations[idx][0]
+
+    @Slot(str, str, result='QStringList')
+    def get_stations(self, line, direction):
+        print 'line:', line, 'current line:', self.current_line
+        for dx, stations in self.current_stations:
+            print 'dx:', dx, 'direction:', direction
+            if dx == direction:
+                return [stationname for stationname, url in stations]
+
+        return ['no stations found']
+
+    directionsLoaded = Signal()
+
+    @Slot(str)
+    def load_directions(self, line):
+        def load_async():
+            stations = sorted(self.itip.get_stations(line).items())
+
+            self.current_line = line
+            self.current_stations = stations
+
+            self.directionsLoaded.emit()
+
+        threading.Thread(target=load_async).start()
 
     @Slot(result='QStringList')
     def get_lines(self):

@@ -101,20 +101,201 @@ Page {
         anchors {
             top: gline.bottom
             left: parent.left
-            right: parent.right
+            right: stationPickerButton.left
             topMargin: 10
             leftMargin: 10
+            rightMargin: 10*stationPickerButton.opacity
+        }
+        onTextChanged: {
+            directionLabel.currentDirection = ''
+        }
+    }
+
+    Sheet {
+        id: stationSheet
+        property string currentLine: ''
+        property string currentDirection: ''
+        property string currentStation: ''
+
+        acceptButtonText: 'Select'
+        rejectButtonText: 'Cancel'
+
+        function loadData(lineName) {
+            stationSheet.currentLine = lineName
+
+            directionChooser.direction1 = ''
+            directionChooser.direction2 = ''
+
+            directionChooserBusyIndicator.running = true
+            itip.load_directions(stationSheet.currentLine)
+
+            firstDirection.clicked()
+            directionChooser.checkedButton = firstDirection
+        }
+
+        Connections {
+            target: itip
+
+            onDirectionsLoaded: {
+                directionChooserBusyIndicator.running = false
+
+                directionChooser.direction1 = itip.get_direction(0)
+                directionChooser.direction2 = itip.get_direction(1)
+
+                firstDirection.clicked()
+                directionChooser.checkedButton = firstDirection
+            }
+        }
+
+        content: Item {
+            anchors.fill: parent
+
+            ButtonColumn {
+                id: directionChooser
+                property string direction1
+                property string direction2
+
+                visible: !directionChooserBusyIndicator.running
+
+                function chosen(idx) {
+                    console.log('direction chosen: '+ idx)
+
+                    stationSelectorListView.selectedIndex = -1
+
+                    if (idx == 1) {
+                        stationSheet.currentDirection = directionChooser.direction1
+                    } else {
+                        stationSheet.currentDirection = directionChooser.direction2
+                    }
+
+                    directionChooserModel.clear()
+                    var stations = itip.get_stations(stationSheet.currentLine, stationSheet.currentDirection)
+
+                    for (var s in stations) {
+                        directionChooserModel.append({'station': stations[s]})
+                    }
+                }
+
+                anchors {
+                    margins: 10
+                    top: parent.top
+                    left: parent.left
+                    right: parent.right
+                }
+
+                Button {
+                    id: firstDirection
+                    text: 'Richtung ' + directionChooser.direction1
+                    onClicked: directionChooser.chosen(1)
+                }
+
+                Button {
+                    id: secondDirection
+                    text: 'Richtung ' + directionChooser.direction2
+                    onClicked: directionChooser.chosen(2)
+                }
+            }
+
+            ListView {
+                id: stationSelectorListView
+                visible: !directionChooserBusyIndicator.running
+
+                property int selectedIndex: -1
+                onSelectedIndexChanged: {
+                    console.log('current index: ' + selectedIndex)
+                }
+
+                anchors {
+                    margins: 10
+                    top: directionChooser.bottom
+                    left: parent.left
+                    right: parent.right
+                    bottom: parent.bottom
+                }
+
+                clip: true
+
+                model: ListModel {
+                    id: directionChooserModel
+                }
+
+                delegate: StationListItem { selector: stationSelectorListView }
+            }
+
+            ScrollDecorator {
+                flickableItem: stationSelectorListView
+            }
+
+            BusyIndicator {
+                id: directionChooserBusyIndicator
+                anchors.centerIn: parent
+                visible: running
+                platformStyle: BusyIndicatorStyle { size: 'large' }
+            }
+        }
+
+        onAccepted: {
+            if (stationSelectorListView.selectedIndex == -1) {
+                gstation.text = ''
+            } else {
+                gstation.text = directionChooserModel.get(stationSelectorListView.selectedIndex).station
+            }
+
+            directionLabel.currentDirection = stationSheet.currentDirection
+        }
+    }
+
+    Button {
+        id: stationPickerButton
+
+        anchors {
+            top: gstation.top
+            bottom: gstation.bottom
+            right: parent.right
             rightMargin: 10
+        }
+
+        Behavior on opacity { PropertyAnimation { } }
+
+        opacity: gline.text != '' // XXX: Check if the line is valid
+
+        width: lineSearchButton.width * opacity
+        //iconSource: 'image://theme/icon-m-common-location-picker'
+        iconSource: 'image://theme/icon-m-toolbar-list'
+
+        onClicked: {
+            stationSheet.open()
+            stationSheet.loadData(gline.text)
         }
     }
 
     ResultRealtime { id: resu }
 
+    Label {
+        id: directionLabel
+        property string currentDirection: ''
+        text: 'Richtung ' + currentDirection
+
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: gstation.bottom
+            margins: 20*directionLabel.opacity
+        }
+
+        font.pixelSize: UIConstants.FONT_SMALL
+
+        opacity: currentDirection != ''
+        scale: opacity
+
+        Behavior on opacity { PropertyAnimation { } }
+    }
+
     Button {
         id: btnSearch
         text: 'Search'
         anchors {
-            top: gstation.bottom
+            top: directionLabel.bottom
             topMargin: 10
             horizontalCenter: parent.horizontalCenter
         }
