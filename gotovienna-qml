@@ -7,7 +7,10 @@ __version__ = '1.0'
 __website__ = 'https://github.com/kelvan/gotoVienna/'
 __license__ = 'GNU General Public License v3 or later'
 
-from PySide import QtCore, QtGui, QtDeclarative
+from PySide.QtCore import *
+from PySide.QtGui import *
+from PySide.QtDeclarative import *
+
 from gotovienna.utils import *
 from gotovienna.realtime import *
 
@@ -15,21 +18,58 @@ import urllib2
 import os
 import sys
 
+class GotoViennaListModel(QAbstractListModel):
+    def __init__(self, objects=None):
+        QAbstractListModel.__init__(self)
+        if objects is None:
+            objects = []
+        self._objects = objects
+        self.setRoleNames({0: 'modelData'})
 
-class Gui(QtCore.QObject):
-    @QtCore.Slot(str, str)
+    def set_objects(self, objects):
+        self._objects = objects
+
+    def get_objects(self):
+        return self._objects
+
+    def get_object(self, index):
+        return self._objects[index.row()]
+
+    def rowCount(self, parent=QModelIndex()):
+        return len(self._objects)
+
+    def data(self, index, role):
+        if index.isValid():
+            if role == 0:
+                return self.get_object(index)
+        return None
+
+
+class Gui(QObject):
+    def __init__(self):
+        QObject.__init__(self)
+        self.itip = ITipParser()
+        self.lines = []
+
+        # Read line names in categorized/sorted order
+        for _, lines in categorize_lines(self.itip.lines):
+            self.lines.extend(lines)
+
+    @Slot(result='QStringList')
+    def get_lines(self):
+        return self.lines
+
+    @Slot(str, str)
     def search(self, line, station):
         line = line.upper()
         station = station.decode('utf-8')
         print line, station
-        
-        itip = ITipParser()
-        print itip.lines
-        if not line in itip.lines:
+
+        if line not in self.lines:
             return "Invalid line"
-        
+
         try:
-            stations = sorted(itip.get_stations(line).items())
+            stations = sorted(self.itip.get_stations(line).items())
             print stations
             headers, stations = zip(*stations)
             print headers
@@ -42,16 +82,16 @@ class Gui(QtCore.QObject):
             return e.message
 
 if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
 
-    view = QtDeclarative.QDeclarativeView()
+    view = QDeclarativeView()
 
     # instantiate the Python object
     itip = Gui()
 
     # expose the object to QML
     context = view.rootContext()
-    context.setContextProperty("itip", itip)
+    context.setContextProperty('itip', itip)
 
     if os.path.abspath(__file__).startswith('/usr/bin/'):
         # Assume system-wide installation, QML from /usr/share/
