@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-from BeautifulSoup import BeautifulSoup, NavigableString
+from gotovienna.BeautifulSoup import BeautifulSoup, NavigableString
 from urllib2 import urlopen
 from urllib import urlencode
 from datetime import datetime, time, timedelta
 from textwrap import wrap
-import argparse
 import sys
 import os.path
 import re

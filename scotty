@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import argparse
 import sys
 
+from gotovienna import argparse
 from gotovienna.utils import *
 from gotovienna.routing import *
 

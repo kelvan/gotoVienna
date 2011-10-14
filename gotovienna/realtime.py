@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from BeautifulSoup import BeautifulSoup
+from gotovienna.BeautifulSoup import BeautifulSoup
 from urllib2 import urlopen
 from datetime import time
-import argparse
 import re
 import collections
 

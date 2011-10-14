@@ -1,5 +1,12 @@
 #!/usr/env/python
 
+"""Public transport information for Vienna"""
+
+__author__ = 'kelvan <kelvan@logic.at>'
+__version__ = '1.0'
+__website__ = 'https://github.com/kelvan/gotoVienna/'
+__license__ = 'GNU General Public License v3 or later'
+
 from PySide import QtCore, QtGui, QtDeclarative
 from gotovienna.utils import *
 from gotovienna.realtime import *
@@ -46,7 +53,13 @@ if __name__ == '__main__':
     context = view.rootContext()
     context.setContextProperty("itip", itip)
 
-    view.setSource(os.path.join(os.path.dirname(__file__), 'qml/main.qml'))
+    if os.path.abspath(__file__).startswith('/usr/bin/'):
+        # Assume system-wide installation, QML from /usr/share/
+        view.setSource('/usr/share/gotovienna/qml/main.qml')
+    else:
+        # Assume test from source directory, use relative path
+        view.setSource(os.path.join(os.path.dirname(__file__), 'qml/main.qml'))
+
     view.showFullScreen()
 
     sys.exit(app.exec_())

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=gotoVienna
+Exec=invoker --single-instance --type=e /usr/bin/gotovienna-qml
+Icon=/usr/share/gotovienna/gotovienna_qml80.png
+Terminal=false
+Type=Application
+Categories=Network;
