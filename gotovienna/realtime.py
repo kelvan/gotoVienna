@@ -90,10 +90,12 @@ class ITipParser:
             if len(th) < 2:
                 #TODO replace with logger
                 print "[DEBUG] Unable to find th in:\n%s" % str(tr)
-                continue
-
+            elif len(th) == 2:
+                t = th[-1]
+            else:
+                t = th[-2]
             # parse time
-            time = th[-2].text.split(' ')
+            time = t.text.split(' ')
             if len(time) < 2:
                 #print 'Invalid time: %s' % time
                 # TODO: Issue a warning OR convert "HH:MM" format to countdown
