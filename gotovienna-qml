@@ -58,6 +58,7 @@ class Gui(QObject):
 
         self.current_line = ''
         self.current_stations = []
+        self.current_departures = []
 
     @Slot(int, result=str)
     def get_direction(self, idx):
@@ -87,9 +88,29 @@ class Gui(QObject):
 
         threading.Thread(target=load_async).start()
 
+    departuresLoaded = Signal()
+
+    @Slot(str)
+    def load_departures(self, url):
+        def load_async():
+            self.current_departures = [str(x) for x in
+                    self.itip.get_departures(url)]
+            print self.current_departures
+            self.departuresLoaded.emit()
+
+        threading.Thread(target=load_async).start()
+
+    @Slot(str, str, str, result=str)
+    def get_directions_url(self, line, direction, station):
+        return self.itip.get_url_from_direction(line, direction, station)
+
     @Slot(result='QStringList')
     def get_lines(self):
         return self.lines
+
+    @Slot(result='QStringList')
+    def get_departures(self):
+        return self.current_departures
 
     @Slot(str, str)
     def search(self, line, station):

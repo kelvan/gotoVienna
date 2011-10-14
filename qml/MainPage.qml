@@ -6,6 +6,12 @@ import "ExtrasConstants.js" as ExtrasConstants
 Page {
     tools: commonTools
 
+    property bool canRefresh: realtimeResult.sourceUrl != ''
+
+    function refresh() {
+        realtimeResult.refresh()
+    }
+
     Image {
         id: logo
         source: 'logo.png'
@@ -59,6 +65,7 @@ Page {
         onTextChanged: {
             // TODO: Check if text matches an item in lineSelectorModel and
             // set selectedIndex in lineSelector to the right item
+            gstation.text = ''
 
             if (lineSelector.selectedIndex == -1) {
                 return
@@ -98,6 +105,7 @@ Page {
     TextField {
         placeholderText: 'Station'
         id: gstation
+
         anchors {
             top: gline.bottom
             left: parent.left
@@ -105,9 +113,6 @@ Page {
             topMargin: 10
             leftMargin: 10
             rightMargin: 10*stationPickerButton.opacity
-        }
-        onTextChanged: {
-            directionLabel.currentDirection = ''
         }
     }
 
@@ -203,6 +208,11 @@ Page {
                 property int selectedIndex: -1
                 onSelectedIndexChanged: {
                     console.log('current index: ' + selectedIndex)
+                    if (selectedIndex != -1) {
+                        stationSheet.currentStation = directionChooserModel.get(selectedIndex).station
+                    } else {
+                        stationSheet.currentStation = ''
+                    }
                 }
 
                 anchors {
@@ -235,13 +245,15 @@ Page {
         }
 
         onAccepted: {
-            if (stationSelectorListView.selectedIndex == -1) {
-                gstation.text = ''
-            } else {
-                gstation.text = directionChooserModel.get(stationSelectorListView.selectedIndex).station
-            }
+            gstation.text = stationSheet.currentStation
 
-            directionLabel.currentDirection = stationSheet.currentDirection
+            realtimeResult.gline = stationSheet.currentLine
+            realtimeResult.gstation = stationSheet.currentStation
+            realtimeResult.gdirection = stationSheet.currentDirection
+
+            realtimeResult.sourceUrl = itip.get_directions_url(stationSheet.currentLine, stationSheet.currentDirection, stationSheet.currentStation)
+            console.log('url to get: ' + realtimeResult.sourceUrl)
+
         }
     }
 
@@ -269,43 +281,24 @@ Page {
         }
     }
 
-    ResultRealtime { id: resu }
-
-    Label {
-        id: directionLabel
-        property string currentDirection: ''
-        text: 'Richtung ' + currentDirection
+    ResultRealtime {
+        id: realtimeResult
 
         anchors {
-            left: parent.left
-            right: parent.right
+            margins: 10
             top: gstation.bottom
-            margins: 20*directionLabel.opacity
+            left: parent.left
+            bottom: parent.bottom
+            right: parent.right
         }
 
-        font.pixelSize: UIConstants.FONT_SMALL
+        clip: true
 
-        opacity: currentDirection != ''
-        scale: opacity
+        gline: stationSheet.currentLine
+        gstation: stationSheet.currentStation
+        gdirection: stationSheet.currentDirection
 
-        Behavior on opacity { PropertyAnimation { } }
-    }
-
-    Button {
-        id: btnSearch
-        text: 'Search'
-        anchors {
-            top: directionLabel.bottom
-            topMargin: 10
-            horizontalCenter: parent.horizontalCenter
-        }
-        onClicked: {
-            resu.gline = gline.text
-            resu.gstation = gstation.text
-            pageStack.push(resu)
-            itip.search(gline.text, gstation.text)
-            resu.busy = false
-        }
+        sourceUrl: stationSheet.currentUrl
     }
 }
 

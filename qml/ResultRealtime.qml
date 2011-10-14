@@ -4,12 +4,45 @@ import com.nokia.extras 1.0
 import "UIConstants.js" as UIConstants
 import "ExtrasConstants.js" as ExtrasConstants
 
-Page {
-    tools: commonTools
+Item {
+    id: resultRealtime
 
-    property string gline : ""
-    property string gstation : ""
-    property bool busy : true
+    property string gline: ''
+    property string gstation: ''
+    property string gdirection: ''
+
+    property string sourceUrl: ''
+    property bool busy: true
+
+    function refresh() {
+        busy = true
+        itip.load_departures(sourceUrl)
+        console.log('refreshing')
+    }
+
+    onSourceUrlChanged: {
+        refresh()
+        console.log('source url changed: ' + sourceUrl)
+    }
+
+    Connections {
+        target: itip
+
+        onDeparturesLoaded: {
+            busy = false
+            departuresModel.clear()
+
+            var departures = itip.get_departures()
+
+            for (var d in departures) {
+                console.log('departure: ' + departures[d])
+                // XXX: destination might be wrong?!
+                var row = {'line': resultRealtime.gline, 'station': resultRealtime.gstation, 'destination': gdirection, 'departure': departures[d]}
+                console.log('inserting: ' + row)
+                departuresModel.append(row)
+            }
+        }
+    }
 
     Component {
          id: departureDelegate
@@ -89,35 +122,34 @@ Page {
          }
      }
 
-    Component {
-             id: heading
-             Rectangle {
-                 width: parent.width
-                 height: childrenRect.height + 2*UIConstants.DEFAULT_MARGIN
-                 color: "lightsteelblue"
-
-                 Text {
-                     anchors {
-                         top: parent.top
-                         left: parent.left
-                         margins: UIConstants.DEFAULT_MARGIN
-                     }
-
-                     text: gstation + " [" + gline + "]"
-                     font.bold: true
-                     font.family: ExtrasConstants.FONT_FAMILY_LIGHT
-                     font.pixelSize: UIConstants.FONT_LSMALL
-                 }
-             }
-         }
-
      ListView {
          id: list
          width: parent.width; height: parent.height
 
-         header: heading
+         header: Rectangle {
+             width: parent.width
+             height: childrenRect.height + 2*UIConstants.DEFAULT_MARGIN
+             color: "lightsteelblue"
+
+             Text {
+                 anchors {
+                     top: parent.top
+                     left: parent.left
+                     right: parent.right
+                     margins: UIConstants.DEFAULT_MARGIN
+                 }
+
+                 text: 'Abfahrten Richtung ' + gdirection
+                 elide: Text.ElideRight
+                 font.bold: true
+                 font.family: ExtrasConstants.FONT_FAMILY_LIGHT
+                 font.pixelSize: UIConstants.FONT_LSMALL
+             }
+         }
 
          model: ListModel {
+             id: departuresModel
+/*
             ListElement {
                 line: "N60"
                 station: "Schottentor"
@@ -129,81 +161,11 @@ Page {
                 station: "Schottentor"
                 destination: "Grinzing"
                 departure: 7
-            }
-            ListElement {
-                line: "N25"
-                station: "Schottentor"
-                destination: "Großfeldsiedlung"
-                departure: 8
-            }
-            ListElement {
-                line: "N41"
-                station: "Schottentor"
-                destination: "Pötzleinsdorf"
-                departure: 12
-            }
-            ListElement {
-                line: "N43"
-                station: "Schottentor"
-                destination: "Neuwaldegg"
-                departure: 12
-            }
-            ListElement {
-                line: "N66"
-                station: "Schottentor"
-                destination: "Liesing S"
-                departure: 20
-            }
-            ListElement {
-                line: "N38"
-                station: "Schottentor"
-                destination: "Grinzing"
-                departure: 22
-            }
-            ListElement {
-                line: "N25"
-                station: "Schottentor"
-                destination: "Großfeldsiedlung"
-                departure: 35
-            }
-            ListElement {
-                line: "N60"
-                station: "Schottentor"
-                destination: "Maurer Hauptplatz"
-                departure: 35
-            }
-            ListElement {
-                line: "N38"
-                station: "Schottentor"
-                destination: "Grinzing"
-                departure: 37
-            }
-            ListElement {
-                line: "N41"
-                station: "Schottentor"
-                destination: "Pötzleinsdorf"
-                departure: "03:12"
-            }
-            ListElement {
-                line: "N43"
-                station: "Schottentor"
-                destination: "Neuwaldegg"
-                departure: 42
-            }
-            ListElement {
-                line: "N66"
-                station: "Schottentor"
-                destination: "Liesing S"
-                departure: 50
-            }
-            ListElement {
-                line: "N38"
-                station: "Schottentor"
-                destination: "Grinzing"
-                departure: 52
-            }
+            }*/
          }
          delegate: departureDelegate
+
+         visible: !resultRealtime.busy && resultRealtime.sourceUrl != ''
      }
 
      ScrollDecorator {
@@ -214,8 +176,8 @@ Page {
 
      BusyIndicator {
          id: busyIndicator
-         visible: busy
-         running: true
+         visible: resultRealtime.busy && resultRealtime.sourceUrl != ''
+         running: visible
          platformStyle: BusyIndicatorStyle { size: 'large' }
          anchors.centerIn: parent
      }

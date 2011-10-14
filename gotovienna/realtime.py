@@ -59,6 +59,15 @@ class ITipParser:
 
         return self._lines
 
+    def get_url_from_direction(self, line, direction, station):
+        stations = self.get_stations(line)
+
+        for stationname, url in stations.get(direction, []):
+            if stationname == station:
+                return url
+
+        return None
+
     def get_departures(self, url):
         """ Get list of next departures
         integer if time until next departure

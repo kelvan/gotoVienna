@@ -13,17 +13,17 @@ PageStackWindow {
     ToolBarLayout {
         id: commonTools
         visible: true
-        ToolIcon {
+        /*ToolIcon {
             platformIconId: "toolbar-view-menu"
             anchors.right: (parent === undefined) ? undefined : parent.right
             onClicked: (menu.status == DialogStatus.Closed) ? menu.open() : menu.close()
-        }
+        }*/
         ToolIcon {
-              enabled: appWindow.pageStack.depth > 1
-              platformIconId: enabled ? "icon-m-toolbar-back" : "icon-m-toolbar-back-dimmed"
-              anchors.left: parent.left
-              onClicked: pageStack.pop()
-             }
+              enabled: mainPage.canRefresh
+              platformIconId: enabled ? 'icon-m-toolbar-refresh' : 'icon-m-toolbar-refresh-dimmed'
+              anchors.right: parent.right
+              onClicked: mainPage.refresh()
+        }
     }
 
     Menu {
