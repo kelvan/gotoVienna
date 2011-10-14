@@ -6,12 +6,23 @@ import "ExtrasConstants.js" as ExtrasConstants
 Page {
     tools: commonTools
 
+    Image {
+        id: logo
+        source: 'logo.png'
+
+        anchors {
+            topMargin: 25
+            top: parent.top
+            horizontalCenter: parent.horizontalCenter
+        }
+    }
+
     TextField {
         placeholderText: 'Line'
 
         id: gline
         anchors {
-            top: parent.top
+            top: logo.bottom
             left: parent.left
             topMargin: 20
             leftMargin: 10

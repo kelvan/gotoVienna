@@ -3,7 +3,10 @@
 from PySide import QtCore, QtGui, QtDeclarative
 from gotovienna.utils import *
 from gotovienna.realtime import *
+
 import urllib2
+import os
+import sys
 
 
 class Gui(QtCore.QObject):
@@ -32,8 +35,6 @@ class Gui(QtCore.QObject):
             return e.message
 
 if __name__ == '__main__':
-    import sys
-
     app = QtGui.QApplication(sys.argv)
 
     view = QtDeclarative.QDeclarativeView()
@@ -45,7 +46,8 @@ if __name__ == '__main__':
     context = view.rootContext()
     context.setContextProperty("itip", itip)
 
-    view.setSource(QtCore.QUrl('gotovienna/qml/main.qml'))
-    view.show()
+    view.setSource(os.path.join(os.path.dirname(__file__), 'qml/main.qml'))
+    view.showFullScreen()
 
     sys.exit(app.exec_())
+
