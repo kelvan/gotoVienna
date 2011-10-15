@@ -80,8 +80,9 @@ class ITipParser:
         if not url:
             # FIXME prevent from calling this method with None
             return []
-
-        bs = BeautifulSoup(urlopen(url))
+        
+        # open url for 90 min timeslot / get departure for next 90 min
+        bs = BeautifulSoup(urlopen(url + "&departureSizeTimeSlot=90"))
         result_lines = bs.findAll('table')[-1].findAll('tr')
 
         dep = []
