@@ -163,18 +163,22 @@ class sParser:
         places_destination = self.soup.find('select', {'id': 'placeList_destination'})
         
 
-        if names_origin or names_destination or places_origin or places_destination:
+        if any([names_origin, names_destination, places_origin, places_destination]):
             dict = {}
             
             if names_origin:
-                dict['origin'] = map(lambda x: x.text, names_origin.findAll('option'))
+                dict['origin'] = map(lambda x: x.text, 
+                                     names_origin.findAll('option'))
             if names_destination:
-                dict['destination'] = map(lambda x: x.text, names_destination.findAll('option'))
+                dict['destination'] = map(lambda x: x.text, 
+                                          names_destination.findAll('option'))
                 
             if places_origin:
-                dict['place_origin'] = map(lambda x: x.text, names_origin.findAll('option'))
+                dict['place_origin'] = map(lambda x: x.text, 
+                                           names_origin.findAll('option'))
             if names_destination:
-                dict['place_destination'] = map(lambda x: x.text, names_destination.findAll('option'))
+                dict['place_destination'] = map(lambda x: x.text, 
+                                                names_destination.findAll('option'))
     
             return dict
         

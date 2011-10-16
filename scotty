@@ -8,10 +8,16 @@ from gotovienna.utils import *
 from gotovienna.routing import *
 
 parser = argparse.ArgumentParser(description='Get public transport route for Vienna')
-parser.add_argument('-ot', metavar='type', type=str, help='origin type: %s' % ' | '.join(POSITION_TYPES), default=None, choices=POSITION_TYPES)
-parser.add_argument('-dt', metavar='type', type=str, help='destination type: %s' % ' | '.join(POSITION_TYPES), default=None, choices=POSITION_TYPES)
-parser.add_argument('origin', nargs='?', help='origin station name')
-parser.add_argument('destination', nargs='?', help='destination station name')
+parser.add_argument('-ot', metavar='type', type=str, 
+                    help='origin type: %s' % ' | '.join(POSITION_TYPES), 
+                    default=None, choices=POSITION_TYPES)
+parser.add_argument('-dt', metavar='type', type=str, 
+                    help='destination type: %s' % ' | '.join(POSITION_TYPES), 
+                    default=None, choices=POSITION_TYPES)
+parser.add_argument('origin', nargs='?', 
+                    help='origin station name')
+parser.add_argument('destination', nargs='?', 
+                    help='destination station name')
 
 args = parser.parse_args()
 
@@ -90,8 +96,11 @@ if parser.state == PageType.RESULT:
         if l.isdigit() and int(l) <= len(details):
             for detail in details[int(l) - 1]:
                 if detail['timespan'] and detail['station']:
-                    time = '%s - %s' % (detail['timespan'][0].strftime(TIMEFORMAT), detail['timespan'][1].strftime(TIMEFORMAT))
-                    print '[%s] %s\n%s' % (time, ' -> '.join(detail['station']), '\n'.join(detail['info']))
+                    time = '%s - %s' % (detail['timespan'][0].strftime(TIMEFORMAT), 
+                                        detail['timespan'][1].strftime(TIMEFORMAT))
+                    print '[%s] %s\n%s' % (time, 
+                                           ' -> '.join(detail['station']), 
+                                           '\n'.join(detail['info']))
                 else:
                     print '\n'.join(detail['info'])
                 print '-' * 79
