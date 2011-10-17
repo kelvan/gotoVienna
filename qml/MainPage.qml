@@ -12,7 +12,7 @@ Page {
         realtimeResult.refresh()
     }
 
-    Image {
+    /*Image {
         id: logo
         source: 'logo.png'
 
@@ -21,7 +21,7 @@ Page {
             top: parent.top
             horizontalCenter: parent.horizontalCenter
         }
-    }
+    }*/
 
     SelectionDialog {
         id: lineSelector
@@ -54,7 +54,7 @@ Page {
 
         id: gline
         anchors {
-            top: logo.bottom
+            top: parent.top
             left: parent.left
             topMargin: 20
             leftMargin: 10

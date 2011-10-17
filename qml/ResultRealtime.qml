@@ -62,6 +62,7 @@ Item {
                  anchors.margins: UIConstants.DEFAULT_MARGIN
 
                  Row {
+                     spacing: 10
                      Text {
                          id: l
                          text: line // <----
@@ -79,7 +80,8 @@ Item {
                          Text {
                              id: s
                              text: station // <----
-                             width: 75
+                             width: parent.parent.parent.width - l.width - dep.width - 10
+                             elide: Text.ElideRight
                              font.pixelSize: UIConstants.FONT_LARGE
                              font.family: ExtrasConstants.FONT_FAMILY_LIGHT
                              color: !theme.inverted ? UIConstants.COLOR_FOREGROUND : UIConstants.COLOR_INVERTED_FOREGROUND
@@ -130,6 +132,8 @@ Item {
              width: parent.width
              height: childrenRect.height + 2*UIConstants.DEFAULT_MARGIN
              color: "lightsteelblue"
+             radius: 5.0
+             smooth: true
 
              Text {
                  anchors {
@@ -139,7 +143,7 @@ Item {
                      margins: UIConstants.DEFAULT_MARGIN
                  }
 
-                 text: 'Abfahrten Richtung ' + gdirection
+                 text: 'Richtung ' + gdirection
                  elide: Text.ElideRight
                  font.bold: true
                  font.family: ExtrasConstants.FONT_FAMILY_LIGHT
@@ -149,19 +153,6 @@ Item {
 
          model: ListModel {
              id: departuresModel
-/*
-            ListElement {
-                line: "N60"
-                station: "Schottentor"
-                destination: "Maurer Hauptplatz"
-                departure: 5
-            }
-            ListElement {
-                line: "N38"
-                station: "Schottentor"
-                destination: "Grinzing"
-                departure: 7
-            }*/
          }
          delegate: departureDelegate
 

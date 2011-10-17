@@ -24,6 +24,24 @@ PageStackWindow {
               anchors.right: parent.right
               onClicked: mainPage.refresh()
         }
+
+        ToolIcon {
+              platformIconId: enabled ? 'icon-m-toolbar-refresh' : 'icon-m-toolbar-refresh-dimmed'
+              anchors.right: parent.right
+              onClicked: mainPage.refresh()
+        }
+
+        Image {
+            id: logo
+            source: 'logo.png'
+
+            anchors {
+                bottomMargin: 10
+                bottom: parent.bottom
+                left: parent.left
+                leftMargin: 10
+            }
+        }
     }
 
     /*Menu {
