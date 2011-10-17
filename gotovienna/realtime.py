@@ -27,7 +27,7 @@ class ITipParser:
             bs = BeautifulSoup(urlopen(self.lines[name]))
             tables = bs.findAll('table', {'class': 'text_10pix'})
             for i in range(2):
-                dir = tables[i].div.contents[-1].strip('&nbsp;')
+                dir = tables[i].div.contents[-1].strip()[6:-6]
 
                 sta = []
                 for tr in tables[i].findAll('tr', {'onmouseout': 'obj_unhighlight(this);'}):
@@ -80,7 +80,7 @@ class ITipParser:
         if not url:
             # FIXME prevent from calling this method with None
             return []
-        
+
         # open url for 90 min timeslot / get departure for next 90 min
         bs = BeautifulSoup(urlopen(url + "&departureSizeTimeSlot=90"))
         result_lines = bs.findAll('table')[-1].findAll('tr')
@@ -191,24 +191,24 @@ class Line:
             self.name = name.strip()
         else:
             raise LineNotFoundError('There is no line "%s"' % name.strip())
-        
+
     @property
     def stations(self):
         if not self._stations:
             self._stations = parser.get_stations(self.name)
         return self._stations
-    
+
     def get_departures(self, stationname):
         stationname = stationname.strip().lower()
         stations = self.stations
-        
+
         found = false
-        
+
         for direction in stations.keys():
             # filter stations starting with stationname
             stations[direction] = filter(lambda station: station[0].lower().starts_with(stationname), stations)
             found = found or bool(stations[direction])
-        
+
         if found:
             # TODO return departures
             raise NotImplementedError()
