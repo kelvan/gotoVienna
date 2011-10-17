@@ -7,9 +7,9 @@ __version__ = '1.0'
 __website__ = 'https://github.com/kelvan/gotoVienna/'
 __license__ = 'GNU General Public License v3 or later'
 
-from PySide.QtCore import *
-from PySide.QtGui import *
-from PySide.QtDeclarative import *
+from PySide.QtCore import QAbstractListModel, QModelIndex, QObject, Slot, Signal
+from PySide.QtGui import QApplication
+from PySide.QtDeclarative import QDeclarativeView
 
 from gotovienna.utils import *
 from gotovienna.realtime import *

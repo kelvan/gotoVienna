@@ -26,11 +26,11 @@ PageStackWindow {
         }
     }
 
-    Menu {
+    /*Menu {
         id: menu
         visualParent: pageStack
         MenuLayout {
             MenuItem { text: "Test"; onClicked: pageStack.push(Qt.resolvedUrl("test.qml")) }
         }
-    }
+    }*/
 }
