@@ -9,6 +9,35 @@ from errors import LineNotFoundError, StationNotFoundError
 
 from gotovienna import defaults
 
+class Departure:
+    def __init__(self, line, station, direction, time, lowfloor):
+        self.line = line
+        self.station = station
+        self.direction = direction
+        self.time = time
+        self.lowfloor = lowfloor
+
+    def get_departure_time(self):
+        """ return time object of departure time
+        """
+        if type(self.time) == time:
+            return self.time
+        else:
+            pass
+    def get_departure_deltatime(self):
+        """ return int representing minutes until departure
+        """
+        if type(self.time) == int:
+            return self.time
+        else:
+            pass
+
+    def get_ftime(self):
+        if type(self.time) == int:
+            return str(self.time)
+        elif type(self.time) == time:
+            return self.time.strftime('%H:%M')
+
 class ITipParser:
     def __init__(self):
         self._stations = {}
@@ -70,55 +99,75 @@ class ITipParser:
         return None
 
     def get_departures(self, url):
-        """ Get list of next departures
-        integer if time until next departure
-        time if time of next departure
+        """ Get list of next departures as Departure object
         """
 
         #TODO parse line name and direction for station site parsing
 
         if not url:
             # FIXME prevent from calling this method with None
+            print "ERROR empty url"
             return []
 
         # open url for 90 min timeslot / get departure for next 90 min
         bs = BeautifulSoup(urlopen(url + "&departureSizeTimeSlot=90"))
+        print url
+        lines = bs.findAll('table')[-2].findAll('tr')
+        if len(lines) == 1:
+            station = lines[0].span.text.replace('&nbsp;', '')
+            line = lines[0].findAll('span')[-1].text.replace('&nbsp;', '')
+        else:
+            station = lines[1].td.span.text.replace('&nbsp;', '')
+            line = '??'
+
         result_lines = bs.findAll('table')[-1].findAll('tr')
 
         dep = []
         for tr in result_lines[1:]:
+            d = {'station': station}
             th = tr.findAll('th')
             if len(th) < 2:
                 #TODO replace with logger
                 print "[DEBUG] Unable to find th in:\n%s" % str(tr)
             elif len(th) == 2:
+                # underground site looks different -.-
+                d['lowfloor'] = True
+                d['line'] = line
+                d['direction'] = th[0].text.replace('&nbsp;', '')
                 t = th[-1]
             else:
+                # all other lines
+                d['lowfloor'] = th[-1].has_key('img') and th[-1].img.has_key('alt')
+                d['line'] = th[0].text.replace('&nbsp;', '')
+                d['direction'] = th[1].text.replace('&nbsp;', '')
                 t = th[-2]
             # parse time
-            time = t.text.split(' ')
-            if len(time) < 2:
-                #print 'Invalid time: %s' % time
+            tim = t.text.split(' ')
+            if len(tim) < 2:
+                # print '[WARNING] Invalid time: %s' % time
                 # TODO: Issue a warning OR convert "HH:MM" format to countdown
-                continue
+                tim = tim[0]
+            else:
+                tim = tim[1]
 
-            time = time[1]
-
-            if time.find('rze...') >= 0:
-                    dep.append(0)
-            elif time.isdigit():
+            if tim.find('rze...') >= 0:
+                    d['time'] = 0
+            elif tim.isdigit():
                 # if time to next departure in cell convert to int
-                dep.append(int(time))
+                d['time'] = int(tim)
             else:
                 # check if time of next departue in cell
-                t = time.strip('&nbsp;').split(':')
+                t = tim.strip('&nbsp;').split(':')
                 if len(t) == 2 and all(map(lambda x: x.isdigit(), t)):
                     t = map(int, t)
-                    dep.append(time(*t))
+                    d['time'] = time(*t)
                 else:
                     # Unexpected content
                     #TODO replace with logger
                     print "[DEBUG] Invalid data:\n%s" % time
+
+            print d
+            dep.append(Departure(**d))
 
         return dep
 

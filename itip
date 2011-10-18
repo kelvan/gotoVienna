@@ -4,6 +4,7 @@
 from gotovienna import argparse
 from gotovienna.utils import *
 from gotovienna.realtime import *
+from datetime import time
 
 parser = argparse.ArgumentParser(description='Get realtime public transport information for Vienna')
 parser.add_argument('line', nargs='?', help='line name (e.g. 59A)')
@@ -32,7 +33,7 @@ if args.line in itip.lines:
     for stops in stations:
         # Pad station list with empty items for printing, so that
         # different-sized lists aren't truncated (with zip below)
-        stops.extend([('', '')]*(maxlength-len(stops)))
+        stops.extend([('', '')] * (maxlength - len(stops)))
 
     stations_table = zip(*stations)
     fmt = '%%-%ds' % ITEM_WIDTH
@@ -41,15 +42,15 @@ if args.line in itip.lines:
     print
     print spacer, spacer.join(inblue(fmt % ('Richtung %s' % name))
             for name in headers)
-    print spacer, spacer.join('-'*ITEM_WIDTH for name in headers)
+    print spacer, spacer.join('-' * ITEM_WIDTH for name in headers)
 
     def match_station(query, station):
         return query and station and (query.lower() in station.lower())
 
     for row in stations_table:
-        print spacer, spacer.join(ingreen(fmt%name)
+        print spacer, spacer.join(ingreen(fmt % name)
                 if match_station(args.station, name)
-                else fmt%name
+                else fmt % name
                 for name, url in row)
     print
 
@@ -64,8 +65,11 @@ if args.line in itip.lines:
         print
 
     # Format a departure time (in minutes from now) for display
-    def format_departure(minutes):
-        if minutes == 0:
+    def format_departure(departure):
+        minutes = departure.time
+        if type(minutes) == time:
+            return inblue(minutes.strftime('%H:%M'))
+        elif minutes == 0:
             return inred('now')
         elif minutes == 1:
             return inblue('1') + ' min'
@@ -86,7 +90,7 @@ if args.line in itip.lines:
 else:
     ITEMS_PER_LINE = 12
     ITEM_WIDTH = 5
-    LINE_WIDTH = (ITEMS_PER_LINE*ITEM_WIDTH + ITEMS_PER_LINE)
+    LINE_WIDTH = (ITEMS_PER_LINE * ITEM_WIDTH + ITEMS_PER_LINE)
 
     if args.line:
         print
@@ -95,10 +99,10 @@ else:
     print
     for label, remaining in categorize_lines(itip.lines):
         prefix, fill, postfix = '|== ', '=', '==- -'
-        before, after = prefix+label+' ', postfix
-        padding = LINE_WIDTH - len(before+after)
+        before, after = prefix + label + ' ', postfix
+        padding = LINE_WIDTH - len(before + after)
         before = before.replace(label, inblue(label))
-        print ''.join((before, fill*padding, after))
+        print ''.join((before, fill * padding, after))
 
         while remaining:
             this_row = [remaining.pop(0) for _ in

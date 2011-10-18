@@ -8,6 +8,7 @@ Sheet {
     property string currentLine: ''
     property string currentDirection: ''
     property string currentStation: ''
+    property string currentUrl: ''
 
     acceptButtonText: 'Select'
     rejectButtonText: 'Cancel'

@@ -75,9 +75,10 @@ Page {
          }
     }
 
+    /*
     LineSheet {
         id: lineSheet
-    }
+    }*/
 
     Button {
         id: lineSearchButton
