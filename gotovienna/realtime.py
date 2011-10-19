@@ -110,15 +110,30 @@ class ITipParser:
             return []
 
         # open url for 90 min timeslot / get departure for next 90 min
-        bs = BeautifulSoup(urlopen(url + "&departureSizeTimeSlot=90"))
-        print url
-        lines = bs.findAll('table')[-2].findAll('tr')
-        if len(lines) == 1:
-            station = lines[0].span.text.replace('&nbsp;', '')
-            line = lines[0].findAll('span')[-1].text.replace('&nbsp;', '')
+        retry = 0
+        tries = 2
+        while retry < tries:
+            bs = BeautifulSoup(urlopen(url + "&departureSizeTimeSlot=90"))
+            try:
+                lines = bs.find('form', {'name': 'mainform'}).table.findAll('tr')[1]
+            except AttributeError:
+                print 'FetchError'
+                msg = bs.findAll('span', {'class': 'rot fett'})
+                if len(msg) > 0 and str(msg[0].text).find(u'technischen St') > 0:
+                    print 'Temporary problem'
+                    print '\n'.join(map(lambda x: x.text.replace('&nbsp;', ''), msg))
+                    # FIXME Change to error message after fixing qml gui
+                    return []
+                # FIXME more testing
+                retry += 1
+                if retry == tries:
+                    return []
+        if len(lines.findAll('td', {'class': 'info'})) > 0:
+            station = lines.span.text.replace('&nbsp;', '')
+            line = lines.findAll('span')[-1].text.replace('&nbsp;', '')
         else:
-            station = lines[1].td.span.text.replace('&nbsp;', '')
-            line = '??'
+            station = lines.td.span.text.replace('&nbsp;', '')
+            line = lines.find('td', {'align': 'right'}).span.text.replace('&nbsp;', '')
 
         result_lines = bs.findAll('table')[-1].findAll('tr')
 
