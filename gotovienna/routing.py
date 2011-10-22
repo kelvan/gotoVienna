@@ -36,7 +36,7 @@ def extract_city(station):
         return station.split(',')[-1].strip()
     else:
         return 'Wien'
-        
+
 def extract_station(station):
     """ Remove city from string
     
@@ -47,7 +47,7 @@ def extract_station(station):
         return station[:station.rindex(',')].strip()
     else:
         return station
-    
+
 def split_station(station):
     """ >>> split_station('Karlsplatz, Wien')
     ('Karlsplatz', 'Wien')
@@ -99,7 +99,7 @@ def search(origin_tuple, destination_tuple, dtime=None):
 
     origin, origin_type = origin_tuple
     origin, origin_city = split_station(origin)
-    
+
     destination, destination_type = destination_tuple
     destination, destination_city = split_station(destination)
 
@@ -127,13 +127,7 @@ def search(origin_tuple, destination_tuple, dtime=None):
     post['place_destination'] = destination_city
     params = urlencode(post)
     url = '%s?%s' % (defaults.action, params)
-
-    try:
-        f = open(DEBUGLOG, 'a')
-        f.write(url + '\n')
-        f.close()
-    except:
-        print 'Unable to write to DEBUGLOG: %s' % DEBUGLOG
+    #print url
 
     return urlopen(url)
 
@@ -161,27 +155,27 @@ class sParser:
         names_destination = self.soup.find('select', {'id': 'nameList_destination'})
         places_origin = self.soup.find('select', {'id': 'placeList_origin'})
         places_destination = self.soup.find('select', {'id': 'placeList_destination'})
-        
+
 
         if any([names_origin, names_destination, places_origin, places_destination]):
             dict = {}
-            
+
             if names_origin:
-                dict['origin'] = map(lambda x: x.text, 
+                dict['origin'] = map(lambda x: x.text,
                                      names_origin.findAll('option'))
             if names_destination:
-                dict['destination'] = map(lambda x: x.text, 
+                dict['destination'] = map(lambda x: x.text,
                                           names_destination.findAll('option'))
-                
+
             if places_origin:
-                dict['place_origin'] = map(lambda x: x.text, 
+                dict['place_origin'] = map(lambda x: x.text,
                                            names_origin.findAll('option'))
             if names_destination:
-                dict['place_destination'] = map(lambda x: x.text, 
+                dict['place_destination'] = map(lambda x: x.text,
                                                 names_destination.findAll('option'))
-    
+
             return dict
-        
+
         else:
             raise ParserError('Unable to parse html')
 
@@ -243,21 +237,21 @@ class rParser:
                     to_dtime = datetime.combine(d + timedelta(1), times[1])
                 else:
                     to_dtime = datetime.combine(d, times[1])
-                    
+
                 return [from_dtime, to_dtime]
-            
+
             else:
                 dtregex = {'date' : '\d\d\.\d\d',
                            'time': '\d\d:\d\d'}
-                
+
                 regex = "\s*(?P<date1>{date})?\s*(?P<time1>{time})\s*(?P<date2>{date})?\s*(?P<time2>{time})\s*".format(**dtregex)
                 ma = re.match(regex, y)
-                
+
                 if not ma:
                     return []
-                
+
                 gr = ma.groupdict()
-                
+
                 def extract_datetime(gr, n):
                     if 'date%d' % n in gr and gr['date%d' % n]:
                         from_dtime = datetime.strptime(str(datetime.today().year) + gr['date%d' % n] + gr['time%d' % n], '%Y%d.%m.%H:%M')
@@ -265,13 +259,13 @@ class rParser:
                         t = datetime.strptime(gr['time%d' % n], '%H:%M').time()
                         d = datetime.today().date()
                         return datetime.combine(d, t)
-                
+
                 # detail mode
                 from_dtime = extract_datetime(gr, 1)
                 to_dtime = extract_datetime(gr, 2)
-                
+
                 return [from_dtime, to_dtime]
-                
+
         else:
             return []
 

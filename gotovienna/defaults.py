@@ -1,9 +1,19 @@
-from os import path
+from os import path, mkdir
 
 # route search
-folder = path.dirname(__file__)
 action = 'http://efa.vor.at/wvb/XSLT_TRIP_REQUEST2'
-hist_file = path.join(folder, '.wl_history')
+hist_file = path.expanduser('~/.gotovienna_history')
+sys_cache = path.expanduser('~/.cache')
+cache_folder = path.join(sys_cache, 'gotovienna')
+
+# FIXME more robust
+if not path.exists(sys_cache):
+    mkdir(sys_cache)
+if not path.exists(cache_folder):
+    mkdir(cache_folder)
+
+cache_line = path.join(cache_folder, 'lines.json')
+cache_stations = path.join(cache_folder, 'stations.json')
 
 # iTip
 
