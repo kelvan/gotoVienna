@@ -5,76 +5,79 @@ import defaults
 import realtime
 
 
-def load(path):
-    if path.exists(path, typ):
+def load(p, typ):
+    if path.exists(p):
         try:
-            with open(path, 'r') as f:
+            with open(p, 'r') as f:
                 j = json.load(f)
                 if type(j) == typ:
                     return j
                 else:
                     print 'Unexpected content in cache file'
                     print 'rebuilding cache'
-                    shutil.copy(path, path + '.bak')
+                    shutil.copy(p, p + '.bak')
         except ValueError:
+            # FIXME check if empty
             print 'Corrupt cache file'
             print 'rebuilding cache'
-            shutil.copy(path, path + '.bak')
+            shutil.copy(p, p + '.bak')
 
     return None
 
-class Lines(list):
-    def __init__(self, lines=[]):
-        l = load(defaults.cache_line)
-        if l and type(l) == list:
-            lines = l
-        self.lines = lines
 
-    def __iter__(self):
-        for line in self.lines:
-            yield line
-        raise StopIteration()
+class Lines(dict):
+    def __init__(self):
+        self.load()
 
-    def __iadd__(self, y):
-        self.lines += y
+    def update(self, *args, **kwargs):
+        a = dict.update(self, *args, **kwargs)
+        self.save()
+        return a
 
-    def __add__(self, y):
-        return self.lines + y
+    def save(self):
+        with open(defaults.cache_lines, 'w') as fp:
+            json.dump(self, fp)
 
-    def __getitem__(self, y):
-        return self.lines[y]
+    def load(self):
+        l = load(defaults.cache_lines, dict)
+        if l:
+            self.update(l)
 
-    def __len__(self):
-        return len(self.lines)
+lines = Lines()
 
-    def __str__(self):
-        return str(self.lines)
-
-    def __setitem__(self, i, y):
-        self.lines[i] = y
 
 class Stations(dict):
-    stations = {}
+    stations = None
 
-    def __init__(self, line=False):
+    def __init__(self, line):
         """ loads cache files
-        if line=False behaves as dict of all lines/stations
-        if line behaves as dict of directions/stations of line
+        behaves as dict of directions/stations of line
+        automatically saves cache on updates
         """
-        if not Stations.stations:
-            s = load(defaults.cache_line, dict)
-            if s:
-                Stations.stations = st
+        if Stations.stations == None:
+            Stations.load()
 
         self.current_line = line
-        if line == False:
-            self.dict = Stations.stations
-        elif line in Stations.stations:
-            self.dict = Stations.stations[line]
+        if line in Stations.stations:
+            self.update(Stations.stations[line])
+        # FIXME maybe cause problems in the future, race conditions
+        Stations.stations[line] = self
+
+    def update(self, *args, **kwargs):
+        u = dict.update(self, *args, **kwargs)
+        if args[0]:
+            Stations.save()
+        return u
+
+    @classmethod
+    def save(cls):
+        with open(defaults.cache_stations, 'w') as fp:
+            json.dump(Stations.stations, fp)
+
+    @classmethod
+    def load(cls):
+        s = load(defaults.cache_stations, dict)
+        if s:
+            cls.stations = s
         else:
-            Stations.stations[line] = {}
-            self.dict = Stations.stations[line]
-
-
-    def __getitem__(self, *args, **kwargs):
-        return self.dict.__getitem__(self, *args, **kwargs)
+            cls.stations = {}

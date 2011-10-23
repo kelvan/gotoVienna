@@ -12,7 +12,7 @@ if not path.exists(sys_cache):
 if not path.exists(cache_folder):
     mkdir(cache_folder)
 
-cache_line = path.join(cache_folder, 'lines.json')
+cache_lines = path.join(cache_folder, 'lines.json')
 cache_stations = path.join(cache_folder, 'stations.json')
 
 # iTip
