@@ -29,10 +29,10 @@ class Lines(dict):
     def __init__(self):
         self.load()
 
-    def update(self, *args, **kwargs):
-        a = dict.update(self, *args, **kwargs)
+    def __setitem__(self, *args, **kwargs):
+        s = dict.__setitem__(self, *args, **kwargs)
         self.save()
-        return a
+        return s
 
     def save(self):
         with open(defaults.cache_lines, 'w') as fp:
@@ -44,7 +44,6 @@ class Lines(dict):
             self.update(l)
 
 lines = Lines()
-
 
 class Stations(dict):
     stations = None
@@ -63,10 +62,9 @@ class Stations(dict):
         # FIXME maybe cause problems in the future, race conditions
         Stations.stations[line] = self
 
-    def update(self, *args, **kwargs):
-        u = dict.update(self, *args, **kwargs)
-        if args[0]:
-            Stations.save()
+    def __setitem__(self, *args, **kwargs):
+        u = dict.__setitem__(self, *args, **kwargs)
+        Stations.save()
         return u
 
     @classmethod

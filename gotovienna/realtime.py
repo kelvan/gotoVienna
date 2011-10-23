@@ -6,6 +6,8 @@ from datetime import time
 import re
 import collections
 from errors import LineNotFoundError, StationNotFoundError
+import cache
+from cache import Stations
 
 from gotovienna import defaults
 
@@ -40,19 +42,18 @@ class Departure:
 
 class ITipParser:
     def __init__(self):
-        self._stations = {}
-        self._lines = {}
+        self._lines = cache.lines
 
     def get_stations(self, name):
         """ Get station by direction
         {'Directionname': [('Station name', 'url')]}
         """
-        if not self._stations.has_key(name):
-            st = {}
+        if not name in self.lines:
+            return {}
 
-            if not self.lines.has_key(name):
-                return None
+        st = Stations(name)
 
+        if not st:
             bs = BeautifulSoup(urlopen(self.lines[name]))
             tables = bs.findAll('table', {'class': 'text_10pix'})
             for i in range(2):
@@ -66,9 +67,8 @@ class ITipParser:
                         sta.append((tr.text.strip('&nbsp;'), None))
 
                 st[dir] = sta
-            self._stations[name] = st
 
-        return self._stations[name]
+        return st
 
     @property
     def lines(self):
