@@ -2,7 +2,8 @@
 # -*- coding: UTF-8 -*-
 
 from gotovienna.BeautifulSoup import BeautifulSoup, NavigableString
-from urllib2 import urlopen
+#from urllib2 import urlopen
+from UrlOpener import urlopen
 from urllib import urlencode
 from datetime import datetime, time, timedelta
 from textwrap import wrap
