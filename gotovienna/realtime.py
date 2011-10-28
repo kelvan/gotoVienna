@@ -2,44 +2,59 @@
 
 from gotovienna.BeautifulSoup import BeautifulSoup
 #from urllib2 import urlopen
+from urllib import quote_plus
 from UrlOpener import urlopen
-from datetime import time
+from datetime import time, datetime, timedelta
 import re
 import collections
 from errors import LineNotFoundError, StationNotFoundError
 import cache
 from cache import Stations
+from time import sleep
 
 from gotovienna import defaults
 
-class Departure:
+class Departure(dict):
     def __init__(self, line, station, direction, time, lowfloor):
-        self.line = line
-        self.station = station
-        self.direction = direction
-        self.time = time
-        self.lowfloor = lowfloor
+        self['line'] = line
+        self['station'] = station
+        self['direction'] = direction
+        self['time'] = time
+        self['lowfloor'] = lowfloor
 
-    def get_departure_time(self):
+    def __getitem__(self, *args, **kwargs):
+        if args[0] == 'ftime':
+            return self.ftime
+        elif args[0] == 'deltatime':
+            return self.departure_deltatime
+        elif args[0] == 'atime':
+            return self.departure_time
+        return dict.__getitem__(self, *args, **kwargs)
+
+    @property
+    def departure_time(self):
         """ return time object of departure time
         """
-        if type(self.time) == time:
-            return self.time
+        if type(self['time']) == time:
+            return self['time']
         else:
-            pass
-    def get_departure_deltatime(self):
+            return (datetime.now() + timedelta(self['time'])).time()
+
+    @property
+    def departure_deltatime(self):
         """ return int representing minutes until departure
         """
-        if type(self.time) == int:
-            return self.time
+        if type(self['time']) == int:
+            return self['time']
         else:
-            pass
+            raise NotImplementedError()
 
-    def get_ftime(self):
-        if type(self.time) == int:
-            return str(self.time)
-        elif type(self.time) == time:
-            return self.time.strftime('%H:%M')
+    @property
+    def ftime(self):
+        if type(self['time']) == int:
+            return str(self['time'])
+        elif type(self['time']) == time:
+            return self['time'].strftime('%H:%M')
 
 class ITipParser:
     def __init__(self):
@@ -99,6 +114,60 @@ class ITipParser:
 
         return None
 
+    def get_departures_by_station(self, station):
+        """ Get list of Departures for one station
+        """
+
+        # TODO 1. Error handling
+        # TODO 2. more error handling
+        # TODO 3. ultimative error handling
+
+        dep = []
+        bs = BeautifulSoup(urlopen(defaults.departures_by_station % quote_plus(station.encode('UTF-8'))))
+        try:
+            li = bs.ul.findAll('li')
+            if li[0].a:
+                # Dirty workaround for ambiguous station
+                bs = BeautifulSoup(urlopen(defaults.qando + li[0].a['href']))
+                li = bs.ul.findAll('li')
+
+            for l in li:
+                try:
+                    d = l.div.next
+                    if d.find('&raquo;') == -1:
+                        d = d.next.next
+
+                    direction = d.replace('&raquo;', '').strip()
+                    if direction.startswith('NICHT EINSTEIGEN'):
+                        continue
+
+                    line = l.img['alt']
+                    for span in l.findAll('span'):
+                        if span.text.isdigit():
+                            tim = int(span.text)
+                        elif span.text.find(':') >= 0:
+                            tim = time(*map(int, span.text.split(':')))
+                        else:
+                            print 'Warning: %s' % span.text
+                            continue
+
+                        if span['class'] == 'departureBarrierFree':
+                            lowfloor = True
+                        else:
+                            lowfloor = False
+
+                        dep.append(Departure(line, station, direction, tim, lowfloor))
+
+                except:
+                    print 'Warning: %s' % l
+                    continue
+
+        except AttributeError:
+            print 'Error while getting station %s' % station
+            return dep
+
+        return dep
+
     def get_departures(self, url):
         """ Get list of next departures as Departure object
         """
@@ -117,6 +186,8 @@ class ITipParser:
             bs = BeautifulSoup(urlopen(url + "&departureSizeTimeSlot=90"))
             try:
                 lines = bs.find('form', {'name': 'mainform'}).table.findAll('tr')[1]
+                break
+
             except AttributeError:
                 print 'FetchError'
                 msg = bs.findAll('span', {'class': 'rot fett'})
@@ -129,6 +200,8 @@ class ITipParser:
                 retry += 1
                 if retry == tries:
                     return []
+            sleep(0.5)
+
         if len(lines.findAll('td', {'class': 'info'})) > 0:
             station = lines.span.text.replace('&nbsp;', '')
             line = lines.findAll('span')[-1].text.replace('&nbsp;', '')
@@ -182,7 +255,6 @@ class ITipParser:
                     #TODO replace with logger
                     print "[DEBUG] Invalid data:\n%s" % time
 
-            print d
             dep.append(Departure(**d))
 
         return dep

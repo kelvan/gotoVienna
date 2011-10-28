@@ -97,7 +97,7 @@ class Gui(QObject):
     @Slot(str)
     def load_departures(self, url):
         def load_async():
-            self.current_departures = [x.get_ftime() for x in
+            self.current_departures = [x['ftime'] for x in
                     self.itip.get_departures(url)]
             print self.current_departures
             self.departuresLoaded.emit()

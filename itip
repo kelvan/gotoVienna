@@ -66,7 +66,7 @@ if args.line in itip.lines:
 
     # Format a departure time (in minutes from now) for display
     def format_departure(departure):
-        minutes = departure.time
+        minutes = departure['time']
         if type(minutes) == time:
             return inblue(minutes.strftime('%H:%M'))
         elif minutes == 0:

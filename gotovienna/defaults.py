@@ -19,6 +19,8 @@ cache_stations = path.join(cache_folder, 'stations.json')
 
 line_overview = 'http://www.wienerlinien.at/itip/linienwahl/'
 stations = 'http://www.wienerlinien.at/itip/haltestelle?letter=%s'
+departures_by_station = 'http://m.qando.at/de/get_monitor.ft?stop=%s&submit=Anfordern'
+qando = 'http://m.qando.at/de/'
 
 search_post = {'language': 'de',
             'sessionID': 0,
