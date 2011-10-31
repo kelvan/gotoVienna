@@ -9,8 +9,6 @@ __license__ = 'GNU General Public License v3 or later'
 
 from datetime import datetime
 
-t = datetime.now()
-
 from PySide.QtCore import QAbstractListModel, QModelIndex, QObject, Slot, Signal
 from PySide.QtGui import QApplication
 from PySide.QtDeclarative import QDeclarativeView
@@ -156,8 +154,6 @@ if __name__ == '__main__':
     else:
         # Assume test from source directory, use relative path
         view.setSource(os.path.join(os.path.dirname(__file__), 'qml/main.qml'))
-
-    print datetime.now() - t
 
     view.showFullScreen()
 

@@ -1,0 +1,8 @@
+[DEFAULT]
+Depends: python-pyside
+MIME-Desktop-Files: gotovienna.desktop
+Package: gotovienna
+Source: gotovienna
+Suite: fremantle
+Section: user/network
+XS-Python-Version: 2.5
