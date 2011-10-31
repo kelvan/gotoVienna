@@ -181,7 +181,7 @@ class ITipParser:
 
         # open url for 90 min timeslot / get departure for next 90 min
         retry = 0
-        tries = 2
+        tries = 2 # try a second time before return empty list
         while retry < tries:
             bs = BeautifulSoup(urlopen(url + "&departureSizeTimeSlot=90"))
             try:
