@@ -6,6 +6,10 @@ except ImportError:
 import shutil
 import defaults
 import realtime
+try:
+    from __future__ import with_statement
+except:
+    pass
 
 
 def load(p, typ):
