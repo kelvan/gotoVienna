@@ -15,6 +15,7 @@ from PySide.QtDeclarative import QDeclarativeView
 
 from gotovienna.utils import *
 from gotovienna.realtime import *
+from gotovienna.gps import *
 
 import urllib2
 import os
@@ -113,6 +114,14 @@ class Gui(QObject):
     @Slot(result='QStringList')
     def get_departures(self):
         return self.current_departures
+
+    @Slot(float, float, result=str)
+    def get_nearby_stations(self, lat, lon):
+        try:
+            return ', '.join(get_nearby_stations(lat, lon))
+        except Exception as e:
+            print e.message
+            return ''
 
     @Slot(str, str)
     def search(self, line, station):

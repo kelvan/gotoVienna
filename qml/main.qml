@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+import QtMobility.location 1.1
 
 PageStackWindow {
     id: appWindow
@@ -8,6 +9,13 @@ PageStackWindow {
 
     MainPage {
         id: mainPage
+    }
+
+    PositionSource {
+        id: positionSource
+        updateInterval: 15000
+
+        active: !(position.longitudeValid && position.latitudeValid)
     }
 
     ToolBarLayout {
@@ -41,6 +49,28 @@ PageStackWindow {
                 left: parent.left
                 leftMargin: 10
             }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    console.debug(itip.get_nearby_stations(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude))
+                    debugText.text = itip.get_nearby_stations(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude)
+                }
+            }
+        }
+
+        Text {
+            id: debugText
+            text: ''
+
+            anchors {
+                bottomMargin: 10
+                bottom: parent.bottom
+                left: logo.right
+                leftMargin: 10
+                top: logo.top
+            }
+            font.pixelSize: 16
         }
     }
 

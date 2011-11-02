@@ -15,6 +15,10 @@ if not path.exists(cache_folder):
 cache_lines = path.join(cache_folder, 'lines.json')
 cache_stations = path.join(cache_folder, 'stations.json')
 
+# SQL & GPS
+sql_gps_query = 'SELECT name FROM stations WHERE lat > ? and lat < ? and lon > ? and lon < ?'
+sql_file = path.expanduser('~/.gotovienna/stations.db')
+
 # iTip
 
 line_overview = 'http://www.wienerlinien.at/itip/linienwahl/'
