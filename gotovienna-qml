@@ -3,7 +3,7 @@
 """Public transport information for Vienna"""
 
 __author__ = 'kelvan <kelvan@logic.at>'
-__version__ = '0.8.1'
+__version__ = '0.8.2'
 __website__ = 'https://github.com/kelvan/gotoVienna/'
 __license__ = 'GNU General Public License v3 or later'
 
@@ -21,6 +21,7 @@ import urllib2
 import os
 import sys
 import threading
+from datetime import time
 
 class GotoViennaListModel(QAbstractListModel):
     def __init__(self, objects=None):
@@ -96,8 +97,13 @@ class Gui(QObject):
     @Slot(str)
     def load_departures(self, url):
         def load_async():
-            self.current_departures = [x['ftime'] for x in
-                    self.itip.get_departures(url)]
+            def map_departure(dep):
+                dep['lowfloor'] = 1 if dep['lowfloor'] else 0
+                if type(dep['time']) == time:
+                    dep['time'] = dep['time'].strftime('%H:%M')
+                return dep
+                
+            self.current_departures = map(map_departure, self.itip.get_departures(url))
             print self.current_departures
             self.departuresLoaded.emit()
 
@@ -111,7 +117,7 @@ class Gui(QObject):
     def get_lines(self):
         return self.lines
 
-    @Slot(result='QStringList')
+    @Slot(result='QVariant')
     def get_departures(self):
         return self.current_departures
 

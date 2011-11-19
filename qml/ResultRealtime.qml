@@ -35,141 +35,142 @@ Item {
             var departures = itip.get_departures()
 
             for (var d in departures) {
-                console.log('departure: ' + departures[d])
-                // XXX: destination might be wrong?!
-                var row = {'line': resultRealtime.gline, 'station': resultRealtime.gstation, 'destination': gdirection, 'departure': departures[d]}
-                console.log('inserting: ' + row)
+                console.log('time: ' + departures[d].time)
+                var row = {'line': departures[d].line, 'station': departures[d].station, 'destination': departures[d].direction, 'departure': departures[d].time, 'lowfloor': departures[d].lowfloor}
                 departuresModel.append(row)
             }
         }
     }
 
     Component {
-         id: departureDelegate
+        id: departureDelegate
 
-         Item {
-             width: parent.width
-             height: 80
+        Item {
+            width: parent.width
+            height: 80
 
-             BorderImage {
-                 anchors.fill: parent
-                 visible: mouseArea.pressed
-                 source: theme.inverted ? 'image://theme/meegotouch-list-inverted-background-pressed-vertical-center': 'image://theme/meegotouch-list-background-pressed-vertical-center'
-             }
+            BorderImage {
+                anchors.fill: parent
+                visible: mouseArea.pressed
+                source: theme.inverted ? 'image://theme/meegotouch-list-inverted-background-pressed-vertical-center': 'image://theme/meegotouch-list-background-pressed-vertical-center'
+            }
 
-             Item {
-                 anchors.fill: parent
-                 anchors.margins: UIConstants.DEFAULT_MARGIN
+            Item {
+                anchors.fill: parent
+                anchors.margins: UIConstants.DEFAULT_MARGIN
 
-                 Row {
-                     spacing: 10
-                     Text {
-                         id: l
-                         text: line // <----
-                         anchors.verticalCenter: parent.verticalCenter
-                         width: 70
-                         font.pixelSize: UIConstants.FONT_XLARGE
-                         font.bold: true
-                         font.family: ExtrasConstants.FONT_FAMILY_LIGHT
-                         color: !theme.inverted ? UIConstants.COLOR_FOREGROUND : UIConstants.COLOR_INVERTED_FOREGROUND
-                     }
+                Row {
+                    spacing: 10
+                    Text {
+                        id: l
+                        text: line // <----
+                        anchors.verticalCenter: parent.verticalCenter
+                        //width: 70
+                        font.pixelSize: UIConstants.FONT_XLARGE
+                        font.bold: true
+                        font.family: ExtrasConstants.FONT_FAMILY_LIGHT
+                        color: !theme.inverted ? UIConstants.COLOR_FOREGROUND : UIConstants.COLOR_INVERTED_FOREGROUND
+                    }
 
-                     Column {
-                         anchors.verticalCenter: parent.verticalCenter
+                    Column {
+                        anchors.verticalCenter: parent.verticalCenter
 
-                         Text {
-                             id: s
-                             text: station // <----
-                             width: parent.parent.parent.width - l.width - dep.width - 10
-                             elide: Text.ElideRight
-                             font.pixelSize: UIConstants.FONT_LARGE
-                             font.family: ExtrasConstants.FONT_FAMILY_LIGHT
-                             color: !theme.inverted ? UIConstants.COLOR_FOREGROUND : UIConstants.COLOR_INVERTED_FOREGROUND
-                         }
+                        Text {
+                            id: s
+                            text: station // <----
+                            width: parent.parent.parent.width - l.width - dep.width - 15
+                            elide: Text.ElideRight
+                            font.pixelSize: UIConstants.FONT_LARGE
+                            font.family: ExtrasConstants.FONT_FAMILY_LIGHT
+                            color: !theme.inverted ? UIConstants.COLOR_FOREGROUND : UIConstants.COLOR_INVERTED_FOREGROUND
+                        }
 
-                         Text {
-                             id: d
-                             text: destination // <----
-                             color: !theme.inverted ? UIConstants.COLOR_SECONDARY_FOREGROUND : UIConstants.COLOR_INVERTED_SECONDARY_FOREGROUND
-                             font.family: ExtrasConstants.FONT_FAMILY_LIGHT
-                             font.pixelSize: UIConstants.FONT_LSMALL
-                         }
-                     }
-                 }
-             }
+                        Text {
+                            id: d
+                            text: destination // <----
+                            width: parent.parent.parent.width - l.width - dep.width - 15
+                            elide: Text.ElideRight
+                            color: !theme.inverted ? UIConstants.COLOR_SECONDARY_FOREGROUND : UIConstants.COLOR_INVERTED_SECONDARY_FOREGROUND
+                            font.family: ExtrasConstants.FONT_FAMILY_LIGHT
+                            font.pixelSize: UIConstants.FONT_LSMALL
+                        }
+                    }
+                }
+            }
 
-             Column {
-                 anchors.right: parent.right
-                 anchors.verticalCenter: parent.verticalCenter
-                 Text {
-                     id: dep
-                     // FIXME strange int float transformation appears
-                     text: departure
-                     anchors.right: parent.right
-                     anchors.rightMargin: UIConstants.DEFAULT_MARGIN
-                     font.bold: true
-                     font.pixelSize: UIConstants.FONT_XLARGE
-                     font.family: ExtrasConstants.FONT_FAMILY_LIGHT
-                     color: !theme.inverted ? UIConstants.COLOR_FOREGROUND : UIConstants.COLOR_INVERTED_FOREGROUND
-                 }
-             }
+            Column {
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                Text {
+                    id: dep
+                    // FIXME strange int float transformation appears
+                    text: departure
+                    anchors.right: parent.right
+                    anchors.rightMargin: UIConstants.DEFAULT_MARGIN
+                    font.italic: lowfloor == 1
+                    font.bold: true
+                    font.pixelSize: UIConstants.FONT_XLARGE
+                    font.family: ExtrasConstants.FONT_FAMILY_LIGHT
+                    color: !theme.inverted ? UIConstants.COLOR_FOREGROUND : UIConstants.COLOR_INVERTED_FOREGROUND
+                }
+            }
 
-             MouseArea {
-                 id: mouseArea
-                 anchors.fill: parent
-                 onClicked: {
-                     console.debug("clicked: " + l.text)
-                 }
-             }
-         }
-     }
+            MouseArea {
+                id: mouseArea
+                anchors.fill: parent
+                onClicked: {
+                    console.debug("clicked: " + l.text)
+                }
+            }
+        }
+    }
 
-     ListView {
-         id: list
-         width: parent.width; height: parent.height
+    ListView {
+        id: list
+        width: parent.width; height: parent.height
 
-         header: Rectangle {
-             width: parent.width
-             height: childrenRect.height + 2*UIConstants.DEFAULT_MARGIN
-             color: "lightsteelblue"
-             radius: 5.0
-             smooth: true
+        header: Rectangle {
+            width: parent.width
+            height: childrenRect.height + 2*UIConstants.DEFAULT_MARGIN
+            color: "lightsteelblue"
+            radius: 5.0
+            smooth: true
 
-             Text {
-                 anchors {
-                     top: parent.top
-                     left: parent.left
-                     right: parent.right
-                     margins: UIConstants.DEFAULT_MARGIN
-                 }
+            Text {
+                anchors {
+                    top: parent.top
+                    left: parent.left
+                    right: parent.right
+                    margins: UIConstants.DEFAULT_MARGIN
+                }
 
-                 text: 'Richtung ' + gdirection
-                 elide: Text.ElideRight
-                 font.bold: true
-                 font.family: ExtrasConstants.FONT_FAMILY_LIGHT
-                 font.pixelSize: UIConstants.FONT_LSMALL
-             }
-         }
+                text: 'Richtung ' + gdirection
+                elide: Text.ElideRight
+                font.bold: true
+                font.family: ExtrasConstants.FONT_FAMILY_LIGHT
+                font.pixelSize: UIConstants.FONT_LSMALL
+            }
+        }
 
-         model: ListModel {
-             id: departuresModel
-         }
-         delegate: departureDelegate
+        model: ListModel {
+            id: departuresModel
+        }
+        delegate: departureDelegate
 
-         visible: !resultRealtime.busy && resultRealtime.sourceUrl != ''
-     }
+        visible: !resultRealtime.busy && resultRealtime.sourceUrl != ''
+    }
 
-     ScrollDecorator {
-         id: scrolldecorator
-         flickableItem: list
-         platformStyle: ScrollDecoratorStyle {}
-     }
+    ScrollDecorator {
+        id: scrolldecorator
+        flickableItem: list
+        platformStyle: ScrollDecoratorStyle {}
+    }
 
-     BusyIndicator {
-         id: busyIndicator
-         visible: resultRealtime.busy && resultRealtime.sourceUrl != ''
-         running: visible
-         platformStyle: BusyIndicatorStyle { size: 'large' }
-         anchors.centerIn: parent
-     }
+    BusyIndicator {
+        id: busyIndicator
+        visible: resultRealtime.busy && resultRealtime.sourceUrl != ''
+        running: visible
+        platformStyle: BusyIndicatorStyle { size: 'large' }
+        anchors.centerIn: parent
+    }
 }
