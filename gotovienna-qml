@@ -92,19 +92,50 @@ class Gui(QObject):
 
         threading.Thread(target=load_async).start()
 
+    def map_departure(self, dep):
+        dep['lowfloor'] = 1 if dep['lowfloor'] else 0
+        if type(dep['time']) == time:
+            dep['time'] = dep['time'].strftime('%H:%M')
+        return dep
+
     departuresLoaded = Signal()
 
     @Slot(str)
     def load_departures(self, url):
         def load_async():
-            def map_departure(dep):
-                dep['lowfloor'] = 1 if dep['lowfloor'] else 0
-                if type(dep['time']) == time:
-                    dep['time'] = dep['time'].strftime('%H:%M')
-                return dep
-                
-            self.current_departures = map(map_departure, self.itip.get_departures(url))
+            self.current_departures = map(self.map_departure, self.itip.get_departures(url))
             print self.current_departures
+            self.departuresLoaded.emit()
+
+        threading.Thread(target=load_async).start()
+        
+    @Slot(str)
+    def load_station_departures(self, station):
+        def load_async():
+            self.current_departures = map(self.map_departure, self.itip.get_departures_by_station(station))
+            print self.current_departures
+            self.departuresLoaded.emit()
+
+        threading.Thread(target=load_async).start()
+        
+    @Slot(float, float)
+    def load_nearby_departures(self, lat, lon):
+        def load_async():
+            self.current_departures = []
+            try:
+                stations = get_nearby_stations(lat, lon)
+                print stations
+                for station in stations:
+                    print station
+                    try:
+                        self.current_departures += map(self.map_departure, self.itip.get_departures_by_station(station))
+                    except Exception as e:
+                        print e.message
+                print self.current_departures
+            except Exception as e:
+                print e.message
+                
+            print 'loaded'
             self.departuresLoaded.emit()
 
         threading.Thread(target=load_async).start()
@@ -121,13 +152,13 @@ class Gui(QObject):
     def get_departures(self):
         return self.current_departures
 
-    @Slot(float, float, result=str)
+    @Slot(float, float, result='QStringList')
     def get_nearby_stations(self, lat, lon):
         try:
-            return ', '.join(get_nearby_stations(lat, lon))
+            return get_nearby_stations(lat, lon)
         except Exception as e:
             print e.message
-            return ''
+            return []
 
     @Slot(str, str)
     def search(self, line, station):

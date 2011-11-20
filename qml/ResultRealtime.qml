@@ -137,6 +137,8 @@ Item {
             smooth: true
 
             Text {
+                id: header
+
                 anchors {
                     top: parent.top
                     left: parent.left
