@@ -215,6 +215,7 @@ class ITipParser:
         for tr in result_lines[1:]:
             d = {'station': station}
             th = tr.findAll('th')
+            
             if len(th) < 2:
                 #TODO replace with logger
                 print "[DEBUG] Unable to find th in:\n%s" % str(tr)
@@ -226,7 +227,8 @@ class ITipParser:
                 t = th[-1]
             else:
                 # all other lines
-                d['lowfloor'] = th[-1].has_key('img') and th[-1].img.has_key('alt')
+                print th[-1].find('img') and th[-1].img.has_key('alt')
+                d['lowfloor'] = th[-1].find('img') and th[-1].img.has_key('alt')
                 d['line'] = th[0].text.replace('&nbsp;', '')
                 d['direction'] = th[1].text.replace('&nbsp;', '')
                 t = th[-2]
