@@ -11,6 +11,7 @@ from errors import LineNotFoundError, StationNotFoundError
 import cache
 from cache import Stations
 from time import sleep
+from utils import sort_departures
 
 from gotovienna import defaults
 
@@ -24,10 +25,13 @@ class Departure(dict):
 
     def __getitem__(self, *args, **kwargs):
         if args[0] == 'ftime':
+            # string representation of time/minutes
             return self.ftime
         elif args[0] == 'deltatime':
+            # minutes
             return self.departure_deltatime
         elif args[0] == 'atime':
+            # time object
             return self.departure_time
         return dict.__getitem__(self, *args, **kwargs)
 
@@ -38,7 +42,7 @@ class Departure(dict):
         if type(self['time']) == time:
             return self['time']
         else:
-            return (datetime.now() + timedelta(self['time'])).time()
+            return (datetime.now() + timedelta(0, self['time']) * 60).time()
 
     @property
     def departure_deltatime(self):
@@ -164,9 +168,9 @@ class ITipParser:
 
         except AttributeError:
             print 'Error while getting station %s' % station
-            return dep
 
-        return dep
+        finally:
+            return dep
 
     def get_departures(self, url):
         """ Get list of next departures as Departure object
@@ -215,7 +219,7 @@ class ITipParser:
         for tr in result_lines[1:]:
             d = {'station': station}
             th = tr.findAll('th')
-            
+
             if len(th) < 2:
                 #TODO replace with logger
                 print "[DEBUG] Unable to find th in:\n%s" % str(tr)
