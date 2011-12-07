@@ -35,7 +35,7 @@ Item {
             var departures = itip.get_departures()
 
             for (var d in departures) {
-                console.log('time: ' + departures[d].time)
+                //console.log('time: ' + departures[d].time)
                 var row = {'line': departures[d].line, 'station': departures[d].station, 'destination': departures[d].direction, 'departure': departures[d].time, 'lowfloor': departures[d].lowfloor}
                 departuresModel.append(row)
             }

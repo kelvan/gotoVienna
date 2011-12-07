@@ -39,6 +39,32 @@ Page {
         }
     }
 
+    SelectionDialog {
+        id: stationSelector
+        titleText: 'Select nearby station'
+
+        model: ListModel {
+            id: stationSelectorModel
+
+            Component.onCompleted: {
+                var stations = itip.get_nearby_stations(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude)
+
+                for (var idx in stations) {
+                    stationSelectorModel.append({'name': stations[idx]})
+                }
+            }
+        }
+
+        // XXX It would be nice if we could make a delegate with
+        // icons (i.e. U1, U2, ... in the right colors), but we
+        // would have to "copy" the default delegate style
+
+        onAccepted: {
+            console.log('accepted: ' + selectedIndex)
+            //gline.text = lineSelectorModel.get(selectedIndex).name
+        }
+    }
+
     TextField {
         placeholderText: 'Line'
 
