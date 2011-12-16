@@ -67,7 +67,11 @@ def test_departures_by_station_datetime():
     dep = parser.parse_departures_by_station(stationbased)
     assert_equal(int, type(dep[13]['time']))
     assert_equal(time, type(dep[14]['time']))
+    assert_equal(4, dep[3]['time'])
+    assert_equal(2, dep[4]['time'])
     assert_equal(18, dep[13]['time'])
+    assert_equal('59A', dep[-4]['line'])
+    assert_equal('WLB', dep[-1]['line'])
     assert_equal(time(13, 5), dep[14]['time'])
 
 def test_departures():
