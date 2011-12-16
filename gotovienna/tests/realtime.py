@@ -55,6 +55,8 @@ def test_departures_by_station():
     l = list(set(map(lambda x: x['line'], dep)))
     # there are 8 different lines
     assert_equal(8, len(l))
+    assert_equal(u'Leopoldau', dep[0]['direction'])
+    assert_equal(u'Karlsplatz', dep[0]['station'])
 
 def test_departures_by_station_lowfloor():
     dep = parser.parse_departures_by_station(stationbased)
@@ -65,9 +67,21 @@ def test_departures_by_station_datetime():
     dep = parser.parse_departures_by_station(stationbased)
     assert_equal(int, type(dep[13]['time']))
     assert_equal(time, type(dep[14]['time']))
+    assert_equal(18, dep[13]['time'])
+    assert_equal(time(13, 5), dep[14]['time'])
 
 def test_departures():
     dep = parser.parse_departures(line_station)
+    assert_equal(0, dep[0]['time'])
+    assert_equal(10, dep[2]['time'])
+    assert_equal(6, len(dep))
+    assert_equal(u'Stefan-Fadinger-Platz', dep[0]['direction'])
+    assert_equal(u'Kärntner Ring, Oper', dep[0]['station'])
+
+def test_departures_lowfloor():
+    dep = parser.parse_departures(line_station)
+    assert_false(dep[1]['lowfloor'])
+    assert_true(dep[2]['lowfloor'])
 
 def test_error_page():
     dep = parser.parse_departures(errorpage)

@@ -240,7 +240,6 @@ class ITipParser:
                 t = th[-1]
             else:
                 # all other lines
-                print th[-1].find('img') and th[-1].img.has_key('alt')
                 d['lowfloor'] = th[-1].find('img') and th[-1].img.has_key('alt')
                 d['line'] = th[0].text.replace('&nbsp;', '')
                 d['direction'] = th[1].text.replace('&nbsp;', '')
