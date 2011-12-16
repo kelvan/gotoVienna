@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML><!-- #BeginTemplate "../../Templates/RBL_Ohne_Fuss.dwt" --><!-- DW6 -->
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="pragma" content="no-cache">
+<meta name="robots" content="noindex">
+<!-- #BeginEditable "speicherdatum" -->
+<meta name="date" content='2011-07-16'>
+<!-- #EndEditable -->
+<!-- #BeginEditable "doctitle" -->
+<TITLE>Wiener Linien - i.tip-Abfahrtanzeige</TITLE>
+<!-- #EndEditable -->
+<script language="JavaScript" src="../js/mm.js" type="text/javascript"></script>
+<link rel="stylesheet" href="../css/itip.css">
+<script language="JavaScript" type="text/javascript">
+<!--
+MM_reloadPage(true);
+// -->
+</script>
+</HEAD>
+<BODY onLoad="javascript:window.setTimeout('location.reload()',30000);">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	<tr >
+		<td align="left" valign="top">
+			<!-- #BeginEditable "doc_content" -->
+
+<script language="JavaScript" type="text/javascript" src="/itip/phpwebstat/track.php?mode=js"></script>
+<noscript><img src="/itip/phpwebstat/track.php?mode=img" border="0" alt="" width="1" height="1"></noscript>
+<form method="get" action="/itip/linienwahl/anzeigewl.php" name="mainform">
+	<input type="hidden" name="station" value="00100">
+	<input type="hidden" name="line" value="N6">
+		<table width="95%" align="center" cellpadding="2" cellspacing="2" bgcolor="#f5fff0">
+		<tbody>
+			<tr>
+				<td colspan="4" class="info">Mit aktiviertem Javascript wird diese Seite alle 30 Sekunden automatisch aktualisiert, ansonsten muß der Button "Aktualisieren" gedrückt werden. Eine Änderung der Sortierung für die gefundenen Abfahrten oder &Auml;nderung des Zeitfenster wird erst ab der nächsten manuellen Aktualisierung aktiv.</td>
+			</tr>
+			<tr>
+									<td class="info">
+						Haltestelle:&nbsp;<span class="rot fett">Handelskai S U</span><br>
+						Zeitintervall:&nbsp;30 Minuten<br>
+						Gew&auml;hlte Linie:&nbsp;<span class="rot fett">N6</span>
+					</td>
+					<td align="center" class="info">
+						<strong>
+						Weitere Linien						</strong>
+													<input name="morelines" type="checkbox" value="true">
+							<br>11A,11B,5A											</td>
+								<td nowrap="nowrap" class="info"><span class="fett">Sortierung</span><br>
+					<input type="radio" name="sortType" value="abfSort" checked="checked">
+					nach Abfahrtzeit<br>
+					<input type="radio" name="sortType" value="zielAbfSort" >
+					nach Ziel und Abfahrtzeit<br>
+					<input type="radio" name="sortType" value="linieZielAbfSort" >
+					nach Linie, Ziel und Abfahrtzeit				</td>
+			</tr>
+			<tr>
+				<td align="center" class="info"><strong>Bitte w&auml;hlen Sie ein Zeitfenster aus    	  </strong>
+        	  <select name="departureSizeTimeSlot" size="1" styleid="departureSizeTimeSlot">
+            	<option value="" selected></option><option value="10">10 Minuten</option><option value="20">20 Minuten</option><option value="30" selected>30 Minuten</option><option value="40">40 Minuten</option><option value="50">50 Minuten</option><option value="60">60 Minuten</option><option value="70">70 Minuten</option><option value="80">80 Minuten</option><option value="90">90 Minuten</option><option value="100">100 Minuten</option><option value="110">110 Minuten</option><option value="120">120 Minuten</option>	          </select>
+		  </td>
+	      <td align="center" class="info"><strong>Nur Niederflurfahrzeuge</strong>
+    	          	              <input name="limitedMobilityCapable" type="checkbox" value="false">
+    	                </td>
+	      <td colspan="2" align="center" class="info"><input name="Senden" type="submit" class="teamtext" accesskey="a" title="Alt-a: Aktualisieren" value="Aktualisieren"></td>
+    	  </tr>
+	  </tbody>
+	</table>
+				<table width="95%" border="0" cellspacing="2" align="center" cellpadding="0">
+				<tr bgcolor="#FFFFFF">
+					<th width="10%" align="left" nowrap="nowrap" bgcolor="#355395"><span class="weiss">&nbsp;Linie</span></th>
+					<th width="55%" align="left" nowrap="nowrap" bgcolor="#355395"><span class="weiss">&nbsp;Ziel</span></th>
+					<th width="15%" align="left" nowrap="nowrap" bgcolor="#355395"><span class="weiss">&nbsp;Abfahrt</span></th>
+					<th width="10%" align="center" nowrap="nowrap" bgcolor="#355395"><span class="weiss">&nbsp;Niederflur-<br>&nbsp;Fahrzeug?&nbsp;</span></th>
+				</tr>
+								<table width="95%" align="center" cellpadding="0" cellspacing="0">
+						<tr>
+							<td class="fliesstext fett rot"><br>
+								Keine Abfahrten gefunden.							</td>
+						</tr>
+					</table>
+							</table>
+		</form>
+<!-- #EndEditable -->		</td>
+	</tr>
+</table>
+</BODY>
+<!-- #EndTemplate -->
+</HTML>

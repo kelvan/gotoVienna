@@ -144,12 +144,6 @@ class Gui(QObject):
 
         threading.Thread(target=load_async).start()
 
-    stationsLoaded = Signal()
-
-    @Slot(float, float, result='QStringList')
-    def get_nearby_stations(self, lat, lon):
-        return get_nearby_stations(lat, lon)
-
     @Slot(str, str, str, result=str)
     def get_directions_url(self, line, direction, station):
         return self.itip.get_url_from_direction(line, direction, station)

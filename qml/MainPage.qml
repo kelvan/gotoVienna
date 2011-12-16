@@ -60,7 +60,7 @@ Page {
         // would have to "copy" the default delegate style
 
         onAccepted: {
-            console.log('accepted: ' + selectedIndex)
+            console.log('accepted: ' + lineSelectorModel.get(selectedIndex).name)
             //gline.text = lineSelectorModel.get(selectedIndex).name
         }
     }

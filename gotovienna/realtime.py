@@ -64,6 +64,24 @@ class ITipParser:
     def __init__(self):
         self._lines = cache.lines
 
+    def parse_stations(self, html):
+        bs = BeautifulSoup(html)
+        tables = bs.findAll('table', {'class': 'text_10pix'})
+        st = {}
+
+        for i in range(2):
+            dir = tables[i].div.contents[-1].strip()[6:-6]
+
+            sta = []
+            for tr in tables[i].findAll('tr', {'onmouseout': 'obj_unhighlight(this);'}):
+                if tr.a:
+                    sta.append((tr.a.text, defaults.line_overview + tr.a['href']))
+                else:
+                    sta.append((tr.text.strip('&nbsp;'), None))
+
+            st[dir] = sta
+        return st
+
     def get_stations(self, name):
         """ Get station by direction
         {'Directionname': [('Station name', 'url')]}
@@ -74,38 +92,35 @@ class ITipParser:
         st = Stations(name)
 
         if not st:
-            bs = BeautifulSoup(urlopen(self.lines[name]))
-            tables = bs.findAll('table', {'class': 'text_10pix'})
-            for i in range(2):
-                dir = tables[i].div.contents[-1].strip()[6:-6]
-
-                sta = []
-                for tr in tables[i].findAll('tr', {'onmouseout': 'obj_unhighlight(this);'}):
-                    if tr.a:
-                        sta.append((tr.a.text, defaults.line_overview + tr.a['href']))
-                    else:
-                        sta.append((tr.text.strip('&nbsp;'), None))
-
-                st[dir] = sta
+            st = self.parse_stations(urlopen(self.lines[name]).read())
 
         return st
+
+    def parse_lines(self, html):
+        """ Parse lines from html
+        """
+        bs = BeautifulSoup(html)
+        # get tables
+        lines = bs.findAll('td', {'class': 'linie'})
+
+        l = {}
+
+        for line in lines:
+            if line.a:
+                href = defaults.line_overview + line.a['href']
+                if line.text:
+                    l[line.text] = href
+                elif line.img:
+                    l[line.img['alt']] = href
+
+        return l
 
     @property
     def lines(self):
         """ Dictionary of Line names with url as value
         """
         if not self._lines:
-            bs = BeautifulSoup(urlopen(defaults.line_overview))
-            # get tables
-            lines = bs.findAll('td', {'class': 'linie'})
-
-            for line in lines:
-                if line.a:
-                    href = defaults.line_overview + line.a['href']
-                    if line.text:
-                        self._lines[line.text] = href
-                    elif line.img:
-                        self._lines[line.img['alt']] = href
+            self._lines = self.parse_lines(urlopen(defaults.line_overview).read())
 
         return self._lines
 
@@ -118,22 +133,18 @@ class ITipParser:
 
         return None
 
-    def get_departures_by_station(self, station):
-        """ Get list of Departures for one station
+    def parse_departures_by_station(self, html):
+        """ Parse departure page
+        precondition: html is correct departure page
+        handle select station page before calling this method
         """
-
-        # TODO 1. Error handling
-        # TODO 2. more error handling
-        # TODO 3. ultimative error handling
-
+        bs = BeautifulSoup(html)
         dep = []
-        bs = BeautifulSoup(urlopen(defaults.departures_by_station % quote_plus(station.encode('UTF-8'))))
+
         try:
             li = bs.ul.findAll('li')
-            if li[0].a:
-                # Dirty workaround for ambiguous station
-                bs = BeautifulSoup(urlopen(defaults.qando + li[0].a['href']))
-                li = bs.ul.findAll('li')
+
+            station = bs.strong.text.split(',')[0]
 
             for l in li:
                 try:
@@ -162,8 +173,8 @@ class ITipParser:
 
                         dep.append(Departure(line, station, direction, tim, lowfloor))
 
-                except:
-                    print 'Warning: %s' % l
+                except Exception as e:
+                    print 'Warning: %s' % e.message
                     continue
 
         except AttributeError:
@@ -172,39 +183,37 @@ class ITipParser:
         finally:
             return dep
 
-    def get_departures(self, url):
-        """ Get list of next departures as Departure object
+    def get_departures_by_station(self, station):
+        """ Get list of Departures for one station
         """
 
-        #TODO parse line name and direction for station site parsing
+        # TODO 1. Error handling
+        # TODO 2. more error handling
+        # TODO 3. ultimative error handling
 
-        if not url:
-            # FIXME prevent from calling this method with None
-            print "ERROR empty url"
+        html = urlopen(defaults.departures_by_station % quote_plus(station.encode('UTF-8'))).read()
+
+        li = BeautifulSoup(html).ul.findAll('li')
+
+        if li[0].a:
+            # Dirty workaround for ambiguous station
+            html = urlopen(defaults.qando + li[0].a['href']).read()
+
+        dep = self.parse_departures_by_station(html)
+
+        self.parse_departures_by_station(html)
+        return dep
+
+    def parse_departures(self, html):
+        bs = BeautifulSoup(html)
+
+        # Check for error messages
+        msg = bs.findAll('span', {'class': 'rot fett'})
+        if msg and len(msg) > 0 and unicode(msg[0].text).find(u'technischen St') > 0:
+            print '\n'.join(map(lambda x: x.text.replace('&nbsp;', ''), msg))
             return []
 
-        # open url for 90 min timeslot / get departure for next 90 min
-        retry = 0
-        tries = 2 # try a second time before return empty list
-        while retry < tries:
-            bs = BeautifulSoup(urlopen(url + "&departureSizeTimeSlot=90"))
-            try:
-                lines = bs.find('form', {'name': 'mainform'}).table.findAll('tr')[1]
-                break
-
-            except AttributeError:
-                print 'FetchError'
-                msg = bs.findAll('span', {'class': 'rot fett'})
-                if len(msg) > 0 and str(msg[0].text).find(u'technischen St') > 0:
-                    print 'Temporary problem'
-                    print '\n'.join(map(lambda x: x.text.replace('&nbsp;', ''), msg))
-                    # FIXME Change to error message after fixing qml gui
-                    return []
-                # FIXME more testing
-                retry += 1
-                if retry == tries:
-                    return []
-            sleep(0.5)
+        lines = bs.find('form', {'name': 'mainform'}).table.findAll('tr')[1]
 
         if len(lines.findAll('td', {'class': 'info'})) > 0:
             station = lines.span.text.replace('&nbsp;', '')
@@ -264,6 +273,36 @@ class ITipParser:
             dep.append(Departure(**d))
 
         return dep
+
+    def get_departures(self, url):
+        """ Get list of next departures as Departure object
+        """
+
+        #TODO parse line name and direction for station site parsing
+
+        if not url:
+            # FIXME prevent from calling this method with None
+            print "ERROR empty url"
+            return []
+
+        # open url for 90 min timeslot / get departure for next 90 min
+        retry = 0
+        tries = 2 # try a second time before return empty list
+
+        while retry < tries:
+            html = urlopen(url + "&departureSizeTimeSlot=90").read()
+            dep = self.parse_departures(html)
+
+            if dep:
+                return dep
+
+            retry += 1
+            if retry == tries:
+                return []
+
+            sleep(0.5)
+
+
 
 
 UBAHN, TRAM, BUS, NIGHTLINE, OTHER = range(5)
