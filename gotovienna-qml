@@ -3,7 +3,7 @@
 """Public transport information for Vienna"""
 
 __author__ = 'kelvan <kelvan@logic.at>'
-__version__ = '0.8.2'
+__version__ = '0.9.0'
 __website__ = 'https://github.com/kelvan/gotoVienna/'
 __license__ = 'GNU General Public License v3 or later'
 
