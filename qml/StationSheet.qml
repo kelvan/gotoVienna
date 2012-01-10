@@ -138,6 +138,7 @@ Sheet {
         realtimeResult.gline = stationSheet.currentLine
         realtimeResult.gstation = stationSheet.currentStation
         realtimeResult.gdirection = stationSheet.currentDirection
+        realtimeResult.isStation = false
 
         realtimeResult.sourceUrl = itip.get_directions_url(stationSheet.currentLine, stationSheet.currentDirection, stationSheet.currentStation)
         console.log('url to get: ' + realtimeResult.sourceUrl)

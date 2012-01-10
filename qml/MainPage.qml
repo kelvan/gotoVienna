@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+import QtMobility.location 1.1
 
 import "UIConstants.js" as UIConstants
 import "ExtrasConstants.js" as ExtrasConstants
@@ -7,10 +8,39 @@ import "ExtrasConstants.js" as ExtrasConstants
 Page {
     tools: commonTools
 
-    property bool canRefresh: realtimeResult.sourceUrl != ''
+    property bool canRefresh: realtimeResult.sourceUrl != '' || (realtimeResult.isStation && realtimeResult.gstation != '')
+    //property alias stationSelect: stationSelector
+    property variant nearbyStations
 
     function refresh() {
         realtimeResult.refresh()
+    }
+
+    function fillNearbyStations(lat, lon) {
+        nearbyStations = itip.get_nearby_stations(lat, lon)
+    }
+
+    function showNearby() {
+        console.log("show nearby")
+
+        var stations = nearbyStations
+        stationSelectorModel.clear()
+        for (var idx in stations) {
+            stationSelectorModel.append({'name': stations[idx]})
+        }
+
+        stationSelector.open()
+    }
+
+    PositionSource {
+        id: positionSource
+        updateInterval: 10000
+
+        active: true
+
+        onPositionChanged: {
+            fillNearbyStations(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude)
+        }
     }
 
     SelectionDialog {
@@ -45,23 +75,16 @@ Page {
 
         model: ListModel {
             id: stationSelectorModel
-
-            Component.onCompleted: {
-                var stations = itip.get_nearby_stations(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude)
-
-                for (var idx in stations) {
-                    stationSelectorModel.append({'name': stations[idx]})
-                }
-            }
         }
 
-        // XXX It would be nice if we could make a delegate with
-        // icons (i.e. U1, U2, ... in the right colors), but we
-        // would have to "copy" the default delegate style
-
         onAccepted: {
-            console.log('accepted: ' + lineSelectorModel.get(selectedIndex).name)
-            //gline.text = lineSelectorModel.get(selectedIndex).name
+            realtimeResult.isStation = true
+            realtimeResult.gstation = stationSelectorModel.get(selectedIndex).name
+            realtimeResult.gline = ''
+            realtimeResult.sourceUrl = ''
+            gline.text = ''
+            gstation.text = stationSelectorModel.get(selectedIndex).name
+            console.log('station to get: ' + realtimeResult.gstation)
         }
     }
 
@@ -83,12 +106,12 @@ Page {
             // set selectedIndex in lineSelector to the right item
             gstation.text = ''
 
-            if (lineSelector.selectedIndex == -1) {
+            if (lineSelector.selectedIndex === -1) {
                 return
             }
 
             // Disable selection in line selector if user changes the text
-            if (lineSelectorModel.get(lineSelector.selectedIndex).name != text) {
+            if (lineSelectorModel.get(lineSelector.selectedIndex).name !== text) {
                 lineSelector.selectedIndex = -1
             }
         }
@@ -153,7 +176,7 @@ Page {
 
         Behavior on opacity { PropertyAnimation { } }
 
-        opacity: gline.text != '' // XXX: Check if the line is valid
+        opacity: gline.text !== '' // XXX: Check if the line is valid
 
         width: lineSearchButton.width * opacity
         //iconSource: 'image://theme/icon-m-common-location-picker'

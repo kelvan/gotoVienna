@@ -13,16 +13,27 @@ Item {
 
     property string sourceUrl: ''
     property bool busy: true
+    property bool isStation: false
 
     function refresh() {
         busy = true
-        itip.load_departures(sourceUrl)
         console.log('refreshing')
+
+        if (isStation) {
+            console.log('station based')
+            itip.load_station_departures(gstation)
+        } else {
+            console.log('one line')
+            itip.load_departures(sourceUrl)
+        }
     }
 
-    onSourceUrlChanged: {
+    function isCorrectInput () {
+        return resultRealtime.sourceUrl != '' || (resultRealtime.isStation && resultRealtime.gstation != '')
+    }
+
+    onGstationChanged: {
         refresh()
-        console.log('source url changed: ' + sourceUrl)
     }
 
     Connections {
@@ -35,7 +46,7 @@ Item {
             var departures = itip.get_departures()
 
             for (var d in departures) {
-                //console.log('time: ' + departures[d].time)
+                console.log('time: ' + departures[d].time)
                 var row = {'line': departures[d].line, 'station': departures[d].station, 'destination': departures[d].direction, 'departure': departures[d].time, 'lowfloor': departures[d].lowfloor}
                 departuresModel.append(row)
             }
@@ -159,7 +170,7 @@ Item {
         }
         delegate: departureDelegate
 
-        visible: !resultRealtime.busy && resultRealtime.sourceUrl != ''
+        visible: !resultRealtime.busy && isCorrectInput()
     }
 
     ScrollDecorator {
@@ -170,7 +181,7 @@ Item {
 
     BusyIndicator {
         id: busyIndicator
-        visible: resultRealtime.busy && resultRealtime.sourceUrl != ''
+        visible: resultRealtime.busy && isCorrectInput()
         running: visible
         platformStyle: BusyIndicatorStyle { size: 'large' }
         anchors.centerIn: parent

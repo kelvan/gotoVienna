@@ -55,7 +55,8 @@ PageStackWindow {
                 onClicked: {
                     //console.debug(itip.get_nearby_stations(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude))
                     //debugText.text = itip.get_nearby_stations(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude)
-                    itip.load_nearby_departures(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude)
+                    //itip.load_nearby_departures(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude)
+                    mainPage.showNearby()
                 }
             }
         }
