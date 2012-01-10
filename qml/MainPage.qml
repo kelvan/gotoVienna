@@ -107,6 +107,7 @@ Page {
             gstation.text = ''
 
             if (lineSelector.selectedIndex === -1) {
+                text = text.toUpperCase()
                 return
             }
 
