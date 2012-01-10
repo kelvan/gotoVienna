@@ -57,6 +57,8 @@ Page {
             // set selectedIndex in lineSelector to the right item
             gstation.text = ''
 
+            text = text.toUpperCase()
+
             if (lineSelector.selectedIndex == -1) {
                 return
             }
