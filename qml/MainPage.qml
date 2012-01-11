@@ -44,32 +44,6 @@ Page {
     }
 
     SelectionDialog {
-        id: lineSelector
-        titleText: 'Select line'
-
-        model: ListModel {
-            id: lineSelectorModel
-
-            Component.onCompleted: {
-                var lines = itip.get_lines()
-
-                for (var idx in lines) {
-                    lineSelectorModel.append({'name': lines[idx]})
-                }
-            }
-        }
-
-        // XXX It would be nice if we could make a delegate with
-        // icons (i.e. U1, U2, ... in the right colors), but we
-        // would have to "copy" the default delegate style
-
-        onAccepted: {
-            console.log('accepted: ' + selectedIndex)
-            gline.text = lineSelectorModel.get(selectedIndex).name
-        }
-    }
-
-    SelectionDialog {
         id: stationSelector
         titleText: 'Select nearby station'
 
@@ -102,18 +76,11 @@ Page {
         }
 
         onTextChanged: {
-            // TODO: Check if text matches an item in lineSelectorModel and
-            // set selectedIndex in lineSelector to the right item
             gstation.text = ''
 
             if (lineSelector.selectedIndex === -1) {
                 text = text.toUpperCase()
                 return
-            }
-
-            // Disable selection in line selector if user changes the text
-            if (lineSelectorModel.get(lineSelector.selectedIndex).name !== text) {
-                lineSelector.selectedIndex = -1
             }
         }
 
@@ -126,10 +93,10 @@ Page {
          }
     }
 
-    /*
     LineSheet {
         id: lineSheet
-    }*/
+        onAccepted: gline.text = currentLine
+    }
 
     Button {
         id: lineSearchButton
@@ -144,7 +111,7 @@ Page {
         width: 60
         iconSource: 'image://theme/icon-m-common-search'
 
-        onClicked: lineSelector.open()
+        onClicked: lineSheet.open()
     }
 
     TextField {
