@@ -12,10 +12,10 @@ $ python -m gotovienna.tests.runner
 
 To build the package with aegis tokens (install python-stdeb first):
 
-$ python setup.py --command-packages=stdeb.command sdist_dsc
-$ cp gotovienna.aegis deb_dist/gotovienna-*/debian/
-$ cd deb_dist/gotovienna-*/
-$ dpkg-buildpackage -rfakeroot -S
+ python setup.py --command-packages=stdeb.command sdist_dsc
+ cp gotovienna.aegis deb_dist/gotovienna-*/debian/
+ cd deb_dist/gotovienna-*/
+ dpkg-buildpackage -rfakeroot -S
 
 Upload the resulting source package to the OBS or build in Scratchbox.
 
