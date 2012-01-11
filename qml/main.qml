@@ -32,6 +32,13 @@ PageStackWindow {
 
     ToolBarLayout {
         id: commonTools
+
+        ToolIcon {
+            platformIconId: 'icon-m-toolbar-search'
+            anchors.left: parent.left
+            onClicked: mainPage.search()
+        }
+
         ToolIcon {
             platformIconId: "toolbar-view-menu"
             anchors.right: parent.right
@@ -43,17 +50,6 @@ PageStackWindow {
               platformIconId: 'icon-m-toolbar-refresh'
               anchors.centerIn: parent
               onClicked: mainPage.refresh()
-        }
-
-        Image {
-            id: logo
-            source: 'logo.png'
-
-            anchors {
-                verticalCenter: parent.verticalCenter
-                left: parent.left
-                leftMargin: 10
-            }
         }
 
         Text {

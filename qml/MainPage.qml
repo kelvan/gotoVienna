@@ -12,6 +12,10 @@ Page {
     //property alias stationSelect: stationSelector
     property variant nearbyStations
 
+    function search() {
+        lineSearchButton.clicked()
+    }
+
     function refresh() {
         realtimeResult.refresh()
     }
@@ -30,6 +34,47 @@ Page {
         }
 
         stationSelector.open()
+    }
+
+    Text {
+        visible: !parent.canRefresh
+        anchors.centerIn: parent
+        font.pixelSize: 30
+        text: '<p><strong>Welcome, traveller!<br></strong></p><p>Press <img src="image://theme/icon-m-toolbar-search"> to search for<br>departure information.</p><p>Press <img src="image://theme/icon-m-toolbar-view-menu"> for nearby stations.<br></p><p><strong>Have a safe journey.</strong></p>'
+    }
+
+    Rectangle {
+        id: header
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+            margins: -1
+        }
+        border {
+            color: 'black'
+            width: 1
+        }
+
+        gradient: Gradient {
+            GradientStop { position: 0; color: '#777' }
+            GradientStop { position: 1; color: '#aaa' }
+        }
+
+        height: 80
+        color: 'white'
+
+        Image {
+            id: logo
+            source: 'logo.png'
+
+            anchors {
+                verticalCenter: parent.verticalCenter
+                left: parent.left
+                leftMargin: 10
+            }
+        }
+
     }
 
     PositionSource {
@@ -63,6 +108,7 @@ Page {
     }
 
     TextField {
+        visible: false
         placeholderText: 'Line'
 
         id: gline
@@ -100,6 +146,7 @@ Page {
 
     Button {
         id: lineSearchButton
+        visible: false
 
         anchors {
             top: gline.top
@@ -120,6 +167,7 @@ Page {
     TextField {
         placeholderText: 'Station'
         id: gstation
+        visible: false
 
         anchors {
             top: gline.bottom
@@ -133,6 +181,19 @@ Page {
 
     StationSheet {
         id: stationSheet
+        onAccepted: {
+            gstation.text = stationSheet.currentStation
+
+            realtimeResult.gline = stationSheet.currentLine
+            realtimeResult.gstation = stationSheet.currentStation
+            realtimeResult.gdirection = stationSheet.currentDirection
+            realtimeResult.isStation = false
+
+            realtimeResult.sourceUrl = itip.get_directions_url(stationSheet.currentLine, stationSheet.currentDirection, stationSheet.currentStation)
+            console.log('url to get: ' + realtimeResult.sourceUrl)
+            realtimeResult.refresh()
+
+        }
     }
 
     Button {
@@ -145,9 +206,7 @@ Page {
             rightMargin: 10
         }
 
-        Behavior on opacity { PropertyAnimation { } }
-
-        opacity: gline.text !== '' // XXX: Check if the line is valid
+        visible: false
 
         width: lineSearchButton.width * opacity
         //iconSource: 'image://theme/icon-m-common-location-picker'
@@ -164,7 +223,7 @@ Page {
 
         anchors {
             margins: 10
-            top: gstation.bottom
+            top: header.bottom
             left: parent.left
             bottom: parent.bottom
             right: parent.right
