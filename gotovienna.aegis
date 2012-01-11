@@ -1,0 +1,6 @@
+<aegis>
+  <request>
+    <credential name="Location" />
+    <for path="/usr/bin/gotovienna-qml" />
+  </request>
+</aegis>
