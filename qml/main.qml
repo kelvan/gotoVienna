@@ -6,9 +6,21 @@ PageStackWindow {
     id: appWindow
 
     initialPage: mainPage
+    showToolBar: aboutBox.opacity == 0
 
     MainPage {
         id: mainPage
+
+        AboutBox {
+            id: aboutBox
+            anchors.fill: parent
+
+            appName: aboutInfo.getAppName()
+            websiteURL: aboutInfo.getWebsiteURL()
+            copyright: aboutInfo.getCopyright()
+            license: aboutInfo.getLicense()
+            iconFilename: 'gotovienna-about-logo.png'
+        }
     }
 
     PositionSource {
@@ -20,22 +32,16 @@ PageStackWindow {
 
     ToolBarLayout {
         id: commonTools
-        visible: true
-        /*ToolIcon {
-            platformIconId: "toolbar-view-menu"
-            anchors.right: (parent === undefined) ? undefined : parent.right
-            onClicked: (menu.status == DialogStatus.Closed) ? menu.open() : menu.close()
-        }*/
         ToolIcon {
-              enabled: mainPage.canRefresh
-              platformIconId: enabled ? 'icon-m-toolbar-refresh' : 'icon-m-toolbar-refresh-dimmed'
-              anchors.right: parent.right
-              onClicked: mainPage.refresh()
+            platformIconId: "toolbar-view-menu"
+            anchors.right: parent.right
+            onClicked: menu.open()
         }
 
         ToolIcon {
-              platformIconId: enabled ? 'icon-m-toolbar-refresh' : 'icon-m-toolbar-refresh-dimmed'
-              anchors.right: parent.right
+              visible: mainPage.canRefresh
+              platformIconId: 'icon-m-toolbar-refresh'
+              anchors.centerIn: parent
               onClicked: mainPage.refresh()
         }
 
@@ -44,20 +50,9 @@ PageStackWindow {
             source: 'logo.png'
 
             anchors {
-                bottomMargin: 10
-                bottom: parent.bottom
+                verticalCenter: parent.verticalCenter
                 left: parent.left
                 leftMargin: 10
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    //console.debug(itip.get_nearby_stations(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude))
-                    //debugText.text = itip.get_nearby_stations(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude)
-                    //itip.load_nearby_departures(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude)
-                    mainPage.showNearby()
-                }
             }
         }
 
@@ -76,11 +71,18 @@ PageStackWindow {
         }
     }
 
-    /*Menu {
+    Menu {
         id: menu
-        visualParent: pageStack
+
         MenuLayout {
-            MenuItem { text: "Test"; onClicked: pageStack.push(Qt.resolvedUrl("test.qml")) }
+            MenuItem {
+                text: 'Nearby stations'
+                onClicked: mainPage.showNearby()
+            }
+            MenuItem {
+                text: 'About gotoVienna'
+                onClicked: aboutBox.show()
+            }
         }
-    }*/
+    }
 }

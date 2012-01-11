@@ -4,7 +4,7 @@
 
 __author__ = 'kelvan <kelvan@logic.at>'
 __version__ = '0.9.0'
-__website__ = 'https://github.com/kelvan/gotoVienna/'
+__website__ = 'http://tinyurl.com/gotoVienna'
 __license__ = 'GNU General Public License v3 or later'
 
 from datetime import datetime
@@ -22,6 +22,26 @@ import os
 import sys
 import threading
 from datetime import time
+
+class AboutInfo(QObject):
+    def __init__(self):
+        QObject.__init__(self)
+
+    @Slot(result=unicode)
+    def getAppName(self):
+        return u'gotoVienna %s' % __version__
+
+    @Slot(result=unicode)
+    def getWebsiteURL(self):
+        return __website__
+
+    @Slot(result=unicode)
+    def getCopyright(self):
+        return 'Copyright 2011, 2012 %s' % __author__
+
+    @Slot(result=unicode)
+    def getLicense(self):
+        return __license__
 
 class GotoViennaListModel(QAbstractListModel):
     def __init__(self, objects=None):
@@ -191,12 +211,15 @@ if __name__ == '__main__':
 
     view = QDeclarativeView()
 
+    aboutInfo = AboutInfo()
+
     # instantiate the Python object
     itip = Gui()
 
     # expose the object to QML
     context = view.rootContext()
     context.setContextProperty('itip', itip)
+    context.setContextProperty('aboutInfo', aboutInfo)
 
     if os.path.abspath(__file__).startswith('/usr/bin/'):
         # Assume system-wide installation, QML from /usr/share/
