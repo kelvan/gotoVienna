@@ -1,5 +1,6 @@
 
 import QtQuick 1.0
+import QtMobility.feedback 1.1
 
 Rectangle {
     id: linePad
@@ -33,6 +34,22 @@ Rectangle {
 
     height: 800
     width: 480
+
+     HapticsEffect {
+         id: buttonFeedback
+
+         /**
+          * Ideally we would use ThemeEffect here,
+          * but on Harmattan it has no effect (sic)
+          **/
+
+         attackIntensity: 0.5
+         attackTime: 100
+         intensity: 1.0
+         duration: 50
+         fadeTime: 0
+         fadeIntensity: 0.0
+     }
 
     Text {
         id: inputLine
@@ -72,7 +89,10 @@ Rectangle {
                     fill: parent
                     margins: -(inputLine.height - height)/2
                 }
-                onClicked: inputLine.text = ''
+                onClicked: {
+                    buttonFeedback.start()
+                    inputLine.text = ''
+                }
             }
         }
     }
@@ -143,6 +163,7 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
+                    buttonFeedback.start()
                     inputLine.text += modelData
                 }
             }

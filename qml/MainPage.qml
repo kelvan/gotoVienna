@@ -77,11 +77,6 @@ Page {
 
         onTextChanged: {
             gstation.text = ''
-
-            if (lineSelector.selectedIndex === -1) {
-                text = text.toUpperCase()
-                return
-            }
         }
 
          MouseArea {
@@ -95,7 +90,12 @@ Page {
 
     LineSheet {
         id: lineSheet
-        onAccepted: gline.text = currentLine
+        onAccepted: {
+            gline.text = currentLine
+
+            /* We usually want to select a station after selecting a line */
+            stationPickerButton.clicked()
+        }
     }
 
     Button {
@@ -111,7 +111,10 @@ Page {
         width: 60
         iconSource: 'image://theme/icon-m-common-search'
 
-        onClicked: lineSheet.open()
+        onClicked: {
+            lineSheet.currentLine = ''
+            lineSheet.open()
+        }
     }
 
     TextField {
