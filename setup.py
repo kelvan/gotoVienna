@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from bdist_hdeb import bdist_hdeb
 from distutils.core import setup
 
 import re
@@ -36,7 +37,8 @@ DATA_FILES = [
         ('share/gotovienna/qml', glob.glob('qml/*')),
 ]
 
-setup(name=PACKAGE,
+setup(cmdclass={'bdist_hdeb': bdist_hdeb},
+      name=PACKAGE,
       version=VERSION,
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
