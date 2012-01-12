@@ -40,11 +40,11 @@ class bdist_hdeb(Command):
         
         # inject aegis manifest into .deb
         if self.aegis_manifest is not None:
-	  DEBNAME = self.distribution.get_name()+'_'+self.distribution.get_version()+'*_all.deb'
-	  copy(self.aegis_manifest, target_dir+'/_aegis')
-	  rules = open(target_dir+'/debian/rules', 'a')
-	  rules.write('override_dh_builddeb:\n\tdh_builddeb\n\tar q ../'+DEBNAME+' _aegis\n\n')
-	  rules.close()
+            DEBNAME = self.distribution.get_name()+'_'+self.distribution.get_version()+'*_all.deb'
+            copy(self.aegis_manifest, target_dir+'/_aegis')
+            rules = open(target_dir+'/debian/rules', 'a')
+            rules.write('override_dh_builddeb:\n\tdh_builddeb\n\tar q ../'+DEBNAME+' _aegis\n\n')
+            rules.close()
 
         # define system command to execute (gen .deb binary pkg)
         syscmd = ['dpkg-buildpackage','-rfakeroot','-uc','-b']
