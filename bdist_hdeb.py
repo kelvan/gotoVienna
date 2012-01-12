@@ -38,14 +38,21 @@ class bdist_hdeb(Command):
         if target_dir is None:
             raise ValueError('could not find debian source directory')        
         
-        # inject aegis manifest into .deb
+        # inject custom logic to dh_builddeb (build digsigsums before and add aegis manifest after)
+        DEBNAME = self.distribution.get_name()+'_'+self.distribution.get_version()+'*_all.deb'
+        rules = open(target_dir+'/debian/rules', 'a')
+        rules.write('override_dh_builddeb:\n\tpython ../../digsigsums.py '+self.distribution.get_name()+\
+        '\n\tdh_builddeb')
         if self.aegis_manifest is not None:
-            DEBNAME = self.distribution.get_name()+'_'+self.distribution.get_version()+'*_all.deb'
-            copy(self.aegis_manifest, target_dir+'/_aegis')
-            rules = open(target_dir+'/debian/rules', 'a')
-            rules.write('override_dh_builddeb:\n\tdh_builddeb\n\tar q ../'+DEBNAME+' _aegis\n\n')
-            rules.close()
+            rules.write('\n\tar q ../'+DEBNAME+' _aegis')
+        
+        rules.write('\n\n')
+        rules.close()
 
+        # make aegies manifest avaiable to debian/rules
+        if self.aegis_manifest is not None:
+            copy(self.aegis_manifest, target_dir+'/_aegis')
+        
         # define system command to execute (gen .deb binary pkg)
         syscmd = ['dpkg-buildpackage','-rfakeroot','-uc','-b']
 
