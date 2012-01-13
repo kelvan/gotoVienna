@@ -20,7 +20,7 @@ def hash_file(filePath, packageName):
     # S 15 com.nokia.maemo H 40 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx R 5 abcde
     # Source (might change) hash (sha1)                                 relative path
     if '/DEBIAN/' in filePath:
-        relativepath = 'var/lib/dpkg/info/{0}.{1}'.format(packageName, filePath[17+len(packageName):])
+        relativepath = 'var/lib/dpkg/info/{0}.{1}'.format(packageName, filePath[15+len(packageName):])
     else:
         relativepath = filePath[8+len(packageName):]        
         
