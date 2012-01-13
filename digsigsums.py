@@ -19,7 +19,11 @@ def hash_file(filePath, packageName):
     # digsigsums format:
     # S 15 com.nokia.maemo H 40 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx R 5 abcde
     # Source (might change) hash (sha1)                                 relative path
-    relativepath = filePath[8+len(packageName):]
+    if '/DEBIAN/' in filePath:
+        relativepath = 'var/lib/dpkg/info/{0}.{1}'.format(packageName, filePath[17+len(packageName):])
+    else:
+        relativepath = filePath[8+len(packageName):]        
+        
     fileToHash = open (filePath, 'rb')
     sha1 = hashlib.sha1()
     sha1.update(fileToHash.read())
