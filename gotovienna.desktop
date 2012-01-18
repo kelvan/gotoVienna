@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=gotoVienna
-Exec=invoker --single-instance --type=e /usr/bin/gotovienna-qml
+Exec=invoker -S /usr/share/gotovienna/splash.png -L /usr/share/gotovienna/splashlandscape.png --single-instance --type=e /usr/bin/gotovienna-qml
 Icon=/usr/share/gotovienna/gotovienna_qml80.png
 Terminal=false
 Type=Application
