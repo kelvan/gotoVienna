@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="de" lang="de">
+<head>
+<title>Wiener Linien | Fahrplanauskunft</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="de" />
+<meta name="author" content="http://www.seeyou.at" />
+<meta name="robots" content="index,follow" />
+<meta name="keywords" content="." />
+<meta name="description" content="." />
+<link href="css/prj.css" rel="stylesheet" type="text/css" />
+<!--[if lte IE 7]><link href="css/iehacks.css" rel="stylesheet" type="text/css" /><![endif]-->
+<link href="css/mdvStyles.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+				var netplanTooltipUsage;
+			
+			var mapLanguage =		'de';
+			var setOrigin = 				'Route von hier';
+			var setDestination = 		'Route hierher';
+			var setMyLocation = 		'Mein Punkt';
+			var mapOrigin = 			'Gewählter Startpunkt aus Karte';
+			var mapDestination = 	'Gewählter Zielpunkt aus Karte';
+			var mapMyLocation = 	'Mein Punkt aus Karte';
+			var goNorth =					'Norden';
+			var goEast =					'Osten';
+			var goSouth =				'Süden';
+			var goWest =					'Westen';
+			var lastResult =				'Letztes Ergebnis';
+			var zoomIn =					'Vergrößern';
+			var zoomOut =				'Verkleinern';
+			var openMap = 				'Karte';
+			var closeMap = 				'Karte schließen';
+			var openNetplan = 			'Netzplan';
+			var closeNetplan = 		'Netzplan schließen';
+												
+			
+			var openDMBubble = 		'';
+		</script>
+<script type="text/javascript" src="//styles.wienerstadtwerke.at/mastertemplate/js/jquery/jquery.js"> </script>
+<script type="text/javascript" src="//styles.wienerstadtwerke.at/mastertemplate/js/utilities.js"> </script>
+<script type="text/javascript" src="script/odvSuggest.js"> </script>
+<script type="text/javascript" src="script/mdvScript.js"> </script>
+<script type="text/javascript" src="script/mdvMapHandler.js"> </script></head>
+<body class="efapage formlayout hideright" onload="setFocus();">
+<div id="page_margins">
+<input type="hidden" name="itdLPxx_EFA" id="itdLPxx_EFA" value="true" />
+<div id="page">
+<div id="header">
+<div style="line-height:0px;hight:0px;font-size:0px;"><a id="pagetop" name="pagetop" style="text-decoration:none;"> </a></div>
+<div id="topnav" class="clearfix">
+<a class="skip" href="#navigation" title="Zur Navigation springen">Zur Navigation springen</a>
+<span class="hideme">.</span>
+<a class="skip" href="#content" title="Zum Inhalt springen">Zum Inhalt springen</a>
+<span class="hideme">.</span>
+<div id="topnav_left" class="pagemargin_left">
+<a href="http://www.wienerlinien.at" class="text extlink" target="_blank" title="Neues Fenster: Wiener Linien">
+<strong>Zur Startseite Wiener Linien</strong>
+</a>
+</div>
+<div id="topnav_content">
+<script type="text/javascript">write3A('Schrift kleiner','Schrift normal','Schrift größer');</script>
+<a href="XSLT_TRIP_REQUEST2?language=en" title="English">English</a>
+</div>
+</div>
+<div id="head">
+<div id="head_content" class="clearfix">
+<div id="logo">
+<a href="http://www.wienerlinien.at" title="Startseite Fahrplanauskunft Wiener Linien">
+<img src="img/wl_logo.gif" alt="Startseite Fahrplanauskunft Wiener Linien" />
+</a>
+</div>
+<div id="sitetitle">
+<div class="title">Fahrplanauskunft</div>
+</div>
+</div>
+</div>
+</div>
+<div id="nav" class="navbar"><span style="font-size:0px;height:0px;line-height:0px;"> </span></div>
+<div id="main">
+<div id="col1">
+<div id="col1_content" class="clearfix">
+<div style="line-height:0px;hight:0px;font-size:0px;"><a id="navigation" name="navigation"> </a></div>
+<div id="submenu">
+<div class="image">
+<img src="img/navi_bild_efa_186x60.jpg" alt="Fahrplanauskunft-Subnavi" />
+</div>
+<div class="title">Fahrplan</div>
+<ul>
+<li class="&#xA;										active nosub&#xA;									">
+<a href="XSLT_TRIP_REQUEST2?language=de&amp;itdLPxx_locationServerActive=true">Auskunft</a>
+</li>
+<li>
+<a href="XSLT_PS_REQUEST2?language=de&amp;itdLPxx_locationServerActive=true">Pers. Fahrplan</a>
+</li>
+<li>
+<a href="XSLT_DM_REQUEST?language=de&amp;itdLPxx_locationServerActive=true">Abfahrtsmonitor</a>
+</li>
+<li>
+<a href="http://www03.vor.at:8380/vorrbl/XSLT_DM_REQUEST?language=de&amp;itdLPxx_locationServerActive=true" target="_blank">Echtzeitanzeige</a>
+</li>
+<li>
+<a href="XSLT_PROFILE_LOGIN_REQUEST?language=de&amp;itdLPxx_locationServerActive=true">Meine Route - Anmeldung</a>
+</li>
+<li>
+<a href="XSLT_PROFILE_REQUEST?language=de&amp;itdLPxx_locationServerActive=true">Meine Route - Einstellungen</a>
+</li>
+<li>
+<a href="XSLT_PROFILE_LOGOFF_REQUEST?language=de&amp;itdLPxx_locationServerActive=true">Meine Route - Abmeldung</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="col2">
+<div id="col2_content" class="clearfix"> </div>
+</div>
+<div id="col3">
+<div id="col3_content" class="clearfix">
+<div style="line-height:0px;hight:0px;font-size:0px;"><a id="content" name="content" style="text-decoration:none;"> </a></div>
+<div id="pagebar" class="floatbox">
+<div class="icons">
+<span class="help">
+<a href="hilfe.html" class="tooltipIframe" target="_blank" rel="#ihelp" title="Hilfe: ...">Hilfe</a>
+</span>
+</div>
+<span class="separator">|</span>
+<div class="icons">
+<script type="text/javascript">
+					writePrintLink('','Seite drucken');
+				</script>
+</div>
+<h1>Auskunft</h1>
+</div>
+<script type="text/javascript">
+			document.write('<div id="ihelp" class="ttContainer"><iframe src="hilfe.html" width="100%" height="400" name="ihelp" frameborder="0"></iframe></div>');
+		</script>
+<form action="XSLT_TRIP_REQUEST2?" method="post" class="form_standard" id="form_fahrplanauskunft" name="form_fahrplanauskunft">
+<input type="hidden" name="language" value="de" />
+<input type="hidden" name="sessionID" id="sessionID" value="WWW051948172500" />
+<input type="hidden" name="requestID" id="requestID" value="1" />
+<input type="hidden" name="execInst" id="execInst" value="normal" />
+<input type="hidden" name="command" id="command" value="" />
+<input type="hidden" name="anySigWhenPerfectNoOtherMatches" value="1" />
+<input type="hidden" name="itdLPxx_locationServerActive" value="true" />
+<input type="hidden" name="locationServerActive" value="1" />
+<div class="form_container"><input type="hidden" name="type_origin" id="type_origin" value="any" /><input type="hidden" name="typeInfo_origin" id="typeInfo_origin" value="invalid" /><fieldset class="clearfix"><legend>Start</legend><div class="fields clearfix"><div class="form_error"><div class="form_error_content"><div class="error">Bitte korrigieren Sie folgende Eingaben:</div><ul><li>Es wurden 2 Treffer gefunden - bitte einen auswählen!</li></ul></div></div><input type="hidden" name="type_origin" id="type_origin" value="any" /><span class="radioset"><label for="nameIdientified_origin">Haltestelle</label></span><br /><div class="clear"> </div><input type="hidden" name="nameState_origin" value="list" /><input type="hidden" name="nameInfo_origin" id="nameInfo_origin" value="invalid" /><input type="hidden" name="anyType_origin" id="anyType_origin" value="stop" /><div style="whitespace:nowrap;"><select name="name_origin" id="nameList_origin" class="text list" onkeypress="checkReturnKey(event);" onchange="mapSynchronisation(this, 'origin');"><option value="0:1" selected="selected">Karlsplatz, Wien [Haltestelle] </option><option value="1:2">Karlsplatz/Oper, Wien [Haltestelle] </option></select><script type="text/javascript"><!--
+							if (document.getElementById('itdLPxx_EFA'))
+								document.write("<a title=\"Karte einblenden\" class=\"iconlink map tooltipIframe\" rel=\"#map1\" onclick=\"odvMapRequest.mapUsage=\'origin\';odvMapRequest.mapType=\'any\';var state=\'list\';vorcheckMDV(\'map1\', \'start\',\'XSLT_MAP_REQUEST?language=de&itdLPxx_usage=origin&mapName=TEL5&createImage=0&pinTypeStop=0&pinTypePOI=0&xCenterReal=5602053&yCenterReal=817032&zoomLevel=3&omc=49000000&placeID=50&amp;itdLPxx_EFA=true')\">Karte</a>");
+							else 
+								document.write("<a title=\"Karte einblenden\" class=\"iconlink map tooltipIframe\" rel=\"#map1\" onclick=\"vorcheck(\'map1\', \'start\',\'XSLT_TRIP_REQUEST2?language=de&sessionID=0&requestID=0&itdLPxx_usage=origin&itdLPxx_map=true', 'http://www.wienerlinien.at/wl/ep/map_close.jsp')\">Karte</a>");
+							document.write("<div id=\"map1\" class=\"ttContainer\"><iframe src=\"\" width=\"100%\" height=\"525\" name=\"Karte1\" frameborder=\"0\"></iframe></div>");
+						--></script><script type="text/javascript"><!--
+							document.write("<a title=\"Netzplan einblenden\" class=\"iconlink traffic tooltipIframe\" rel=\"#plan1\" onclick=\"netplanTooltipUsage=\'origin\';vorcheckMDV(\'plan1\',\'start\',\'standalone_netplanJS_de.html\')\">Netzplan</a>");
+							document.write("<div id=\"plan1\" class=\"ttContainer\"><iframe src=\"\" width=\"100%\" height=\"600\" name=\"Netzplan\" frameborder=\"0\"></iframe></div>");
+						--></script></div></div></fieldset><input type="hidden" name="type_destination" id="type_destination" value="any" /><input type="hidden" name="typeInfo_destination" id="typeInfo_destination" value="invalid" /><fieldset class="clearfix"><legend>Ziel</legend><div class="fields clearfix"><div class="form_error"><div class="form_error_content"><div class="error">Bitte korrigieren Sie folgende Eingaben:</div><ul><li>Es wurden 3 Treffer gefunden - bitte einen auswählen!</li></ul></div></div><input type="hidden" name="type_destination" id="type_destination" value="any" /><span class="radioset"><label for="nameIdientified_destination">Haltestelle</label></span><br /><div class="clear"> </div><input type="hidden" name="nameState_destination" value="list" /><input type="hidden" name="nameInfo_destination" id="nameInfo_destination" value="invalid" /><input type="hidden" name="anyType_destination" id="anyType_destination" value="stop" /><div style="whitespace:nowrap;"><select name="name_destination" id="nameList_destination" class="text list" onkeypress="checkReturnKey(event);" onchange="mapSynchronisation(this, 'destination');"><option value="0:1" selected="selected">Simmering, Wien [Haltestelle] </option><option value="2:3">Simmering S+U/Kaiserebersdf. Str., Wien [Haltestelle] </option><option value="1:2">Simmeringer Haide, Wien [Haltestelle] </option></select><script type="text/javascript"><!--
+							if (document.getElementById('itdLPxx_EFA'))
+								document.write("<a title=\"Karte einblenden\" class=\"iconlink map tooltipIframe\" rel=\"#map1\" onclick=\"odvMapRequest.mapUsage=\'destination\';odvMapRequest.mapType=\'any\';var state=\'list\';vorcheckMDV(\'map1\', \'start\',\'XSLT_MAP_REQUEST?language=de&itdLPxx_usage=destination&mapName=TEL5&createImage=0&pinTypeStop=0&pinTypePOI=0&xCenterReal=5602053&yCenterReal=817032&zoomLevel=3&omc=49000000&placeID=50&amp;itdLPxx_EFA=true')\">Karte</a>");
+							else 
+								document.write("<a title=\"Karte einblenden\" class=\"iconlink map tooltipIframe\" rel=\"#map1\" onclick=\"vorcheck(\'map1\', \'start\',\'XSLT_TRIP_REQUEST2?language=de&sessionID=0&requestID=0&itdLPxx_usage=destination&itdLPxx_map=true', 'http://www.wienerlinien.at/wl/ep/map_close.jsp')\">Karte</a>");
+							document.write("<div id=\"map1\" class=\"ttContainer\"><iframe src=\"\" width=\"100%\" height=\"525\" name=\"Karte1\" frameborder=\"0\"></iframe></div>");
+						--></script><script type="text/javascript"><!--
+							document.write("<a title=\"Netzplan einblenden\" class=\"iconlink traffic tooltipIframe\" rel=\"#plan1\" onclick=\"netplanTooltipUsage=\'destination\';vorcheckMDV(\'plan1\',\'start\',\'standalone_netplanJS_de.html\')\">Netzplan</a>");
+							document.write("<div id=\"plan1\" class=\"ttContainer\"><iframe src=\"\" width=\"100%\" height=\"600\" name=\"Netzplan\" frameborder=\"0\"></iframe></div>");
+						--></script></div></div></fieldset><fieldset class="clearfix"><legend class="legend">Zeit</legend><div class="fields clearfix"><span class="set radioset"><input id="f_zeit_abfahrt" type="radio" name="itdTripDateTimeDepArr" value="dep" checked="checked" /><label for="f_zeit_abfahrt">Abfahrt</label><input id="f_zeit_ankunft" type="radio" name="itdTripDateTimeDepArr" value="arr" /><label for="f_zeit_ankunft">Ankunft</label></span><span class="set inline clearfix"><label for="f_datum">Datum</label><input id="f_datum" type="text" name="itdDateDayMonthYear" class="text date" value="16.12.2011" /><label for="f_uhrzeit">Uhrzeit</label><input id="f_uhrzeit" type="text" name="itdTime" class="text time" value="15:46" /></span></div></fieldset></div><div id="form_buttons"><div id="form_buttons_content"><div class="linkbuttons floatbox"><input type="submit" name="submitbutton" id="submitbutton" class="button next" value="SUCHEN" /><a href="XSLT_TRIP_REQUEST2?language=de&amp;itdLPxx_locationServerActive=true" class="linkbutton" title="Zurücksetzen">ZURÜCKSETZEN</a><a class="linkbutton" href="XSLT_TRIP_REQUEST2?language=de&amp;sessionID=WWW051948172500&amp;requestID=1&amp;execInst=readOnly&amp;itdLPxx_advancedOptions=true&amp;itdLPxx_locationServerActive=true" title="Erweiterte Suche">ERWEITERTE SUCHE 
+								</a></div><div style="clear:both;font-size:0px;line-height:0px;height:0px;"> </div></div></div>
+</form>
+</div>
+<div id="ie_clearing"> </div>
+<div id="contentfooter" class="floatbox noborder">
+<div class="cf1">
+<script type="text/javascript">
+						writePrintLink('Drucken', "Seite drucken");
+					</script>
+</div>
+<div class="cf2">
+<a href="#pagetop" class="toplink" title="Zum Seitenanfang">Top</a>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer_content">© 2008 <a href="http://www.wienerlinien.at" class="extlink" target="_blank" title="Neues Fenster: Wiener Linien">Wiener Linien</a>
+<span class="separator">|</span>Ein Unternehmen der <a href="http://www.wienerstadtwerke.at" class="extlink" target="_blank" title="Neues Fenster: Wiener Stadtwerke">Wiener Stadtwerke</a>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

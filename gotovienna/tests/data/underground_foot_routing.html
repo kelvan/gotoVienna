@@ -1,0 +1,289 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="de" lang="de">
+<head>
+<title>Wiener Linien | Fahrplanauskunft</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="de" />
+<meta name="author" content="http://www.seeyou.at" />
+<meta name="robots" content="index,follow" />
+<meta name="keywords" content="." />
+<meta name="description" content="." />
+<link href="css/prj.css" rel="stylesheet" type="text/css" />
+<!--[if lte IE 7]><link href="css/iehacks.css" rel="stylesheet" type="text/css" /><![endif]-->
+<link href="css/mdvStyles.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+				var netplanTooltipUsage;
+			
+			var mapLanguage =		'de';
+			var setOrigin = 				'Route von hier';
+			var setDestination = 		'Route hierher';
+			var setMyLocation = 		'Mein Punkt';
+			var mapOrigin = 			'Gewählter Startpunkt aus Karte';
+			var mapDestination = 	'Gewählter Zielpunkt aus Karte';
+			var mapMyLocation = 	'Mein Punkt aus Karte';
+			var goNorth =					'Norden';
+			var goEast =					'Osten';
+			var goSouth =				'Süden';
+			var goWest =					'Westen';
+			var lastResult =				'Letztes Ergebnis';
+			var zoomIn =					'Vergrößern';
+			var zoomOut =				'Verkleinern';
+			var openMap = 				'Karte';
+			var closeMap = 				'Karte schließen';
+			var openNetplan = 			'Netzplan';
+			var closeNetplan = 		'Netzplan schließen';
+												
+			
+			var openDMBubble = 		'';
+		</script>
+<script type="text/javascript" src="//styles.wienerstadtwerke.at/mastertemplate/js/jquery/jquery.js"> </script>
+<script type="text/javascript" src="//styles.wienerstadtwerke.at/mastertemplate/js/utilities.js"> </script>
+<script type="text/javascript" src="script/odvSuggest.js"> </script>
+<script type="text/javascript" src="script/mdvScript.js"> </script>
+<script type="text/javascript" src="script/mdvMapHandler.js"> </script></head>
+<body class="efapage formlayout hideright" onload="setFocus();">
+<div id="page_margins">
+<input type="hidden" name="itdLPxx_EFA" id="itdLPxx_EFA" value="true" />
+<div id="page">
+<div id="header">
+<div style="line-height:0px;hight:0px;font-size:0px;"><a id="pagetop" name="pagetop" style="text-decoration:none;"> </a></div>
+<div id="topnav" class="clearfix">
+<a class="skip" href="#navigation" title="Zur Navigation springen">Zur Navigation springen</a>
+<span class="hideme">.</span>
+<a class="skip" href="#content" title="Zum Inhalt springen">Zum Inhalt springen</a>
+<span class="hideme">.</span>
+<div id="topnav_left" class="pagemargin_left">
+<a href="http://www.wienerlinien.at" class="text extlink" target="_blank" title="Neues Fenster: Wiener Linien">
+<strong>Zur Startseite Wiener Linien</strong>
+</a>
+</div>
+<div id="topnav_content">
+<script type="text/javascript">write3A('Schrift kleiner','Schrift normal','Schrift größer');</script>
+<a href="XSLT_TRIP_REQUEST2?language=en" title="English">English</a>
+</div>
+</div>
+<div id="head">
+<div id="head_content" class="clearfix">
+<div id="logo">
+<a href="http://www.wienerlinien.at" title="Startseite Fahrplanauskunft Wiener Linien">
+<img src="img/wl_logo.gif" alt="Startseite Fahrplanauskunft Wiener Linien" />
+</a>
+</div>
+<div id="sitetitle">
+<div class="title">Fahrplanauskunft</div>
+</div>
+</div>
+</div>
+</div>
+<div id="nav" class="navbar"><span style="font-size:0px;height:0px;line-height:0px;"> </span></div>
+<div id="main">
+<div id="col1">
+<div id="col1_content" class="clearfix">
+<div style="line-height:0px;hight:0px;font-size:0px;"><a id="navigation" name="navigation"> </a></div>
+<div id="submenu">
+<div class="image">
+<img src="img/navi_bild_efa_186x60.jpg" alt="Fahrplanauskunft-Subnavi" />
+</div>
+<div class="title">Fahrplan</div>
+<ul>
+<li class="&#xA;										active nosub&#xA;									">
+<a href="XSLT_TRIP_REQUEST2?language=de&amp;itdLPxx_locationServerActive=true">Auskunft</a>
+</li>
+<li>
+<a href="XSLT_PS_REQUEST2?language=de&amp;itdLPxx_locationServerActive=true">Pers. Fahrplan</a>
+</li>
+<li>
+<a href="XSLT_DM_REQUEST?language=de&amp;itdLPxx_locationServerActive=true">Abfahrtsmonitor</a>
+</li>
+<li>
+<a href="http://www03.vor.at:8380/vorrbl/XSLT_DM_REQUEST?language=de&amp;itdLPxx_locationServerActive=true" target="_blank">Echtzeitanzeige</a>
+</li>
+<li>
+<a href="XSLT_PROFILE_LOGIN_REQUEST?language=de&amp;itdLPxx_locationServerActive=true">Meine Route - Anmeldung</a>
+</li>
+<li>
+<a href="XSLT_PROFILE_REQUEST?language=de&amp;itdLPxx_locationServerActive=true">Meine Route - Einstellungen</a>
+</li>
+<li>
+<a href="XSLT_PROFILE_LOGOFF_REQUEST?language=de&amp;itdLPxx_locationServerActive=true">Meine Route - Abmeldung</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="col2">
+<div id="col2_content" class="clearfix"> </div>
+</div>
+<div id="col3">
+<div id="col3_content" class="clearfix">
+<div style="line-height:0px;hight:0px;font-size:0px;"><a id="content" name="content" style="text-decoration:none;"> </a></div>
+<div id="pagebar" class="floatbox">
+<div class="icons">
+<span class="help">
+<a href="hilfe.html" class="tooltipIframe" target="_blank" rel="#ihelp" title="Hilfe: ...">Hilfe</a>
+</span>
+</div>
+<span class="separator">|</span>
+<div class="icons">
+<script type="text/javascript">
+					writePrintLink('','Seite drucken');
+				</script>
+</div>
+<h1>Auskunft: Ergebnis</h1>
+</div>
+<script type="text/javascript">
+			document.write('<div id="ihelp" class="ttContainer"><iframe src="hilfe.html" width="100%" height="400" name="ihelp" frameborder="0"></iframe></div>');
+		</script>
+<form action="XSLT_TRIP_REQUEST2?" method="post" class="form_standard" id="form_efaresults" name="form_efaresults">
+<input type="hidden" name="language" value="de" />
+<input type="hidden" name="sessionID" id="sessionID" value="WWW051948265594" />
+<input type="hidden" name="requestID" id="requestID" value="1" />
+<input type="hidden" name="execInst" id="execInst" value="normal" />
+<input type="hidden" name="command" id="command" value="" />
+<input type="hidden" name="anySigWhenPerfectNoOtherMatches" value="1" />
+<input type="hidden" name="itdLPxx_locationServerActive" value="true" />
+<input type="hidden" name="locationServerActive" value="1" />
+<input type="hidden" name="tripSelection" value="on" /><input type="hidden" name="configurationFontSizeNormal" value="1" /><div class="summaryContainer"><div class="summaryLeft"><table summary="Ergebnis: Eingegebene Daten" class="efainputdata"><tr><th>Start</th><td>Stephansplatz, Wien</td></tr><tr><th>Ziel</th><td>Rathausstraße 6, Wien</td></tr><tr><th>Zeit</th><td>Fr, 16.12.2011, 15:46 Uhr</td></tr></table></div><div class="summaryLogo"><a href="http://www.qando.at" target="_blank"><img src="img/qando_banner.gif" alt="" /></a></div><div class="clear"> </div></div><div id="form_buttons"><div id="form_buttons_content"><div class="linkbuttons floatbox"><a href="XSLT_TRIP_REQUEST2?language=de&amp;sessionID=WWW051948265594&amp;requestID=1&amp;command=tripPrev&amp;itdLPxx_locationServerActive=true" id="submitbutton_1" class="linkbutton">FRÜHER</a><a href="XSLT_TRIP_REQUEST2?language=de&amp;sessionID=WWW051948265594&amp;requestID=1&amp;command=tripNext&amp;itdLPxx_locationServerActive=true" id="submitbutton_2" class="linkbutton">SPÄTER</a><a href="XSLT_TRIP_REQUEST2?language=de&amp;sessionID=WWW051948265594&amp;requestID=1&amp;command=tripFirst&amp;itdLPxx_locationServerActive=true" id="submitbutton_3" class="linkbutton">ERSTE FAHRT</a><a href="XSLT_TRIP_REQUEST2?language=de&amp;sessionID=WWW051948265594&amp;requestID=1&amp;command=tripLast&amp;itdLPxx_locationServerActive=true" id="submitbutton_4" class="linkbutton">LETZTE FAHRT</a><a href="XSLT_TRIP_REQUEST2?language=de&amp;sessionID=WWW051948265594&amp;requestID=1&amp;command=tripRetoure&amp;itdLPxx_locationServerActive=true" id="submitbutton_5" class="linkbutton">RÜCKFAHRT</a><a href="XSLT_TRIP_REQUEST2?language=de&amp;sessionID=WWW051948265594&amp;requestID=1&amp;command=changeRequest&amp;itdLPxx_locationServerActive=true" id="submitbutton_6" class="linkbutton next">ÄNDERN</a><a href="XSLT_TRIP_REQUEST2?language=de&amp;itdLPxx_locationServerActive=true" class="linkbutton next">NEUE FAHRT</a></div></div></div><div class="data_table tours"><table class="full" id="tbl_fahrten" summary="Ergebnis: Alle Fahrten"><caption>Preise in EUR inkl. MwSt.</caption><thead><tr><th class="col_chk">Auswahl</th><th class="col_tour">Fahrten</th><th class="col_date">Tag</th><th class="col_time">Zeit</th><th class="col_duration">Dauer</th><th class="col_change">Umsteigen</th><th class="col_price">Preis</th><th class="col_route">Fahrtstrecke</th></tr></thead><tbody><tr class="odd"><td class="col_chk"><input type="checkbox" name="tripSelector1" id="ch_t1" checked="checked" /><label for="ch_t1">1. Fahrt</label></td><td class="col_tour"><a href="#fahrt1" class="navlink" title="1. Fahrt">1. Fahrt</a></td><td class="col_date">16.12.2011</td><td class="col_time">15:44  - 15:54 </td><td class="col_duration">00:10</td><td class="col_change">1</td><td class="col_price"><a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=1&amp;itdLPxx_locationServerActive=true" class="navlink"> 1,8</a> <a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=1&amp;itdLPxx_locationServerActive=true"><img src="img/tarifinformation.gif" alt="Tarifinformation" title="Tarifinformation" /></a></td><td class="col_route"><a href="FILELOAD?Filename=aut_4EEB5A630.pdf" class="navlink" target="_blank" title="1. Fahrt downloaden">PDF</a> <span class="doc_pdf">
+						 
+					</span></td></tr><tr class="even"><td class="col_chk"><input type="checkbox" name="tripSelector2" id="ch_t2" checked="checked" /><label for="ch_t2">2. Fahrt</label></td><td class="col_tour"><a href="#fahrt2" class="navlink" title="2. Fahrt">2. Fahrt</a></td><td class="col_date">16.12.2011</td><td class="col_time">15:44  - 15:59 </td><td class="col_duration">00:15</td><td class="col_change">0</td><td class="col_price"><a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=2&amp;itdLPxx_locationServerActive=true" class="navlink"> 0,9</a> <a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=2&amp;itdLPxx_locationServerActive=true"><img src="img/tarifinformation.gif" alt="Tarifinformation" title="Tarifinformation" /></a></td><td class="col_route"><a href="FILELOAD?Filename=aut_4EEB5A636.pdf" class="navlink" target="_blank" title="2. Fahrt downloaden">PDF</a> <span class="doc_pdf">
+						 
+					</span></td></tr><tr class="odd"><td class="col_chk"><input type="checkbox" name="tripSelector3" id="ch_t3" checked="checked" /><label for="ch_t3">3. Fahrt</label></td><td class="col_tour"><a href="#fahrt3" class="navlink" title="3. Fahrt">3. Fahrt</a></td><td class="col_date">16.12.2011</td><td class="col_time">15:47  - 15:59 </td><td class="col_duration">00:12</td><td class="col_change">1</td><td class="col_price"><a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=3&amp;itdLPxx_locationServerActive=true" class="navlink"> 1,8</a> <a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=3&amp;itdLPxx_locationServerActive=true"><img src="img/tarifinformation.gif" alt="Tarifinformation" title="Tarifinformation" /></a></td><td class="col_route"><a href="FILELOAD?Filename=aut_4EEB5A630.pdf" class="navlink" target="_blank" title="3. Fahrt downloaden">PDF</a> <span class="doc_pdf">
+						 
+					</span></td></tr><tr class="even"><td class="col_chk"><input type="checkbox" name="tripSelector4" id="ch_t4" checked="checked" /><label for="ch_t4">4. Fahrt</label></td><td class="col_tour"><a href="#fahrt4" class="navlink" title="4. Fahrt">4. Fahrt</a></td><td class="col_date">16.12.2011</td><td class="col_time">15:47  - 16:02 </td><td class="col_duration">00:15</td><td class="col_change">0</td><td class="col_price"><a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=4&amp;itdLPxx_locationServerActive=true" class="navlink"> 0,9</a> <a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=4&amp;itdLPxx_locationServerActive=true"><img src="img/tarifinformation.gif" alt="Tarifinformation" title="Tarifinformation" /></a></td><td class="col_route"><a href="FILELOAD?Filename=aut_4EEB5A636.pdf" class="navlink" target="_blank" title="4. Fahrt downloaden">PDF</a> <span class="doc_pdf">
+						 
+					</span></td></tr><tr class="odd"><td class="col_chk"><input type="checkbox" name="tripSelector5" id="ch_t5" checked="checked" /><label for="ch_t5">5. Fahrt</label></td><td class="col_tour"><a href="#fahrt5" class="navlink" title="5. Fahrt">5. Fahrt</a></td><td class="col_date">16.12.2011</td><td class="col_time">15:53  - 16:04 </td><td class="col_duration">00:11</td><td class="col_change">1</td><td class="col_price"><a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=5&amp;itdLPxx_locationServerActive=true" class="navlink"> 1,8</a> <a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=5&amp;itdLPxx_locationServerActive=true"><img src="img/tarifinformation.gif" alt="Tarifinformation" title="Tarifinformation" /></a></td><td class="col_route"><a href="FILELOAD?Filename=aut_4EEB5A630.pdf" class="navlink" target="_blank" title="5. Fahrt downloaden">PDF</a> <span class="doc_pdf">
+						 
+					</span></td></tr><tr class="even"><td class="col_chk"><input type="checkbox" name="tripSelector6" id="ch_t6" checked="checked" /><label for="ch_t6">6. Fahrt</label></td><td class="col_tour"><a href="#fahrt6" class="navlink" title="6. Fahrt">6. Fahrt</a></td><td class="col_date">16.12.2011</td><td class="col_time">15:53  - 16:08 </td><td class="col_duration">00:15</td><td class="col_change">0</td><td class="col_price"><a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=6&amp;itdLPxx_locationServerActive=true" class="navlink"> 0,9</a> <a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=6&amp;itdLPxx_locationServerActive=true"><img src="img/tarifinformation.gif" alt="Tarifinformation" title="Tarifinformation" /></a></td><td class="col_route"><a href="FILELOAD?Filename=aut_4EEB5A636.pdf" class="navlink" target="_blank" title="6. Fahrt downloaden">PDF</a> <span class="doc_pdf">
+						 
+					</span></td></tr><tr class="odd"><td class="col_chk"><input type="checkbox" name="tripSelector7" id="ch_t7" checked="checked" /><label for="ch_t7">7. Fahrt</label></td><td class="col_tour"><a href="#fahrt7" class="navlink" title="7. Fahrt">7. Fahrt</a></td><td class="col_date">16.12.2011</td><td class="col_time">15:59  - 16:09 </td><td class="col_duration">00:10</td><td class="col_change">1</td><td class="col_price"><a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=7&amp;itdLPxx_locationServerActive=true" class="navlink"> 1,8</a> <a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=7&amp;itdLPxx_locationServerActive=true"><img src="img/tarifinformation.gif" alt="Tarifinformation" title="Tarifinformation" /></a></td><td class="col_route"><a href="FILELOAD?Filename=aut_4EEB5A630.pdf" class="navlink" target="_blank" title="7. Fahrt downloaden">PDF</a> <span class="doc_pdf">
+						 
+					</span></td></tr><tr class="even"><td class="col_chk"><input type="checkbox" name="tripSelector8" id="ch_t8" checked="checked" /><label for="ch_t8">8. Fahrt</label></td><td class="col_tour"><a href="#fahrt8" class="navlink" title="8. Fahrt">8. Fahrt</a></td><td class="col_date">16.12.2011</td><td class="col_time">15:59  - 16:14 </td><td class="col_duration">00:15</td><td class="col_change">0</td><td class="col_price"><a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=8&amp;itdLPxx_locationServerActive=true" class="navlink"> 0,9</a> <a href="XSLT_TRIP_REQUEST?language=de&amp;command=nop&amp;sessionID=WWW051948265594&amp;requestID=1&amp;itdLPxx_fareInformation=8&amp;itdLPxx_locationServerActive=true"><img src="img/tarifinformation.gif" alt="Tarifinformation" title="Tarifinformation" /></a></td><td class="col_route"><a href="FILELOAD?Filename=aut_4EEB5A636.pdf" class="navlink" target="_blank" title="8. Fahrt downloaden">PDF</a> <span class="doc_pdf">
+						 
+					</span></td></tr></tbody></table><p class="tfoot"><strong>ausgewählte Fahrten als Übersicht</strong> (<span class="doc_pdf">PDF</span>): <a href="javascript:document.forms[0].configurationFontSizeNormal.value='1';document.forms[0].command.value='printOverview';document.forms[0].submit();" class="navlink">normale Schrift</a> <a href="javascript:document.forms[0].configurationFontSizeNormal.value='0';document.forms[0].command.value='printOverview';document.forms[0].submit();" class="navlink">große Schrift</a></p></div><div class="data_table tourdetail"><div class="info printonly"><span>1. Fahrt: </span> Dauer 00:10</div><table class="full" id="tbl_tour1" summary="1. Fahrt im Detail"><caption class="floatbox dontprint"><span class="download"><a href="javascript:document.forms['print'].command.value='printSingleview:0';document.forms['print'].itdLPxx_view.value='pdf';document.forms['print'].submit();" class="navlink">Fahrt im Detail</a> (<span class="doc_pdf">PDF</span>)</span><span class="info"><a name="fahrt1" id="fahrt1">1. Fahrt: </a> Dauer 00:10</span></caption><thead><tr><th class="col_time">Zeit</th><th class="col_station">Haltestelle</th><th class="col_map">Umgebungsplan</th><th class="col_icons">
+							 
+						</th><th class="col_line">Linie / Weg</th></tr></thead><tbody><tr><td class="col_time">15:44 <br />15:47 <br /></td><td class="col_station">ab Stephansplatz <br />an Volkstheater </td><td class="col_map"><a href="FILELOAD?Filename=aut_4EEB5A631.pdf" class="navlink" target="_blank" title="Umgebungsplan Stephansplatz">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /><a href="FILELOAD?Filename=aut_4EEB5A632.pdf" class="navlink" target="_blank" title="Umgebungsplan Volkstheater">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img class="motImg" src="img/means/u_bahn.gif" alt="U-Bahn" title="U-Bahn" /></td><td class="col_info">U-Bahn U3<br />Ottakring</td></tr><tr><td class="col_time">
+				 
+			</td><td class="col_station">
+				 
+			</td><td class="col_map">
+				 
+			</td><td class="col_icons"><img src="img/symbols/escalator_up.gif" class="symbol" alt="Rolltreppe aufwärts" title="Rolltreppe aufwärts" /></td><td class="col_info">Rolltreppe aufwärts<br />ca.  2 Minuten</td></tr><tr><td class="col_time">15:49 <br />15:51 <br /></td><td class="col_station">ab Volkstheater <br />an Rathaus </td><td class="col_map"> <br /><a href="FILELOAD?Filename=aut_4EEB5A633.pdf" class="navlink" target="_blank" title="Umgebungsplan Rathaus">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img class="motImg" src="img/means/u_bahn.gif" alt="U-Bahn" title="U-Bahn" /></td><td class="col_info">U-Bahn U2<br />Aspernstraße</td></tr><tr><td class="col_time">15:51 <br />15:54 <br /></td><td class="col_station">ab Rathaus <br />an Wien Rathausstraße 6 </td><td class="col_map"> <br /><a href="FILELOAD?Filename=aut_4EEB5A635.pdf" class="navlink" target="_blank" title="Umgebungsplan Wien Rathausstraße 6">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img src="img/symbols/stairs_up.gif" class="symbol" alt="Treppe aufwärts" title="Treppe aufwärts" /><img src="img/means/fuss.gif" class="motImg" alt="Fußweg" title="Fußweg" /></td><td class="col_info">Treppe aufwärts/Fußweg<br />ca. 3 Minuten<br />ca. 0,2 km <br /></td></tr></tbody></table></div><div class="data_table tourdetail"><div class="info printonly"><span>2. Fahrt: </span> Dauer 00:15</div><table class="full" id="tbl_tour2" summary="2. Fahrt im Detail"><caption class="floatbox dontprint"><span class="download"><a href="javascript:document.forms['print'].command.value='printSingleview:1';document.forms['print'].itdLPxx_view.value='pdf';document.forms['print'].submit();" class="navlink">Fahrt im Detail</a> (<span class="doc_pdf">PDF</span>)</span><span class="info"><a name="fahrt2" id="fahrt2">2. Fahrt: </a> Dauer 00:15</span></caption><thead><tr><th class="col_time">Zeit</th><th class="col_station">Haltestelle</th><th class="col_map">Umgebungsplan</th><th class="col_icons">
+							 
+						</th><th class="col_line">Linie / Weg</th></tr></thead><tbody><tr><td class="col_time">15:44 <br />15:47 <br /></td><td class="col_station">ab Stephansplatz <br />an Volkstheater </td><td class="col_map"><a href="FILELOAD?Filename=aut_4EEB5A637.pdf" class="navlink" target="_blank" title="Umgebungsplan Stephansplatz">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /><a href="FILELOAD?Filename=aut_4EEB5A638.pdf" class="navlink" target="_blank" title="Umgebungsplan Volkstheater">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img class="motImg" src="img/means/u_bahn.gif" alt="U-Bahn" title="U-Bahn" /></td><td class="col_info">U-Bahn U3<br />Ottakring</td></tr><tr><td class="col_time">15:47 <br />15:59 <br /></td><td class="col_station">ab Volkstheater <br />an Wien Rathausstraße 6 </td><td class="col_map"> <br /><a href="FILELOAD?Filename=aut_4EEB5A63A.pdf" class="navlink" target="_blank" title="Umgebungsplan Wien Rathausstraße 6">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img src="img/symbols/escalator_up.gif" class="symbol" alt="Rolltreppe aufwärts" title="Rolltreppe aufwärts" /><img src="img/symbols/escalator_up.gif" class="symbol" alt="Rolltreppe aufwärts" title="Rolltreppe aufwärts" /><img src="img/means/fuss.gif" class="motImg" alt="Fußweg" title="Fußweg" /></td><td class="col_info">Rolltreppe aufwärts/Rolltreppe aufwärts/Fußweg<br />ca. 12 Minuten<br />ca. 0,6 km <br /></td></tr></tbody></table></div><div class="data_table tourdetail"><div class="info printonly"><span>3. Fahrt: </span> Dauer 00:12</div><table class="full" id="tbl_tour3" summary="3. Fahrt im Detail"><caption class="floatbox dontprint"><span class="download"><a href="javascript:document.forms['print'].command.value='printSingleview:2';document.forms['print'].itdLPxx_view.value='pdf';document.forms['print'].submit();" class="navlink">Fahrt im Detail</a> (<span class="doc_pdf">PDF</span>)</span><span class="info"><a name="fahrt3" id="fahrt3">3. Fahrt: </a> Dauer 00:12</span></caption><thead><tr><th class="col_time">Zeit</th><th class="col_station">Haltestelle</th><th class="col_map">Umgebungsplan</th><th class="col_icons">
+							 
+						</th><th class="col_line">Linie / Weg</th></tr></thead><tbody><tr><td class="col_time">15:47 <br />15:50 <br /></td><td class="col_station">ab Stephansplatz <br />an Volkstheater </td><td class="col_map"><a href="FILELOAD?Filename=aut_4EEB5A631.pdf" class="navlink" target="_blank" title="Umgebungsplan Stephansplatz">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /><a href="FILELOAD?Filename=aut_4EEB5A632.pdf" class="navlink" target="_blank" title="Umgebungsplan Volkstheater">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img class="motImg" src="img/means/u_bahn.gif" alt="U-Bahn" title="U-Bahn" /></td><td class="col_info">U-Bahn U3<br />Ottakring</td></tr><tr><td class="col_time">
+				 
+			</td><td class="col_station">
+				 
+			</td><td class="col_map">
+				 
+			</td><td class="col_icons"><img src="img/symbols/escalator_up.gif" class="symbol" alt="Rolltreppe aufwärts" title="Rolltreppe aufwärts" /></td><td class="col_info">Rolltreppe aufwärts<br />ca.  2 Minuten</td></tr><tr><td class="col_time">15:54 <br />15:56 <br /></td><td class="col_station">ab Volkstheater <br />an Rathaus </td><td class="col_map"> <br /><a href="FILELOAD?Filename=aut_4EEB5A633.pdf" class="navlink" target="_blank" title="Umgebungsplan Rathaus">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img class="motImg" src="img/means/u_bahn.gif" alt="U-Bahn" title="U-Bahn" /></td><td class="col_info">U-Bahn U2<br />Aspernstraße</td></tr><tr><td class="col_time">15:56 <br />15:59 <br /></td><td class="col_station">ab Rathaus <br />an Wien Rathausstraße 6 </td><td class="col_map"> <br /><a href="FILELOAD?Filename=aut_4EEB5A635.pdf" class="navlink" target="_blank" title="Umgebungsplan Wien Rathausstraße 6">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img src="img/symbols/stairs_up.gif" class="symbol" alt="Treppe aufwärts" title="Treppe aufwärts" /><img src="img/means/fuss.gif" class="motImg" alt="Fußweg" title="Fußweg" /></td><td class="col_info">Treppe aufwärts/Fußweg<br />ca. 3 Minuten<br />ca. 0,2 km <br /></td></tr></tbody></table></div><div class="data_table tourdetail"><div class="info printonly"><span>4. Fahrt: </span> Dauer 00:15</div><table class="full" id="tbl_tour4" summary="4. Fahrt im Detail"><caption class="floatbox dontprint"><span class="download"><a href="javascript:document.forms['print'].command.value='printSingleview:3';document.forms['print'].itdLPxx_view.value='pdf';document.forms['print'].submit();" class="navlink">Fahrt im Detail</a> (<span class="doc_pdf">PDF</span>)</span><span class="info"><a name="fahrt4" id="fahrt4">4. Fahrt: </a> Dauer 00:15</span></caption><thead><tr><th class="col_time">Zeit</th><th class="col_station">Haltestelle</th><th class="col_map">Umgebungsplan</th><th class="col_icons">
+							 
+						</th><th class="col_line">Linie / Weg</th></tr></thead><tbody><tr><td class="col_time">15:47 <br />15:50 <br /></td><td class="col_station">ab Stephansplatz <br />an Volkstheater </td><td class="col_map"><a href="FILELOAD?Filename=aut_4EEB5A637.pdf" class="navlink" target="_blank" title="Umgebungsplan Stephansplatz">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /><a href="FILELOAD?Filename=aut_4EEB5A638.pdf" class="navlink" target="_blank" title="Umgebungsplan Volkstheater">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img class="motImg" src="img/means/u_bahn.gif" alt="U-Bahn" title="U-Bahn" /></td><td class="col_info">U-Bahn U3<br />Ottakring</td></tr><tr><td class="col_time">15:50 <br />16:02 <br /></td><td class="col_station">ab Volkstheater <br />an Wien Rathausstraße 6 </td><td class="col_map"> <br /><a href="FILELOAD?Filename=aut_4EEB5A63A.pdf" class="navlink" target="_blank" title="Umgebungsplan Wien Rathausstraße 6">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img src="img/symbols/escalator_up.gif" class="symbol" alt="Rolltreppe aufwärts" title="Rolltreppe aufwärts" /><img src="img/symbols/escalator_up.gif" class="symbol" alt="Rolltreppe aufwärts" title="Rolltreppe aufwärts" /><img src="img/means/fuss.gif" class="motImg" alt="Fußweg" title="Fußweg" /></td><td class="col_info">Rolltreppe aufwärts/Rolltreppe aufwärts/Fußweg<br />ca. 12 Minuten<br />ca. 0,6 km <br /></td></tr></tbody></table></div><div class="data_table tourdetail"><div class="info printonly"><span>5. Fahrt: </span> Dauer 00:11</div><table class="full" id="tbl_tour5" summary="5. Fahrt im Detail"><caption class="floatbox dontprint"><span class="download"><a href="javascript:document.forms['print'].command.value='printSingleview:4';document.forms['print'].itdLPxx_view.value='pdf';document.forms['print'].submit();" class="navlink">Fahrt im Detail</a> (<span class="doc_pdf">PDF</span>)</span><span class="info"><a name="fahrt5" id="fahrt5">5. Fahrt: </a> Dauer 00:11</span></caption><thead><tr><th class="col_time">Zeit</th><th class="col_station">Haltestelle</th><th class="col_map">Umgebungsplan</th><th class="col_icons">
+							 
+						</th><th class="col_line">Linie / Weg</th></tr></thead><tbody><tr><td class="col_time">15:53 <br />15:56 <br /></td><td class="col_station">ab Stephansplatz <br />an Volkstheater </td><td class="col_map"><a href="FILELOAD?Filename=aut_4EEB5A631.pdf" class="navlink" target="_blank" title="Umgebungsplan Stephansplatz">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /><a href="FILELOAD?Filename=aut_4EEB5A632.pdf" class="navlink" target="_blank" title="Umgebungsplan Volkstheater">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img class="motImg" src="img/means/u_bahn.gif" alt="U-Bahn" title="U-Bahn" /></td><td class="col_info">U-Bahn U3<br />Ottakring</td></tr><tr><td class="col_time">
+				 
+			</td><td class="col_station">
+				 
+			</td><td class="col_map">
+				 
+			</td><td class="col_icons"><img src="img/symbols/escalator_up.gif" class="symbol" alt="Rolltreppe aufwärts" title="Rolltreppe aufwärts" /></td><td class="col_info">Rolltreppe aufwärts<br />ca.  2 Minuten</td></tr><tr><td class="col_time">15:59 <br />16:01 <br /></td><td class="col_station">ab Volkstheater <br />an Rathaus </td><td class="col_map"> <br /><a href="FILELOAD?Filename=aut_4EEB5A633.pdf" class="navlink" target="_blank" title="Umgebungsplan Rathaus">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img class="motImg" src="img/means/u_bahn.gif" alt="U-Bahn" title="U-Bahn" /></td><td class="col_info">U-Bahn U2<br />Aspernstraße</td></tr><tr><td class="col_time">16:01 <br />16:04 <br /></td><td class="col_station">ab Rathaus <br />an Wien Rathausstraße 6 </td><td class="col_map"> <br /><a href="FILELOAD?Filename=aut_4EEB5A635.pdf" class="navlink" target="_blank" title="Umgebungsplan Wien Rathausstraße 6">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img src="img/symbols/stairs_up.gif" class="symbol" alt="Treppe aufwärts" title="Treppe aufwärts" /><img src="img/means/fuss.gif" class="motImg" alt="Fußweg" title="Fußweg" /></td><td class="col_info">Treppe aufwärts/Fußweg<br />ca. 3 Minuten<br />ca. 0,2 km <br /></td></tr></tbody></table></div><div class="data_table tourdetail"><div class="info printonly"><span>6. Fahrt: </span> Dauer 00:15</div><table class="full" id="tbl_tour6" summary="6. Fahrt im Detail"><caption class="floatbox dontprint"><span class="download"><a href="javascript:document.forms['print'].command.value='printSingleview:5';document.forms['print'].itdLPxx_view.value='pdf';document.forms['print'].submit();" class="navlink">Fahrt im Detail</a> (<span class="doc_pdf">PDF</span>)</span><span class="info"><a name="fahrt6" id="fahrt6">6. Fahrt: </a> Dauer 00:15</span></caption><thead><tr><th class="col_time">Zeit</th><th class="col_station">Haltestelle</th><th class="col_map">Umgebungsplan</th><th class="col_icons">
+							 
+						</th><th class="col_line">Linie / Weg</th></tr></thead><tbody><tr><td class="col_time">15:53 <br />15:56 <br /></td><td class="col_station">ab Stephansplatz <br />an Volkstheater </td><td class="col_map"><a href="FILELOAD?Filename=aut_4EEB5A637.pdf" class="navlink" target="_blank" title="Umgebungsplan Stephansplatz">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /><a href="FILELOAD?Filename=aut_4EEB5A638.pdf" class="navlink" target="_blank" title="Umgebungsplan Volkstheater">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img class="motImg" src="img/means/u_bahn.gif" alt="U-Bahn" title="U-Bahn" /></td><td class="col_info">U-Bahn U3<br />Ottakring</td></tr><tr><td class="col_time">15:56 <br />16:08 <br /></td><td class="col_station">ab Volkstheater <br />an Wien Rathausstraße 6 </td><td class="col_map"> <br /><a href="FILELOAD?Filename=aut_4EEB5A63A.pdf" class="navlink" target="_blank" title="Umgebungsplan Wien Rathausstraße 6">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img src="img/symbols/escalator_up.gif" class="symbol" alt="Rolltreppe aufwärts" title="Rolltreppe aufwärts" /><img src="img/symbols/escalator_up.gif" class="symbol" alt="Rolltreppe aufwärts" title="Rolltreppe aufwärts" /><img src="img/means/fuss.gif" class="motImg" alt="Fußweg" title="Fußweg" /></td><td class="col_info">Rolltreppe aufwärts/Rolltreppe aufwärts/Fußweg<br />ca. 12 Minuten<br />ca. 0,6 km <br /></td></tr></tbody></table></div><div class="data_table tourdetail"><div class="info printonly"><span>7. Fahrt: </span> Dauer 00:10</div><table class="full" id="tbl_tour7" summary="7. Fahrt im Detail"><caption class="floatbox dontprint"><span class="download"><a href="javascript:document.forms['print'].command.value='printSingleview:6';document.forms['print'].itdLPxx_view.value='pdf';document.forms['print'].submit();" class="navlink">Fahrt im Detail</a> (<span class="doc_pdf">PDF</span>)</span><span class="info"><a name="fahrt7" id="fahrt7">7. Fahrt: </a> Dauer 00:10</span></caption><thead><tr><th class="col_time">Zeit</th><th class="col_station">Haltestelle</th><th class="col_map">Umgebungsplan</th><th class="col_icons">
+							 
+						</th><th class="col_line">Linie / Weg</th></tr></thead><tbody><tr><td class="col_time">15:59 <br />16:02 <br /></td><td class="col_station">ab Stephansplatz <br />an Volkstheater </td><td class="col_map"><a href="FILELOAD?Filename=aut_4EEB5A631.pdf" class="navlink" target="_blank" title="Umgebungsplan Stephansplatz">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /><a href="FILELOAD?Filename=aut_4EEB5A632.pdf" class="navlink" target="_blank" title="Umgebungsplan Volkstheater">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img class="motImg" src="img/means/u_bahn.gif" alt="U-Bahn" title="U-Bahn" /></td><td class="col_info">U-Bahn U3<br />Ottakring</td></tr><tr><td class="col_time">
+				 
+			</td><td class="col_station">
+				 
+			</td><td class="col_map">
+				 
+			</td><td class="col_icons"><img src="img/symbols/escalator_up.gif" class="symbol" alt="Rolltreppe aufwärts" title="Rolltreppe aufwärts" /></td><td class="col_info">Rolltreppe aufwärts<br />ca.  2 Minuten</td></tr><tr><td class="col_time">16:04 <br />16:06 <br /></td><td class="col_station">ab Volkstheater <br />an Rathaus </td><td class="col_map"> <br /><a href="FILELOAD?Filename=aut_4EEB5A633.pdf" class="navlink" target="_blank" title="Umgebungsplan Rathaus">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img class="motImg" src="img/means/u_bahn.gif" alt="U-Bahn" title="U-Bahn" /></td><td class="col_info">U-Bahn U2<br />Aspernstraße</td></tr><tr><td class="col_time">16:06 <br />16:09 <br /></td><td class="col_station">ab Rathaus <br />an Wien Rathausstraße 6 </td><td class="col_map"> <br /><a href="FILELOAD?Filename=aut_4EEB5A635.pdf" class="navlink" target="_blank" title="Umgebungsplan Wien Rathausstraße 6">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img src="img/symbols/stairs_up.gif" class="symbol" alt="Treppe aufwärts" title="Treppe aufwärts" /><img src="img/means/fuss.gif" class="motImg" alt="Fußweg" title="Fußweg" /></td><td class="col_info">Treppe aufwärts/Fußweg<br />ca. 3 Minuten<br />ca. 0,2 km <br /></td></tr></tbody></table></div><div class="data_table tourdetail"><div class="info printonly"><span>8. Fahrt: </span> Dauer 00:15</div><table class="full" id="tbl_tour8" summary="8. Fahrt im Detail"><caption class="floatbox dontprint"><span class="download"><a href="javascript:document.forms['print'].command.value='printSingleview:7';document.forms['print'].itdLPxx_view.value='pdf';document.forms['print'].submit();" class="navlink">Fahrt im Detail</a> (<span class="doc_pdf">PDF</span>)</span><span class="info"><a name="fahrt8" id="fahrt8">8. Fahrt: </a> Dauer 00:15</span></caption><thead><tr><th class="col_time">Zeit</th><th class="col_station">Haltestelle</th><th class="col_map">Umgebungsplan</th><th class="col_icons">
+							 
+						</th><th class="col_line">Linie / Weg</th></tr></thead><tbody><tr><td class="col_time">15:59 <br />16:02 <br /></td><td class="col_station">ab Stephansplatz <br />an Volkstheater </td><td class="col_map"><a href="FILELOAD?Filename=aut_4EEB5A637.pdf" class="navlink" target="_blank" title="Umgebungsplan Stephansplatz">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /><a href="FILELOAD?Filename=aut_4EEB5A638.pdf" class="navlink" target="_blank" title="Umgebungsplan Volkstheater">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img class="motImg" src="img/means/u_bahn.gif" alt="U-Bahn" title="U-Bahn" /></td><td class="col_info">U-Bahn U3<br />Ottakring</td></tr><tr><td class="col_time">16:02 <br />16:14 <br /></td><td class="col_station">ab Volkstheater <br />an Wien Rathausstraße 6 </td><td class="col_map"> <br /><a href="FILELOAD?Filename=aut_4EEB5A63A.pdf" class="navlink" target="_blank" title="Umgebungsplan Wien Rathausstraße 6">PDF</a> <span class="doc_pdf">
+						 
+					</span><br /></td><td class="col_icons"><img src="img/symbols/escalator_up.gif" class="symbol" alt="Rolltreppe aufwärts" title="Rolltreppe aufwärts" /><img src="img/symbols/escalator_up.gif" class="symbol" alt="Rolltreppe aufwärts" title="Rolltreppe aufwärts" /><img src="img/means/fuss.gif" class="motImg" alt="Fußweg" title="Fußweg" /></td><td class="col_info">Rolltreppe aufwärts/Rolltreppe aufwärts/Fußweg<br />ca. 12 Minuten<br />ca. 0,6 km <br /></td></tr></tbody></table></div><div class="disclaimer">Alle Fahrplanauskünfte erfolgen ohne Gewähr</div><br />
+</form>
+<form action="XSLT_TRIP_REQUEST2?" method="post" name="print" target="_blank">
+<input type="hidden" name="sessionID" value="WWW051948265594" />
+<input type="hidden" name="requestID" value="1" />
+<input type="hidden" name="configurationFontSizeNormal" value="1" />
+<input type="hidden" name="command" value="" />
+<input type="hidden" name="itdLPxx_view" />
+</form>
+</div>
+<div id="ie_clearing"> </div>
+<div id="contentfooter" class="floatbox noborder">
+<div class="cf1">
+<script type="text/javascript">
+						writePrintLink('Drucken', "Seite drucken");
+					</script>
+</div>
+<div class="cf2">
+<a href="#pagetop" class="toplink" title="Zum Seitenanfang">Top</a>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer_content">© 2008 <a href="http://www.wienerlinien.at" class="extlink" target="_blank" title="Neues Fenster: Wiener Linien">Wiener Linien</a>
+<span class="separator">|</span>Ein Unternehmen der <a href="http://www.wienerstadtwerke.at" class="extlink" target="_blank" title="Neues Fenster: Wiener Stadtwerke">Wiener Stadtwerke</a>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
