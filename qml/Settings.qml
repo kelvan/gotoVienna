@@ -96,7 +96,7 @@ Page {
                         if (updateAvailable) {
                             var updated = config.updateStations();
                             if (updated !== '') {
-                                updateDialog.text = "Stations updated"
+                                updateDialog.text = "Stations updated\nPlease restart app"
                                 txtLastUpdate.text = updated
                             } else {
                                 updateDialog.text = "[UpdateError]:\nTry again later or send me an email:\n<gotovienna@logic.at>"
