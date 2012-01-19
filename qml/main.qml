@@ -27,7 +27,7 @@ PageStackWindow {
         id: positionSource
         updateInterval: 15000
 
-        active: !(position.longitudeValid && position.latitudeValid)
+        active: config.getGpsEnabled() && !(position.longitudeValid && position.latitudeValid)
     }
 
     ToolBarLayout {
@@ -57,15 +57,16 @@ PageStackWindow {
             text: ''
 
             anchors {
-                bottomMargin: 10
-                bottom: parent.bottom
                 left: logo.right
                 leftMargin: 10
-                top: logo.top
+                top: parent.top
+                topMargin: 10
             }
             font.pixelSize: 16
         }
     }
+
+    Settings{id: settings}
 
     Menu {
         id: menu
@@ -74,6 +75,10 @@ PageStackWindow {
             MenuItem {
                 text: 'Nearby stations'
                 onClicked: mainPage.showNearby()
+            }
+            MenuItem {
+                text: 'Settings'
+                onClicked: pageStack.push(settings)
             }
             MenuItem {
                 text: 'About gotoVienna'

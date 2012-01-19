@@ -4,7 +4,7 @@ from nose.tools import assert_equal, assert_true, assert_false
 from datetime import datetime
 
 from gotovienna.routing import *
-DATAPATH = 'data'
+DATAPATH = os.path.join(os.path.dirname(__file__), 'data')
 
 underground_routing = open(os.path.join(DATAPATH, 'underground_routing.html'), 'r').read()
 underground_foot_routing = open(os.path.join(DATAPATH, 'underground_foot_routing.html'), 'r').read()

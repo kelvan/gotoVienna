@@ -8,7 +8,6 @@ import shutil
 import defaults
 import realtime
 
-
 def load(p, typ):
     if path.exists(p):
         try:
@@ -27,7 +26,6 @@ def load(p, typ):
             shutil.copy(p, p + '.bak')
 
     return None
-
 
 class Lines(dict):
     def __init__(self):

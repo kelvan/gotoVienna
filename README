@@ -7,7 +7,7 @@ This program ist unofficial.
 
 Running unit tests:
 
-$ python -m gotovienna.tests.runner
+$ nosetests gotovienna/tests/*.py
 
 
 To build the package with aegis tokens (install python-stdeb and ar first):

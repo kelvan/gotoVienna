@@ -5,7 +5,7 @@ import sys
 import os
 from datetime import time
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-DATAPATH = 'data'
+DATAPATH = os.path.join(os.path.dirname(__file__), 'data')
 
 from gotovienna.realtime import *
 

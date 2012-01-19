@@ -16,12 +16,50 @@ from PySide.QtDeclarative import QDeclarativeView
 from gotovienna.utils import *
 from gotovienna.realtime import *
 from gotovienna.gps import *
+from gotovienna.update import *
+from gotovienna.config import config as conf
 
 import urllib2
 import os
 import sys
 import threading
 from datetime import time
+
+class Config(QObject):
+    def __init__(self):
+        QObject.__init__(self)
+
+    @Slot(result=bool)
+    def getGpsEnabled(self):
+        return conf.getGpsEnabled()
+
+    @Slot(bool, result=unicode)
+    def setGpsEnabled(self, val):
+        # TODO
+        return conf.setGpsEnabled(val)
+
+    @Slot(result=unicode)
+    def getLastUpdate(self):
+        # TODO
+        return conf.getLastStationsUpdate()
+
+    @Slot(result=unicode)
+    def updateStations(self):
+        # TODO
+        try:
+            update_stations()
+            return datetime.now().strftime('%c')
+        except Exception as e:
+            print e
+            return ''
+
+    @Slot(result=bool)
+    def checkStationsUpdate(self):
+        # FIXME exception handling foo
+        try:
+            return check_stations_update()
+        except:
+            return False
 
 class AboutInfo(QObject):
     def __init__(self):
@@ -180,8 +218,8 @@ class Gui(QObject):
     def get_nearby_stations(self, lat, lon):
         try:
             return get_nearby_stations(lat, lon)
-        except Exception as e:
-            print e.message
+        except BaseException as e:
+            # No/wrong stations.db file
             return []
 
     @Slot(str, str)
@@ -212,6 +250,7 @@ if __name__ == '__main__':
     view = QDeclarativeView()
 
     aboutInfo = AboutInfo()
+    config = Config()
 
     # instantiate the Python object
     itip = Gui()
@@ -220,6 +259,7 @@ if __name__ == '__main__':
     context = view.rootContext()
     context.setContextProperty('itip', itip)
     context.setContextProperty('aboutInfo', aboutInfo)
+    context.setContextProperty('config', config)
 
     if os.path.abspath(__file__).startswith('/usr/bin/'):
         # Assume system-wide installation, QML from /usr/share/
