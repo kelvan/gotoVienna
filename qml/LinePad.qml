@@ -126,7 +126,9 @@ Rectangle {
             Behavior on opacity { PropertyAnimation { } }
 
             color: {
-                if (inputState.isMetro) {
+                if (ch == 'U') {
+                    return '#156ab8';
+                } else if (inputState.isMetro) {
                     switch (ch) {
                         case 1: return '#E20A16';
                         case 2: return '#764785';
@@ -150,7 +152,7 @@ Rectangle {
                     bold: true
                 }
                 color: {
-                    if (inputState.isMetro) {
+                    if (inputState.isMetro || ch == 'U') {
                         return 'white';
                     } else if (inputElement.isCandidate) {
                         return 'black';
@@ -163,8 +165,10 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    buttonFeedback.start()
-                    inputLine.text += modelData
+                    if( inputElement.isCandidate) {
+                        buttonFeedback.start()
+                        inputLine.text += modelData
+                    }
                 }
             }
         }
