@@ -67,6 +67,7 @@ PageStackWindow {
     }
 
     Settings{id: settings}
+    MapView{id: map}
 
     Menu {
         id: menu
@@ -76,6 +77,10 @@ PageStackWindow {
                 text: 'Nearby stations'
                 onClicked: mainPage.showNearby()
             }
+            //MenuItem {
+            //    text: 'Map'
+            //    onClicked: pageStack.push(map)
+            //}
             MenuItem {
                 text: 'Settings'
                 onClicked: pageStack.push(settings)
