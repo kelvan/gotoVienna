@@ -27,13 +27,13 @@ Page {
     function showNearby() {
         console.log("show nearby")
 
-        var stations = nearbyStations
-        stationSelectorModel.clear()
+        var stations = nearbyStations;
+        stationSelectorModel.clear();
         for (var idx in stations) {
-            stationSelectorModel.append({'name': stations[idx]})
+            stationSelectorModel.append({'name': stations[idx]});
         }
 
-        stationSelector.open()
+        stationSelector.open();
     }
 
     Text {
@@ -98,11 +98,11 @@ Page {
 
         onAccepted: {
             realtimeResult.isStation = true
-            realtimeResult.gstation = stationSelectorModel.get(selectedIndex).name
             realtimeResult.gline = ''
             realtimeResult.sourceUrl = ''
             gline.text = ''
             gstation.text = stationSelectorModel.get(selectedIndex).name
+            realtimeResult.gstation = stationSelectorModel.get(selectedIndex).name
             console.log('station to get: ' + realtimeResult.gstation)
         }
     }
@@ -185,14 +185,13 @@ Page {
             gstation.text = stationSheet.currentStation
 
             realtimeResult.gline = stationSheet.currentLine
-            realtimeResult.gstation = stationSheet.currentStation
             realtimeResult.gdirection = stationSheet.currentDirection
             realtimeResult.isStation = false
-
             realtimeResult.sourceUrl = itip.get_directions_url(stationSheet.currentLine, stationSheet.currentDirection, stationSheet.currentStation)
-            console.log('url to get: ' + realtimeResult.sourceUrl)
+            realtimeResult.gstation = stationSheet.currentStation
+            
+            console.debug('url to get: ' + realtimeResult.sourceUrl)
             realtimeResult.refresh()
-
         }
     }
 

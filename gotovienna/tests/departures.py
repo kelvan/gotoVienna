@@ -1,4 +1,4 @@
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_is_instance
 import sys
 import os
 from datetime import time, datetime
@@ -34,12 +34,12 @@ def test_sort():
 
 def test_atime():
     for dep in departures:
-        assert_equal(time, type(dep['atime']))
+        assert_is_instance(dep['departure'], datetime)
 
 def test_ftime():
     for dep in departures:
-        assert_equal(str, type(dep['ftime']))
+        assert_is_instance(dep['ftime'], str)
 
 def test_deltatime():
     for dep in departures:
-        assert_equal(int, type(dep['deltatime']))
+        assert_is_instance(dep['time'], int)

@@ -17,13 +17,13 @@ Item {
 
     function refresh() {
         busy = true
-        console.log('refreshing')
+        console.debug('refreshing')
 
         if (isStation) {
-            console.log('station based')
+            console.debug('station based')
             itip.load_station_departures(gstation)
         } else {
-            console.log('one line')
+            console.debug('one line')
             itip.load_departures(sourceUrl)
         }
     }
@@ -33,6 +33,7 @@ Item {
     }
 
     onGstationChanged: {
+        console.debug('gstation changed')
         refresh()
     }
 

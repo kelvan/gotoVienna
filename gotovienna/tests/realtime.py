@@ -1,13 +1,22 @@
 # -*- coding: utf-8 -*-
 
-from nose.tools import assert_equal, assert_true, assert_false
+from nose.tools import assert_equal, assert_true, assert_false, assert_is_instance
 import sys
 import os
-from datetime import time
+from datetime import datetime
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 DATAPATH = os.path.join(os.path.dirname(__file__), 'data')
 
+# bananas for the monkey
+class datetime_static(datetime):
+    @classmethod
+    def now(cls):
+        return datetime(2000, 1, 1, 11, 50) 
+
+from gotovienna import realtime
+realtime.datetime = datetime_static
 from gotovienna.realtime import *
+# </bananas>
 
 parser = ITipParser()
 
@@ -22,7 +31,7 @@ stations2 = open(os.path.join(DATAPATH, 'stations2.html'), 'r').read()
 parsed_lines = parser.parse_lines(lines)
 
 def test_lines():
-    assert_equal(dict, type(parsed_lines))
+    assert_is_instance(parsed_lines, dict)
     assert_true(parsed_lines)
 
 def test_line_amount():
@@ -65,14 +74,14 @@ def test_departures_by_station_lowfloor():
 
 def test_departures_by_station_datetime():
     dep = parser.parse_departures_by_station(stationbased)
-    assert_equal(int, type(dep[13]['time']))
-    assert_equal(time, type(dep[14]['time']))
+    assert_is_instance(dep[13]['time'], int)
+    assert_is_instance(dep[14]['departure'], datetime)
     assert_equal(4, dep[3]['time'])
     assert_equal(2, dep[4]['time'])
     assert_equal(18, dep[13]['time'])
     assert_equal('59A', dep[-4]['line'])
     assert_equal('WLB', dep[-1]['line'])
-    assert_equal(time(13, 5), dep[14]['time'])
+    assert_equal(datetime(2000, 1, 1, 13, 5), dep[14]['departure'])
 
 def test_departures():
     dep = parser.parse_departures(line_station)

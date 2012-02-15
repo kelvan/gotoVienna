@@ -3,8 +3,10 @@
 from gotovienna.BeautifulSoup import BeautifulSoup
 #from urllib2 import urlopen
 from urllib import quote_plus
+# Use urlopen proxy for fake user agent
 from UrlOpener import urlopen
 from datetime import time, datetime, timedelta
+import datetime as date
 import re
 import collections
 from errors import LineNotFoundError, StationNotFoundError
@@ -20,45 +22,25 @@ class Departure(dict):
         self['line'] = line
         self['station'] = station
         self['direction'] = direction
-        self['time'] = time
+        now = datetime.now()
+        if type(time) == date.time:
+            time = make_datetime(now, time)
+        if type(time) == datetime:
+            # FIXME convert in ModelList
+            self['realtime'] = False
+            self['time'] = (time - now).seconds/60
+            self['departure'] = time
+        elif type(time) == int:
+            # FIXME convert in ModelList
+            self['realtime'] = True
+            self['time'] = time
+            self['departure'] = now + timedelta(minutes=self['time'])
+        else:
+            raise ValueError('Wrong type: time')
+
+        # FIXME convert in ModelList
+        self['ftime'] = str(self['time'])
         self['lowfloor'] = lowfloor
-
-    def __getitem__(self, *args, **kwargs):
-        if args[0] == 'ftime':
-            # string representation of time/minutes
-            return self.ftime
-        elif args[0] == 'deltatime':
-            # minutes
-            return self.departure_deltatime
-        elif args[0] == 'atime':
-            # time object
-            return self.departure_time
-        return dict.__getitem__(self, *args, **kwargs)
-
-    @property
-    def departure_time(self):
-        """ return time object of departure time
-        """
-        if type(self['time']) == time:
-            return self['time']
-        else:
-            return (datetime.now() + timedelta(0, self['time']) * 60).time()
-
-    @property
-    def departure_deltatime(self):
-        """ return int representing minutes until departure
-        """
-        if type(self['time']) == int:
-            return self['time']
-        else:
-            raise NotImplementedError()
-
-    @property
-    def ftime(self):
-        if type(self['time']) == int:
-            return str(self['time'])
-        elif type(self['time']) == time:
-            return self['time'].strftime('%H:%M')
 
 class ITipParser:
     def __init__(self):
@@ -263,7 +245,7 @@ class ITipParser:
                 t = tim.strip('&nbsp;').split(':')
                 if len(t) == 2 and all(map(lambda x: x.isdigit(), t)):
                     t = map(int, t)
-                    d['time'] = time(*t)
+                    d['time'] = make_datetime(datetime.now(), time(*t))
                 else:
                     # Unexpected content
                     #TODO replace with logger
@@ -274,7 +256,7 @@ class ITipParser:
         return dep
 
     def get_departures(self, url):
-        """ Get list of next departures as Departure object
+        """ Get list of next departures as Departure objects
         """
 
         #TODO parse line name and direction for station site parsing
@@ -301,7 +283,11 @@ class ITipParser:
 
             sleep(0.5)
 
-
+    def get_departures_test(self, line, station):
+        """ replacement for get_departure
+            hide url in higher levels :)
+        """
+        raise NotImplementedError
 
 
 UBAHN, TRAM, BUS, NIGHTLINE, OTHER = range(5)
@@ -361,4 +347,17 @@ def categorize_lines(lines):
         lines.sort(key=get_line_sort_key)
 
     return [(LINE_TYPE_NAMES[key], categorized_lines[key])
-            for key in sorted(categorized_lines)]
+        for key in sorted(categorized_lines)]
+
+def make_datetime(date, time):
+    """ Ugly workaround, immutable datetime ftw -.-
+        If 
+    """
+    if date.hour > time.hour:
+        date = date + timedelta(1)
+    return datetime(year=date.year,
+                    month=date.month,
+                    day=date.day,
+                    hour=time.hour,
+                    minute=time.minute,
+                    second=time.second)

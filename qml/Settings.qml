@@ -22,6 +22,10 @@ Page {
         flickableDirection: Flickable.VerticalFlick
 
         Component.onCompleted: {
+            var updateAvailable = config.checkStationsUpdate();
+            if (updateAvailable) {
+                btnUpdate.color = "green"
+            }
         }
 
         Column {
@@ -53,12 +57,17 @@ Page {
 
                     onCheckedChanged: {
                         var gps = config.setGpsEnabled(checked);
-                        if(gps !== '') {
+                        if (gps !== '') {
                             // Unable to set config
                             console.log(gps);
                             checked=!checked;
                         } else {
                             positionSource.active = checked;
+                        }
+                        if (checked) {
+                            positionSource.start();
+                        } else {
+                            positionSource.stop();
                         }
                     }
                 }

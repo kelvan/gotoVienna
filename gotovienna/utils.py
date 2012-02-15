@@ -10,7 +10,7 @@ def inblue(x):
     return '\033[94m' + x + '\033[0m'
 
 def sort_departures(dep):
-    print 'sorting ...'
-    d = sorted(dep, lambda x, y: cmp(x['atime'], y['atime']))
-    print map(lambda x: x['atime'], d)
+    #print 'sorting ...'
+    d = sorted(dep, lambda x, y: cmp(x['departure'], y['departure']))
+    #print map(lambda x: x['departure'], d)
     return d

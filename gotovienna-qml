@@ -151,12 +151,35 @@ class Gui(QObject):
         threading.Thread(target=load_async).start()
 
     def map_departure(self, dep):
+        """ prepare departure list for qml gui
+        """
         dep['lowfloor'] = 1 if dep['lowfloor'] else 0
-        if type(dep['time']) == time:
-            dep['time'] = dep['time'].strftime('%H:%M')
+        dep['realtime'] = 1 if dep['realtime'] else 0
+        dep['time'] = dep['ftime']
         return dep
 
     departuresLoaded = Signal()
+
+    @Slot(str)
+    def load_departures_test(self, **args):
+        """ valid args combinations
+            station
+            line, station
+        """
+        def load_async():
+            if args.has_key('station'):
+                if args.has_key('line'):
+                    self.current_departures = map(self.map_departure, \
+                                                  self.itip.get_departures(args['line'], args['station']))
+                    #print self.current_departures
+                    self.departuresLoaded.emit()
+                else:
+                    self.current_departures = map(self.map_departure, \
+                                                  sort_departures(self.itip.get_departures_by_station(station)))
+            else:
+                raise KeyError('Missing valid argument combination')
+
+        threading.Thread(target=load_async).start()
 
     @Slot(str)
     def load_departures(self, url):
