@@ -90,7 +90,7 @@ Rectangle {
             MouseArea {
                 anchors {
                     fill: parent
-                    margins: -(inputLine.height - height)/2
+                    margins: -30
                 }
                 onClicked: {
                     buttonFeedback.start()
