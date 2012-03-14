@@ -13,6 +13,7 @@ Sheet {
         id: linePad
         anchors.fill: parent
         availableLines: itip.get_lines()
+        onAccept: lineSheet.accept()
     }
 }
 
