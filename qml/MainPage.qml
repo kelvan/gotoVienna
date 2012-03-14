@@ -13,6 +13,16 @@ Page {
     //property alias stationSelect: stationSelector
     property variant nearbyStations
 
+    function showFavorites() {
+        favSelector.model.clear();
+        for (var i=0; i<favManager.getCount(); i++) {
+            var data = eval('(' + favManager.getItem(i) + ')');
+            favSelector.model.append(data);
+        }
+        favSelector.model.sync();
+        favSelector.open();
+    }
+
     function search() {
         lineSearchButton.clicked()
     }
@@ -76,6 +86,26 @@ Page {
             }
         }
 
+
+        ToolIcon {
+            property int increaseMeGently: 0
+            anchors {
+                verticalCenter: parent.verticalCenter
+                right: parent.right
+                rightMargin: 10
+            }
+            platformIconId: {
+                if (favManager.isFavorite(realtimeResult.gline, realtimeResult.gdirection, realtimeResult.gstation, realtimeResult.sourceUrl, realtimeResult.isStation, increaseMeGently)) {
+                    'icon-m-toolbar-favorite-mark'
+                } else {
+                    'icon-m-toolbar-favorite-unmark'
+                }
+            }
+            onClicked: {
+                favManager.toggleFavorite(realtimeResult.gline, realtimeResult.gdirection, realtimeResult.gstation, realtimeResult.sourceUrl, realtimeResult.isStation);
+                increaseMeGently = increaseMeGently + 1;
+            }
+        }
     }
 
     PositionSource {
@@ -236,6 +266,22 @@ Page {
         gdirection: stationSheet.currentDirection
 
         sourceUrl: stationSheet.currentUrl
+    }
+
+    SelectionDialog {
+        id: favSelector
+        titleText: 'Your favorites'
+
+        model: ListModel {}
+
+        onAccepted: {
+            realtimeResult.isStation = model.get(selectedIndex).isstation
+            realtimeResult.gline = model.get(selectedIndex).gline
+            realtimeResult.gdirection = model.get(selectedIndex).gdirection
+            realtimeResult.sourceUrl = model.get(selectedIndex).sourceurl
+            realtimeResult.gstation = model.get(selectedIndex).gstation
+            realtimeResult.refresh()
+        }
     }
 }
 

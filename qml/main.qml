@@ -77,6 +77,10 @@ PageStackWindow {
                 text: 'Nearby stations'
                 onClicked: mainPage.showNearby()
             }
+            MenuItem {
+                text: 'Favorites'
+                onClicked: mainPage.showFavorites()
+            }
             //MenuItem {
             //    text: 'Map'
             //    onClicked: pageStack.push(map)

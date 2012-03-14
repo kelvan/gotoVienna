@@ -19,6 +19,9 @@ cache_stations = path.join(cache_folder, 'stations.json')
 sql_gps_query = 'SELECT name FROM stations WHERE lat > ? and lat < ? and lon > ? and lon < ?'
 sql_file = path.expanduser('~/.gotovienna/stations.db')
 
+# Favorites store
+favorites_file = path.expanduser('~/.gotovienna/favorites.json')
+
 # iTip
 
 line_overview = 'http://www.wienerlinien.at/itip/linienwahl/'

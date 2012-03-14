@@ -19,10 +19,13 @@ from gotovienna.gps import *
 from gotovienna.update import *
 from gotovienna.config import config as conf
 
+from gotovienna import defaults
+
 import urllib2
 import os
 import sys
 import threading
+import json
 from datetime import time
 
 class Config(QObject):
@@ -81,6 +84,58 @@ class AboutInfo(QObject):
     def getLicense(self):
         return __license__
 
+class FavoriteManager(QObject):
+    def __init__(self):
+        QObject.__init__(self)
+        self._faves = []
+        if os.path.exists(defaults.favorites_file):
+            try:
+                self._faves = json.load(open(defaults.favorites_file, 'r'))
+                self._faves = map(tuple, self._faves)
+                print 'faves loaded:', self._faves
+            except Exception, e:
+                print 'faves load error:', e
+
+    @Slot(result=int)
+    def getCount(self):
+        result = len(self._faves)
+        print 'getCount->', result
+        return result
+
+    @Slot(int, result=unicode)
+    def getItem(self, index):
+        keys = ['gline', 'gdirection', 'gstation', 'sourceurl', 'isstation']
+        result = dict(zip(keys, self._faves[index]))
+        result['name'] = u'%(gline)s -> %(gdirection)s @ %(gstation)s' % result
+        result = json.dumps(result)
+        print 'getItem:', index, result
+        return result
+
+    def _persist(self):
+        print 'persist:', self._faves, '->', defaults.favorites_file
+        try:
+            fp = open(defaults.favorites_file, 'w')
+            json.dump(self._faves, fp)
+            fp.close()
+        except Exception, e:
+            print 'faves save error:', e
+
+    @Slot(unicode, unicode, unicode, unicode, bool, int, result=bool)
+    def isFavorite(self, gline, gdirection, gstation, sourceurl, isstation, x):
+        k = (gline, gdirection, gstation, sourceurl, isstation)
+        return (k in self._faves)
+
+    @Slot(unicode, unicode, unicode, unicode, bool)
+    def toggleFavorite(self, gline, gdirection, gstation, sourceurl, isstation):
+        k = (gline, gdirection, gstation, sourceurl, isstation)
+        if k in self._faves:
+            self._faves.remove(k)
+        else:
+            self._faves.append(k)
+
+        self._persist()
+
+
 class GotoViennaListModel(QAbstractListModel):
     def __init__(self, objects=None):
         QAbstractListModel.__init__(self)
@@ -91,6 +146,7 @@ class GotoViennaListModel(QAbstractListModel):
 
     def set_objects(self, objects):
         self._objects = objects
+        self.reset()
 
     def get_objects(self):
         return self._objects
@@ -278,11 +334,14 @@ if __name__ == '__main__':
     # instantiate the Python object
     itip = Gui()
 
+    favManager = FavoriteManager()
+
     # expose the object to QML
     context = view.rootContext()
     context.setContextProperty('itip', itip)
     context.setContextProperty('aboutInfo', aboutInfo)
     context.setContextProperty('config', config)
+    context.setContextProperty('favManager', favManager)
 
     if os.path.abspath(__file__).startswith('/usr/bin/'):
         # Assume system-wide installation, QML from /usr/share/
