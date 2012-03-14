@@ -18,7 +18,7 @@ Page {
         anchors.fill: parent
         anchors.margins: UIConstants.DEFAULT_MARGIN
 
-        contentHeight: content_column.height + 2 * UIConstants.DEFAULT_MARGIN
+        //contentHeight: content_column.height + 2 * UIConstants.DEFAULT_MARGIN
         flickableDirection: Flickable.VerticalFlick
 
         Component.onCompleted: {
@@ -40,6 +40,10 @@ Page {
                 anchors.left: parent.left
             }
 
+            SettingsHeader {
+                text: 'Location'
+            }
+
             Row {
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -50,7 +54,7 @@ Page {
                     color: !theme.inverted ? UIConstants.COLOR_FOREGROUND : UIConstants.COLOR_INVERTED_FOREGROUND
                     anchors.verticalCenter: parent.verticalCenter
                 }
-                CheckBox {
+                Switch {
                     id: gpsEnable
                     anchors.right: parent.right
                     checked: config.getGpsEnabled()
@@ -77,44 +81,36 @@ Page {
                 id:updateDialog
             }
 
-            Row {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                Text {
-                    text: "Update stations"
-                    anchors.left: parent.left
-                    font.pixelSize: UIConstants.FONT_LARGE
-                    color: !theme.inverted ? UIConstants.COLOR_FOREGROUND : UIConstants.COLOR_INVERTED_FOREGROUND
-                    anchors.verticalCenter: parent.verticalCenter
+            SettingsHeader {
+                text: 'Station List'
+            }
+
+            Button {
+                id: btnUpdate
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Update stations"
+                width: parent.width * .7
+
+                Component.onCompleted: {
+                    if (config.checkStationsUpdate()) {
+                        btnUpdate.color = "green"
+                    }
                 }
 
-                Button {
-                    id: btnUpdate
-                    anchors.right: parent.right
-                    text: "Update"
-                    width: 100
-
-                    Component.onCompleted: {
-                        if (config.checkStationsUpdate()) {
-                            btnUpdate.color = "green"
-                        }
-                    }
-
-                    onClicked: {
-                        var updateAvailable = config.checkStationsUpdate();
-                        if (updateAvailable) {
-                            var updated = config.updateStations();
-                            if (updated !== '') {
-                                updateDialog.text = "Stations updated\nPlease restart app"
-                                txtLastUpdate.text = updated
-                            } else {
-                                updateDialog.text = "[UpdateError]:\nTry again later or send me an email:\n<gotovienna@logic.at>"
-                            }
+                onClicked: {
+                    var updateAvailable = config.checkStationsUpdate();
+                    if (updateAvailable) {
+                        var updated = config.updateStations();
+                        if (updated !== '') {
+                            updateDialog.text = "Stations updated\nPlease restart app"
+                            txtLastUpdate.text = updated
                         } else {
-                            updateDialog.text = "No updates available";
+                            updateDialog.text = "[UpdateError]:\nTry again later or send me an email:\n<gotovienna@logic.at>"
                         }
-                        updateDialog.open();
+                    } else {
+                        updateDialog.text = "No updates available";
                     }
+                    updateDialog.open();
                 }
             }
 
