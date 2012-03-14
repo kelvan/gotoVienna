@@ -9,8 +9,8 @@ __license__ = 'GNU General Public License v3 or later'
 
 from datetime import datetime
 
-from PySide.QtCore import QAbstractListModel, QModelIndex, QObject, Slot, Signal
-from PySide.QtGui import QApplication
+from PySide.QtCore import QAbstractListModel, QModelIndex, QObject, Slot, Signal, Qt
+from PySide.QtGui import QApplication, QTextItem
 from PySide.QtDeclarative import QDeclarativeView
 
 from gotovienna.utils import *
@@ -81,38 +81,53 @@ class AboutInfo(QObject):
     def getLicense(self):
         return __license__
 
-class GotoViennaListModel(QAbstractListModel):
-    def __init__(self, objects=None):
-        QAbstractListModel.__init__(self)
-        if objects is None:
-            objects = []
-        self._objects = objects
-        self.setRoleNames({0: 'modelData'})
+class DepartureModel(QAbstractListModel):
+    LINE_ROLE = Qt.UserRole + 1
+    DIRECTION_ROLE = Qt.UserRole + 2
+    STATION_ROLE = Qt.UserRole + 3
+    TIME_ROLE = Qt.UserRole + 4
+    LOWFLOOR_ROLE = Qt.UserRole + 5
 
-    def set_objects(self, objects):
-        self._objects = objects
+    def __init__(self, parent=None):
+        super(DepartureModel, self).__init__(parent)
+        self._data = []
+        
+        self.keys = {}
+        self.keys[DepartureModel.LINE_ROLE] = 'line'
+        self.keys[DepartureModel.DIRECTION_ROLE] = 'direction'
+        self.keys[DepartureModel.STATION_ROLE] = 'station'
+        self.keys[DepartureModel.TIME_ROLE] = 'time'
+        self.keys[DepartureModel.LOWFLOOR_ROLE] = 'lowfloor'
+        self.setRoleNames(self.keys)
 
-    def get_objects(self):
-        return self._objects
-
-    def get_object(self, index):
-        return self._objects[index.row()]
-
-    def rowCount(self, parent=QModelIndex()):
-        return len(self._objects)
+    def rowCount(self, index):
+        return len(self._data)
 
     def data(self, index, role):
-        if index.isValid():
-            if role == 0:
-                return self.get_object(index)
-        return None
+        if not index.isValid():
+            return None
 
+        if index.row() > len(self._data):
+            return None
+            
+        departure = self._data[index.row()]
+        
+        if self.keys.has_key(role):
+            return departure[self.keys[role]]
+        else:
+            return None
+            
+    def setDepartures(self, dep):
+        self.beginResetModel()
+        self._data = dep
+        self.endResetModel()
 
 class Gui(QObject):
-    def __init__(self):
+    def __init__(self, depModel):
         QObject.__init__(self)
         self.itip = ITipParser()
         self.lines = []
+        self.departureModel = depModel
 
         # Read line names in categorized/sorted order
         for _, lines in categorize_lines(self.itip.lines):
@@ -150,13 +165,13 @@ class Gui(QObject):
 
         threading.Thread(target=load_async).start()
 
-    def map_departure(self, dep):
-        """ prepare departure list for qml gui
-        """
-        dep['lowfloor'] = 1 if dep['lowfloor'] else 0
-        dep['realtime'] = 1 if dep['realtime'] else 0
-        dep['time'] = dep['ftime']
-        return dep
+    #def map_departure(self, dep):
+    #    """ prepare departure list for qml gui
+    #    """
+    #    dep['lowfloor'] = 1 if dep['lowfloor'] else 0
+    #    dep['realtime'] = 1 if dep['realtime'] else 0
+    #    dep['time'] = dep['ftime']
+    #    return dep
 
     departuresLoaded = Signal()
 
@@ -184,8 +199,7 @@ class Gui(QObject):
     @Slot(str)
     def load_departures(self, url):
         def load_async():
-            self.current_departures = map(self.map_departure, \
-                                          self.itip.get_departures(url))
+            self.departureModel.setDepartures(self.itip.get_departures(url))
             #print self.current_departures
             self.departuresLoaded.emit()
 
@@ -194,9 +208,7 @@ class Gui(QObject):
     @Slot(str)
     def load_station_departures(self, station):
         def load_async():
-            self.current_departures = map(self.map_departure, \
-                                          sort_departures(self.itip.get_departures_by_station(station)))
-            #print self.current_departures
+            self.departureModel.setDepartures(sort_departures(self.itip.get_departures_by_station(station)))
             self.departuresLoaded.emit()
 
         threading.Thread(target=load_async).start()
@@ -233,10 +245,6 @@ class Gui(QObject):
     def get_lines(self):
         return self.lines
 
-    @Slot(result='QVariant')
-    def get_departures(self):
-        return self.current_departures
-
     @Slot(float, float, result='QStringList')
     def get_nearby_stations(self, lat, lon):
         try:
@@ -245,27 +253,6 @@ class Gui(QObject):
             # No/wrong stations.db file
             return []
 
-    @Slot(str, str)
-    def search(self, line, station):
-        line = line.upper()
-        station = station.decode('utf-8')
-        print line, station
-
-        if line not in self.lines:
-            return "Invalid line"
-
-        try:
-            stations = sorted(self.itip.get_stations(line).items())
-            print stations
-            headers, stations = zip(*stations)
-            print headers
-            print stations
-            details = [(direction, name, url) for direction, stops in stations
-                        for name, url in stops if match_station(station, name)]
-            print details
-        except urllib2.URLError as e:
-            print e.message
-            return e.message
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -274,16 +261,18 @@ if __name__ == '__main__':
 
     aboutInfo = AboutInfo()
     config = Config()
+    departureModel = DepartureModel()
 
     # instantiate the Python object
-    itip = Gui()
+    itip = Gui(departureModel)
 
     # expose the object to QML
     context = view.rootContext()
     context.setContextProperty('itip', itip)
     context.setContextProperty('aboutInfo', aboutInfo)
     context.setContextProperty('config', config)
-
+    context.setContextProperty('resultModel', departureModel)
+    
     if os.path.abspath(__file__).startswith('/usr/bin/'):
         # Assume system-wide installation, QML from /usr/share/
         view.setSource('/usr/share/gotovienna/qml/main.qml')

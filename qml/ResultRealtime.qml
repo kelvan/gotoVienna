@@ -42,15 +42,6 @@ Item {
 
         onDeparturesLoaded: {
             busy = false
-            departuresModel.clear()
-
-            var departures = itip.get_departures()
-
-            for (var d in departures) {
-                console.log('time: ' + departures[d].time)
-                var row = {'line': departures[d].line, 'station': departures[d].station, 'destination': departures[d].direction, 'departure': departures[d].time, 'lowfloor': departures[d].lowfloor}
-                departuresModel.append(row)
-            }
         }
     }
 
@@ -75,7 +66,7 @@ Item {
                     spacing: 10
                     Text {
                         id: l
-                        text: line // <----
+                        text: model.line // <----
                         anchors.verticalCenter: parent.verticalCenter
                         //width: 70
                         font.pixelSize: UIConstants.FONT_XLARGE
@@ -89,7 +80,7 @@ Item {
 
                         Text {
                             id: s
-                            text: station // <----
+                            text: model.station // <----
                             width: parent.parent.parent.width - l.width - dep.width - 15
                             elide: Text.ElideRight
                             font.pixelSize: UIConstants.FONT_LARGE
@@ -99,7 +90,7 @@ Item {
 
                         Text {
                             id: d
-                            text: destination // <----
+                            text: model.direction // <----
                             width: parent.parent.parent.width - l.width - dep.width - 15
                             elide: Text.ElideRight
                             color: !theme.inverted ? UIConstants.COLOR_SECONDARY_FOREGROUND : UIConstants.COLOR_INVERTED_SECONDARY_FOREGROUND
@@ -116,10 +107,10 @@ Item {
                 Text {
                     id: dep
                     // FIXME strange int float transformation appears
-                    text: departure
+                    text: model.time
                     anchors.right: parent.right
                     anchors.rightMargin: UIConstants.DEFAULT_MARGIN
-                    font.italic: lowfloor == 1
+                    font.italic: lowfloor
                     font.bold: true
                     font.pixelSize: UIConstants.FONT_XLARGE
                     font.family: ExtrasConstants.FONT_FAMILY_LIGHT
@@ -166,9 +157,7 @@ Item {
             }
         }
 
-        model: ListModel {
-            id: departuresModel
-        }
+        model: resultModel
         delegate: departureDelegate
 
         visible: !resultRealtime.busy && isCorrectInput()

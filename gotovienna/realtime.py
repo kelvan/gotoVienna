@@ -194,8 +194,12 @@ class ITipParser:
         if msg and len(msg) > 0 and unicode(msg[0].text).find(u'technischen St') > 0:
             print '\n'.join(map(lambda x: x.text.replace('&nbsp;', ''), msg))
             return []
-
-        lines = bs.find('form', {'name': 'mainform'}).table.findAll('tr')[1]
+        
+        mainform = bs.find('form', {'name': 'mainform'})
+        if not mainform:
+            return []
+        
+        lines = mainform.table.findAll('tr')[1]
 
         if len(lines.findAll('td', {'class': 'info'})) > 0:
             station = lines.span.text.replace('&nbsp;', '')
