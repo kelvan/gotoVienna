@@ -7,6 +7,7 @@ import "ExtrasConstants.js" as ExtrasConstants
 
 Page {
     tools: commonTools
+    orientationLock: PageOrientation.LockPortrait
 
     property bool canRefresh: realtimeResult.sourceUrl != '' || (realtimeResult.isStation && realtimeResult.gstation != '')
     //property alias stationSelect: stationSelector

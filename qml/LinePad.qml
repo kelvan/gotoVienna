@@ -6,6 +6,8 @@ Rectangle {
     id: linePad
     property alias currentLine: inputLine.text
 
+    signal accept
+
     /* List of available lines - will be filled w/ real data by LineSheet */
     property variant availableLines: ['59A', '63A', '58']
 
@@ -15,6 +17,7 @@ Rectangle {
         if (matches !== undefined) {
             if (matches.length == 1) {
                 inputLine.text = matches[0];
+                accept();
             }
         }
     }
@@ -126,9 +129,7 @@ Rectangle {
             Behavior on opacity { PropertyAnimation { } }
 
             color: {
-                if (ch == 'U') {
-                    return '#156ab8';
-                } else if (inputState.isMetro) {
+                if (inputState.isMetro) {
                     switch (ch) {
                         case 1: return '#E20A16';
                         case 2: return '#764785';
@@ -144,7 +145,18 @@ Rectangle {
             x: width*(index%3)
             y: inputLine.height + height*parseInt(index/3)
 
+            Image {
+                source: 'ubahnicon.png'
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                    bottom: parent.bottom
+                }
+                visible: (inputElement.ch === 'U')
+            }
+
             Text {
+                id: text
+                visible: (inputElement.ch !== 'U')
                 anchors.centerIn: parent
                 text: modelData
                 font {
