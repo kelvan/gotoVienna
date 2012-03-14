@@ -90,7 +90,7 @@ Item {
 
                         Text {
                             id: d
-                            text: model.direction // <----
+                            text: model.direction // <---   -
                             width: parent.parent.parent.width - l.width - dep.width - 15
                             elide: Text.ElideRight
                             color: !theme.inverted ? UIConstants.COLOR_SECONDARY_FOREGROUND : UIConstants.COLOR_INVERTED_SECONDARY_FOREGROUND
