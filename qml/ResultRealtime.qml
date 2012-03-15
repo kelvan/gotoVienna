@@ -132,7 +132,7 @@ Item {
         id: list
         width: parent.width; height: parent.height
 
-        header: Rectangle {
+        /*header: Rectangle {
             width: parent.width
             height: childrenRect.height + 2*UIConstants.DEFAULT_MARGIN
             color: "lightsteelblue"
@@ -155,7 +155,7 @@ Item {
                 font.family: ExtrasConstants.FONT_FAMILY_LIGHT
                 font.pixelSize: UIConstants.FONT_LSMALL
             }
-        }
+        }*/
 
         model: resultModel
         delegate: departureDelegate
