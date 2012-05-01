@@ -28,7 +28,10 @@ class Departure(dict):
         if type(time) == datetime:
             # FIXME convert in ModelList
             self['realtime'] = False
-            self['time'] = (time - now).seconds/60
+            if time >= now:
+                self['time'] = (time - now).seconds/60
+            else:
+                self['time'] = -1 * (now - time).seconds/60
             self['departure'] = time
         elif type(time) == int:
             # FIXME convert in ModelList
