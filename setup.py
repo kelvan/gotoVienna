@@ -35,6 +35,7 @@ AUTHOR, EMAIL = re.match(r'(.*) <(.*)>', AUTHOR_EMAIL).groups()
 DATA_FILES = [
         ('share/gotovienna', ['images/gotovienna_qml80.png', 'images/splash.png', 'images/splashlandscape.png']),
         ('share/gotovienna/qml', glob.glob('qml/*')),
+        ('', glob.glob(['images/screenshots/*_screenshot.png', 'images/icon.png'])),
 ]
 
 setup(cmdclass={'bdist_hdeb': bdist_hdeb},
