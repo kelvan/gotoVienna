@@ -255,10 +255,17 @@ class rParser:
 
                 def extract_datetime(gr, n):
                     if 'date%d' % n in gr and gr['date%d' % n]:
+                        if gr['time%d' % n] == '24:00':
+                            gr['time%d' % n] = '0:00'
                         from_dtime = datetime.strptime(str(datetime.today().year) + gr['date%d' % n] + gr['time%d' % n], '%Y%d.%m.%H:%M')
                     else:
-                        t = datetime.strptime(gr['time%d' % n], '%H:%M').time()
                         d = datetime.today().date()
+                        # Strange times possible at wienerlinien
+                        if gr['time%d' % n] == '24:00':
+                            gr['time%d' % n] = '0:00'
+                            d += timedelta(days=1)
+                        t = datetime.strptime(gr['time%d' % n], '%H:%M').time()
+                        
                         return datetime.combine(d, t)
 
                 # detail mode
