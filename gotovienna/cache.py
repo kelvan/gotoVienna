@@ -78,6 +78,8 @@ class Stations(dict):
     def load(cls):
         s = load(defaults.cache_stations, dict)
         if s:
+            print "load stations from cache"
             cls.stations = s
         else:
+            print "load stations from internet"
             cls.stations = {}

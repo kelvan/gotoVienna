@@ -4,7 +4,7 @@ from gotovienna.BeautifulSoup import BeautifulSoup
 #from urllib2 import urlopen
 from urllib import quote_plus
 # Use urlopen proxy for fake user agent
-from UrlOpener import urlopen
+from UrlOpener import urlopen, loadCookie
 from datetime import time, datetime, timedelta
 import datetime as date
 import re
@@ -14,6 +14,7 @@ import cache
 from cache import Stations
 from time import sleep
 from utils import sort_departures
+from Levenshtein import distance
 
 from gotovienna import defaults
 
@@ -48,23 +49,26 @@ class Departure(dict):
 class ITipParser:
     def __init__(self):
         self._lines = cache.lines
+        
 
     def parse_stations(self, html):
         bs = BeautifulSoup(html)
-        tables = bs.findAll('table', {'class': 'text_10pix'})
+        tables = bs.findAll('table', {'class':'show_fw'})
         st = {}
 
-        for i in range(2):
-            dir = tables[i].div.contents[-1].strip()[6:-6]
 
+        for i in range(2):
+            trs = tables[i].findAll('tr')
+            direction = trs[0].th.text.strip('&nbsp;').strip()
+            
             sta = []
-            for tr in tables[i].findAll('tr', {'onmouseout': 'obj_unhighlight(this);'}):
+            for tr in trs[3:-1]:
                 if tr.a:
-                    sta.append((tr.a.text, defaults.line_overview + tr.a['href']))
+                    sta.append((tr.a.text, defaults.base_url + tr.a['href']))
                 else:
                     sta.append((tr.text.strip('&nbsp;'), None))
 
-            st[dir] = sta
+            st[direction] = sta
         return st
 
     def get_stations(self, name):
@@ -77,7 +81,8 @@ class ITipParser:
         st = Stations(name)
 
         if not st:
-            st = self.parse_stations(urlopen(self.lines[name]).read())
+            urlopen(defaults.stations % name)
+            st = self.parse_stations(urlopen(defaults.stations % name).read())
 
         return st
 
@@ -86,7 +91,7 @@ class ITipParser:
         """
         bs = BeautifulSoup(html)
         # get tables
-        lines = bs.findAll('td', {'class': 'linie'})
+        lines = bs.findAll('td', {'class':'auswahl'})
 
         l = {}
 
@@ -105,6 +110,7 @@ class ITipParser:
         """ Dictionary of Line names with url as value
         """
         if not self._lines:
+            print "Load lines"
             self._lines = self.parse_lines(urlopen(defaults.line_overview).read())
 
         return self._lines
@@ -176,13 +182,18 @@ class ITipParser:
         # TODO 2. more error handling
         # TODO 3. ultimative error handling
 
-        html = urlopen(defaults.departures_by_station % quote_plus(station.encode('UTF-8'))).read()
+        station = station.encode('UTF-8')
+        html = urlopen(defaults.departures_by_station % quote_plus(station)).read()
 
         li = BeautifulSoup(html).ul.findAll('li')
 
         if li[0].a:
-            # Dirty workaround for ambiguous station
-            html = urlopen(defaults.qando + li[0].a['href']).read()
+            # calculate levenshtein distance of results
+            st = map(lambda x: (distance(station, x.a.text), x.a.text, x.a['href']), li)
+            # take result with lowest levenshtein distance
+            lnk = min(st)[2]
+            
+            html = urlopen(defaults.qando + lnk).read()
 
         dep = self.parse_departures_by_station(html)
 
