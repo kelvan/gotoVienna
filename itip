@@ -73,15 +73,16 @@ if args.line in itip.lines:
     warns = []
     st = []
     for warning in warnings:
-        if warning['station'] in st:
-            # duplicated
-            continue
-        else:
-            st.append(warning['station'])
+        if warning.has_key('station'):
+            if warning['station'] in st:
+                # duplicated
+                continue
+            else:
+                st.append(warning['station'])
         t = ''
         report_date = warning['reportDate']
         if type(report_date) == date:
-            if report_date == date.today().date():
+            if report_date == date.today():
                 t = 'today'
             else:
                 # static warnings from other days aren't interesting
@@ -96,7 +97,10 @@ if args.line in itip.lines:
             else:
                 t = '%d minutes ago' % minutes
         
-        warns.append('%s(%s)' % (warning['station'], t))
+        if warning.has_key('station'):
+            warns.append('%s(%s)' % (warning['station'], t))
+        else:
+            warns.append('%s(%s)' % ('generic', t))
 
     if warns:
         print inred('Schwarzkappler alert:'), ', '.join(warns)
