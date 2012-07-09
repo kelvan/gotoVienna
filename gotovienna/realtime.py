@@ -18,6 +18,9 @@ from Levenshtein import distance
 
 from gotovienna import defaults
 
+DELTATIME_REGEX = re.compile('.*(\d+).*min.*')
+ABSTIME_REGEX = re.compile('.*(\d{2}:\d{2}).*')
+
 class Departure(dict):
     def __init__(self, line, station, direction, time, lowfloor):
         self['line'] = line
@@ -209,49 +212,39 @@ class ITipParser:
             print '\n'.join(map(lambda x: x.text.replace('&nbsp;', ''), msg))
             return []
         
-        mainform = bs.find('form', {'name': 'mainform'})
-        if not mainform:
+        errtable = bs.find('table', {'class':'errortable'})
+        if errtable:
+            print errtable.text
             return []
         
-        lines = mainform.table.findAll('tr')[1]
-
-        if len(lines.findAll('td', {'class': 'info'})) > 0:
-            station = lines.span.text.replace('&nbsp;', '')
-            line = lines.findAll('span')[-1].text.replace('&nbsp;', '')
-        else:
-            station = lines.td.span.text.replace('&nbsp;', '')
-            line = lines.find('td', {'align': 'right'}).span.text.replace('&nbsp;', '')
-
-        result_lines = bs.findAll('table')[-1].findAll('tr')
-
+        table = bs.find('table', {'class':'imagetable'})
+        if not table:
+            print "table not found"
+            return []
+        
         dep = []
-        for tr in result_lines[1:]:
-            d = {'station': station}
-            th = tr.findAll('th')
+        trs = table.findAll('tr')
+        
+        station = bs.table.tr.findAll('td')[-1].text.strip().strip('&nbsp;')
+        for tr in trs[1:]:
+            tds = tr.findAll('td')
+            d = {'line': tds[0].text.strip('&nbsp;'),
+                 'direction': tds[1].text.strip('&nbsp;'),
+                 'lowfloor': tds[3].img != None,
+                 'station': station}
 
-            if len(th) < 2:
-                #TODO replace with logger
-                print "[DEBUG] Unable to find th in:\n%s" % str(tr)
-            elif len(th) == 2:
-                # underground site looks different -.-
-                d['lowfloor'] = True
-                d['line'] = line
-                d['direction'] = th[0].text.replace('&nbsp;', '')
-                t = th[-1]
-            else:
-                # all other lines
-                d['lowfloor'] = th[-1].find('img') and th[-1].img.has_key('alt')
-                d['line'] = th[0].text.replace('&nbsp;', '')
-                d['direction'] = th[1].text.replace('&nbsp;', '')
-                t = th[-2]
             # parse time
-            tim = t.text.split(' ')
-            if len(tim) < 2:
-                # print '[WARNING] Invalid time: %s' % time
-                # TODO: Issue a warning OR convert "HH:MM" format to countdown
-                tim = tim[0]
-            else:
-                tim = tim[1]
+            tim = tds[2].text.strip('&nbsp;')
+            dts = DELTATIME_REGEX.search(tim)
+            abs = ABSTIME_REGEX.search(tim)
+            
+            if dts:
+                # is timedelta
+                d['time'] = dts.group(1)
+            elif tim.isdigit():
+                d['time'] = int(tim)
+            elif abs:
+                d['time'] = calc_datetime(abs.group(1))
 
             if tim.find('rze...') >= 0:
                     d['time'] = 0
@@ -259,7 +252,7 @@ class ITipParser:
                 # if time to next departure in cell convert to int
                 d['time'] = int(tim)
             else:
-                # check if time of next departue in cell
+                # check if time of next departure in cell
                 t = tim.strip('&nbsp;').split(':')
                 if len(t) == 2 and all(map(lambda x: x.isdigit(), t)):
                     t = map(int, t)
@@ -289,7 +282,9 @@ class ITipParser:
         tries = 2 # try a second time before return empty list
 
         while retry < tries:
-            html = urlopen(url + "&departureSizeTimeSlot=90").read()
+            # http://www.wienerlinien.at/itip/linienwahl/anzeige.php?PHPSESSID=8ojk9788jlp69mbqtnqvqaqkg5&departureSizeTimeSlot=70&sortType=abfSort
+            urlopen(url)
+            html = urlopen(url + "&departureSizeTimeSlot=70").read()
             dep = self.parse_departures(html)
 
             if dep:
@@ -368,9 +363,6 @@ def categorize_lines(lines):
         for key in sorted(categorized_lines)]
 
 def make_datetime(date, time):
-    """ Ugly workaround, immutable datetime ftw -.-
-        If 
-    """
     if date.hour > time.hour:
         date = date + timedelta(1)
     return datetime(year=date.year,
@@ -379,3 +371,17 @@ def make_datetime(date, time):
                     hour=time.hour,
                     minute=time.minute,
                     second=time.second)
+
+def calc_datetime(timestr):
+    """ Build datetime from time string ('HH:MM')
+    """
+    hour, minute = timestr.split()
+    t = time(int(hour), int(minute))
+    now = datetime.now() 
+    
+    day = now.today().date()
+    if now.time > t:
+        # time propably tomorrow
+        day += 1
+        
+    return make_datetime(day, t)
