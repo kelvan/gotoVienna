@@ -16,6 +16,48 @@ args = parser.parse_args()
 
 itip = ITipParser()
 
+def show_schwarzkappler_warnings():
+    # Schwarzkappler alert ;)
+    warnings = get_all_warnings(args.line)
+    warns = []
+    st = []
+    for warning in warnings:
+        if warning.has_key('station'):
+            if warning['station'] in st:
+                # duplicated
+                continue
+            else:
+                st.append(warning['station'])
+        t = ''
+        report_date = warning['reportDate']
+        if type(report_date) == date:
+            if report_date == date.today():
+                t = 'today'
+            else:
+                # static warnings from other days aren't interesting
+                continue
+        elif type(report_date == datetime):
+            delta = now - report_date
+            m = delta.seconds/60
+            hours = m/60
+            minutes = m%60
+            if hours:
+                t = '%d hours and %d minutes ago' % (hours, minutes)
+            else:
+                t = '%d minutes ago' % minutes
+        
+        if warning.has_key('station'):
+            warns.append('%s(%s)' % (warning['station'], t))
+        else:
+            warns.append('%s(%s)' % ('generic', t))
+
+    if warns:
+        print inred('Schwarzkappler alert:'), ', '.join(warns)
+    else:
+        print ingreen('No schwarzkappler warnings')
+
+    print
+
 if args.line:
     # Convert line name to uppercase (e.g. 'u4' -> 'U4')
     args.line = args.line.upper()
@@ -68,47 +110,6 @@ if args.line in itip.lines:
         print inred('No station matched your query.')
         print
 
-    # Schwarzkappler alert ;)
-    warnings = get_all_warnings(args.line)
-    warns = []
-    st = []
-    for warning in warnings:
-        if warning.has_key('station'):
-            if warning['station'] in st:
-                # duplicated
-                continue
-            else:
-                st.append(warning['station'])
-        t = ''
-        report_date = warning['reportDate']
-        if type(report_date) == date:
-            if report_date == date.today():
-                t = 'today'
-            else:
-                # static warnings from other days aren't interesting
-                continue
-        elif type(report_date == datetime):
-            delta = now - report_date
-            m = delta.seconds/60
-            hours = m/60
-            minutes = m%60
-            if hours:
-                t = '%d hours and %d minutes ago' % (hours, minutes)
-            else:
-                t = '%d minutes ago' % minutes
-        
-        if warning.has_key('station'):
-            warns.append('%s(%s)' % (warning['station'], t))
-        else:
-            warns.append('%s(%s)' % ('generic', t))
-
-    if warns:
-        print inred('Schwarzkappler alert:'), ', '.join(warns)
-    else:
-        print ingreen('No schwarzkappler warnings')
-
-    print
-
     # Format a departure time (in minutes from now) for display
     def format_departure(departure):
         minutes = departure['time']
@@ -132,6 +133,9 @@ if args.line in itip.lines:
         else:
             print '  No departure information.'
         print
+        
+    show_schwarzkappler_warnings()
+    
 else:
     ITEMS_PER_LINE = 12
     ITEM_WIDTH = 5

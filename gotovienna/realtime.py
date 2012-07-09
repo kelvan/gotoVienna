@@ -59,10 +59,9 @@ class ITipParser:
         tables = bs.findAll('table', {'class':'show_fw'})
         st = {}
 
-
         for i in range(2):
             trs = tables[i].findAll('tr')
-            direction = trs[0].th.text.strip('&nbsp;').strip()
+            direction = trs[0].find('th', {'colspan':'2'}).text.strip('&nbsp;').strip()
             
             sta = []
             for tr in trs[3:-1]:
