@@ -77,7 +77,7 @@ Page {
                 }
             }
 
-            UpdateDialog {
+            InfoDialog {
                 id:updateDialog
             }
 
@@ -111,6 +111,37 @@ Page {
                         updateDialog.text = "No updates available";
                     }
                     updateDialog.open();
+                }
+            }
+
+            InfoDialog {
+                id:clearDialog
+            }
+
+            SettingsHeader {
+                text: 'Cache'
+            }
+
+            Button {
+                id: btnClearCache
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Clear"
+                width: parent.width * .7
+
+                Component.onCompleted: {
+                    if (config.checkClearedCache()) {
+                        btnClearCache.color = "green"
+                    }
+                }
+
+                onClicked: {
+                    var cleared = config.clearCache();
+                    if (cleared) {
+                        clearDialog.text = "Cache cleared"
+                    } else {
+                        updateDialog.text = "[ClearError]:\nTry again later or send me an email:\n<gotovienna@logic.at>"
+                    }
+                    clearDialog.open();
                 }
             }
 

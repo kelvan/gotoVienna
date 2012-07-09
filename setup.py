@@ -37,8 +37,8 @@ DATA_FILES = [
         ('share/gotovienna/qml', glob.glob('qml/*')),
 ]
 
-setup(cmdclass={'bdist_hdeb': bdist_hdeb},
-      name=PACKAGE,
+#setup(cmdclass={'bdist_hdeb': bdist_hdeb},
+setup(name=PACKAGE,
       version=VERSION,
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,

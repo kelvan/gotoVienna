@@ -226,6 +226,7 @@ class ITipParser:
         trs = table.findAll('tr')
         
         station = bs.table.tr.findAll('td')[-1].text.strip().strip('&nbsp;')
+        
         for tr in trs[1:]:
             tds = tr.findAll('td')
             d = {'line': tds[0].text.strip('&nbsp;'),
@@ -245,22 +246,11 @@ class ITipParser:
                 d['time'] = int(tim)
             elif abs:
                 d['time'] = calc_datetime(abs.group(1))
-
-            if tim.find('rze...') >= 0:
-                    d['time'] = 0
-            elif tim.isdigit():
-                # if time to next departure in cell convert to int
-                d['time'] = int(tim)
+            elif tim.find('rze...') >= 0:
+                d['time'] = 0
             else:
-                # check if time of next departure in cell
-                t = tim.strip('&nbsp;').split(':')
-                if len(t) == 2 and all(map(lambda x: x.isdigit(), t)):
-                    t = map(int, t)
-                    d['time'] = make_datetime(datetime.now(), time(*t))
-                else:
-                    # Unexpected content
-                    #TODO replace with logger
-                    print "[DEBUG] Invalid data:\n%s" % time
+                print "ERROR", tim
+                continue
 
             dep.append(Departure(**d))
 

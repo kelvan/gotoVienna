@@ -4,7 +4,9 @@
 from gotovienna import argparse
 from gotovienna.utils import *
 from gotovienna.realtime import *
-from datetime import time
+from schwarzkappler.provider_enabled import get_all_warnings
+
+from datetime import date, time, datetime
 
 parser = argparse.ArgumentParser(description='Get realtime public transport information for Vienna')
 parser.add_argument('line', nargs='?', help='line name (e.g. 59A)')
@@ -24,6 +26,8 @@ if args.station:
 if args.line in itip.lines:
     ITEM_WIDTH = 33
     ITEM_SPACING = 4
+    
+    now = datetime.now()
 
     # FIXME: change get_stations() to return (headers, stations) directly
     stations = sorted(itip.get_stations(args.line).items())
@@ -63,6 +67,43 @@ if args.line in itip.lines:
     if args.station and not details:
         print inred('No station matched your query.')
         print
+
+    # Schwarzkappler alert ;)
+    warnings = get_all_warnings(args.line)
+    warns = []
+    st = []
+    for warning in warnings:
+        if warning['station'] in st:
+            # duplicated
+            continue
+        else:
+            st.append(warning['station'])
+        t = ''
+        report_date = warning['reportDate']
+        if type(report_date) == date:
+            if report_date == date.today().date():
+                t = 'today'
+            else:
+                # static warnings from other days aren't interesting
+                continue
+        elif type(report_date == datetime):
+            delta = now - report_date
+            m = delta.seconds/60
+            hours = m/60
+            minutes = m%60
+            if hours:
+                t = '%d hours and %d minutes ago' % (hours, minutes)
+            else:
+                t = '%d minutes ago' % minutes
+        
+        warns.append('%s(%s)' % (warning['station'], t))
+
+    if warns:
+        print inred('Schwarzkappler alert:'), ', '.join(warns)
+    else:
+        print ingreen('No schwarzkappler warnings')
+
+    print
 
     # Format a departure time (in minutes from now) for display
     def format_departure(departure):

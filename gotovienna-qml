@@ -185,6 +185,7 @@ class Gui(QObject):
 
         # Read line names in categorized/sorted order
         for _, lines in categorize_lines(self.itip.lines):
+            print lines
             self.lines.extend(lines)
 
         self.current_line = ''

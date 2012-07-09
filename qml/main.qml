@@ -25,9 +25,16 @@ PageStackWindow {
 
     PositionSource {
         id: positionSource
-        updateInterval: 15000
+        updateInterval: 10000
 
-        active: config.getGpsEnabled() && !(position.longitudeValid && position.latitudeValid)
+        onActiveChanged: {
+            if (config.getGpsEnabled()) {
+                positionSource.start()
+            } else {
+                positionSource.stop()
+            }
+        }
+
     }
 
     ToolBarLayout {
@@ -52,18 +59,6 @@ PageStackWindow {
               onClicked: mainPage.refresh()
         }
 
-        Text {
-            id: debugText
-            text: ''
-
-            anchors {
-                left: logo.right
-                leftMargin: 10
-                top: parent.top
-                topMargin: 10
-            }
-            font.pixelSize: 16
-        }
     }
 
     Settings{id: settings}

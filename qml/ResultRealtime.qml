@@ -130,33 +130,8 @@ Item {
 
     ListView {
         id: list
+        
         width: parent.width; height: parent.height
-
-        /*header: Rectangle {
-            width: parent.width
-            height: childrenRect.height + 2*UIConstants.DEFAULT_MARGIN
-            color: "lightsteelblue"
-            radius: 5.0
-            smooth: true
-
-            Text {
-                id: header
-
-                anchors {
-                    top: parent.top
-                    left: parent.left
-                    right: parent.right
-                    margins: UIConstants.DEFAULT_MARGIN
-                }
-
-                text: 'Richtung ' + gdirection
-                elide: Text.ElideRight
-                font.bold: true
-                font.family: ExtrasConstants.FONT_FAMILY_LIGHT
-                font.pixelSize: UIConstants.FONT_LSMALL
-            }
-        }*/
-
         model: resultModel
         delegate: departureDelegate
 
