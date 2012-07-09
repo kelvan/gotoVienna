@@ -18,6 +18,9 @@ class Schwarzkappler(Provider):
         cls.info = {}
         for div in divs:
             line = div.h1.text
+            if line == '!':
+                # No reports
+                break
             mz = div.find('div', {'class':'meldung_zeit'}).b.text
             r = TIMEDELTA_REGEX.search(mz)
             hours = r.group('hours')
