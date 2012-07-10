@@ -14,7 +14,11 @@ import cache
 from cache import Stations
 from time import sleep
 from utils import sort_departures
-from Levenshtein import distance
+try:
+    from Levenshtein import distance
+except:
+    print "Cannot import Levenshtein.distance, use fallback"
+    distance = lambda x, y: (y*1.0) / x
 
 from gotovienna import defaults
 
