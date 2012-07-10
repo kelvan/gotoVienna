@@ -16,6 +16,7 @@ docstrings = re.findall('"""(.*?)"""', main_py, re.DOTALL)
 # List the modules that need to be installed/packaged
 PACKAGES = (
         PACKAGE,
+	'mechanize',
 )
 
 # Metadata fields extracted from SCRIPT_FILE
