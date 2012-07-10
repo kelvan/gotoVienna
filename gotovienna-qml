@@ -63,6 +63,11 @@ class Config(QObject):
             return check_stations_update()
         except:
             return False
+    
+    @Slot(result=bool)
+    def clearCache(self):
+        print "TODO clear cache"
+        return True
 
 class AboutInfo(QObject):
     def __init__(self):
@@ -276,7 +281,6 @@ class Gui(QObject):
                 stations = get_nearby_stations(lat, lon)
                 print stations
                 for station in stations:
-                    print station
                     try:
                         self.current_departures += self.itip.get_departures_by_station(station)
                     except Exception as e:
@@ -306,6 +310,7 @@ class Gui(QObject):
             return get_nearby_stations(lat, lon)
         except BaseException as e:
             # No/wrong stations.db file
+            print e.message
             return []
 
 

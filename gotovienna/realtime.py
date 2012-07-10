@@ -18,7 +18,7 @@ from Levenshtein import distance
 
 from gotovienna import defaults
 
-DELTATIME_REGEX = re.compile('.*(\d+).*min.*')
+DELTATIME_REGEX = re.compile('.*(\d+).*')
 ABSTIME_REGEX = re.compile('.*(\d{2}:\d{2}).*')
 
 class Departure(dict):
@@ -192,14 +192,15 @@ class ITipParser:
         if li[0].a:
             # calculate levenshtein distance of results
             st = map(lambda x: (distance(station, x.a.text), x.a.text, x.a['href']), li)
+            print st
             # take result with lowest levenshtein distance
             lnk = min(st)[2]
+            print lnk
             
             html = urlopen(defaults.qando + lnk).read()
 
         dep = self.parse_departures_by_station(html)
 
-        self.parse_departures_by_station(html)
         return dep
 
     def parse_departures(self, html):
@@ -240,7 +241,7 @@ class ITipParser:
             
             if dts:
                 # is timedelta
-                d['time'] = dts.group(1)
+                d['time'] = int(dts.group(1))
             elif tim.isdigit():
                 d['time'] = int(tim)
             elif abs:
