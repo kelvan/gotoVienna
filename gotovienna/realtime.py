@@ -64,7 +64,7 @@ class ITipParser:
             direction = trs[0].find('th', {'colspan':'2'}).text.strip('&nbsp;').strip()
             
             sta = []
-            for tr in trs[3:-1]:
+            for tr in trs[2:-1]:
                 if tr.a:
                     sta.append((tr.a.text, defaults.base_url + tr.a['href']))
                 else:
