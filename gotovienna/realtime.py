@@ -22,7 +22,7 @@ except:
 
 from gotovienna import defaults
 
-DELTATIME_REGEX = re.compile('.*(\d+).*')
+DELTATIME_REGEX = re.compile('.*?(\d+).*?')
 ABSTIME_REGEX = re.compile('.*(\d{2}:\d{2}).*')
 
 class Departure(dict):
@@ -243,13 +243,13 @@ class ITipParser:
             dts = DELTATIME_REGEX.search(tim)
             abs = ABSTIME_REGEX.search(tim)
             
-            if dts:
-                # is timedelta
-                d['time'] = int(dts.group(1))
+            if abs:
+                d['time'] = calc_datetime(abs.group(1))
             elif tim.isdigit():
                 d['time'] = int(tim)
-            elif abs:
-                d['time'] = calc_datetime(abs.group(1))
+            elif dts:
+                # is timedelta
+                d['time'] = int(dts.group(1))
             elif tim.find('rze...') >= 0:
                 d['time'] = 0
             else:
@@ -357,7 +357,7 @@ def categorize_lines(lines):
         for key in sorted(categorized_lines)]
 
 def make_datetime(date, time):
-    if date.hour > time.hour:
+    if datetime.now().hour > time.hour:
         date = date + timedelta(1)
     return datetime(year=date.year,
                     month=date.month,
@@ -369,12 +369,12 @@ def make_datetime(date, time):
 def calc_datetime(timestr):
     """ Build datetime from time string ('HH:MM')
     """
-    hour, minute = timestr.split()
+    hour, minute = timestr.split(':')
     t = time(int(hour), int(minute))
     now = datetime.now() 
     
     day = now.today().date()
-    if now.time > t:
+    if now.time() > t:
         # time propably tomorrow
         day += 1
         
