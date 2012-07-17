@@ -195,11 +195,13 @@ class ITipParser:
 
         if li[0].a:
             # calculate levenshtein distance of results
-            st = map(lambda x: (distance(station, x.a.text), x.a.text, x.a['href']), li)
-            print st
+            st = map(lambda x: (distance(station, x.a.text.encode('UTF-8')), x.a.text.encode('UTF-8'), x.a['href']), li)
             # take result with lowest levenshtein distance
-            lnk = min(st)[2]
-            print lnk
+            s = min(st)
+            lnk = s[2]
+            
+            if len(st) > 1:
+                print "Multiple results found, using best match:", s[1]
             
             html = urlopen(defaults.qando + lnk).read()
 
