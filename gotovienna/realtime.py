@@ -65,7 +65,6 @@ class ITipParser:
         for i in range(2):
             trs = tables[i].findAll('tr')
             direction = clean_text(trs[0].text.replace('Fahrtrichtung', ''))
-            print direction 
             
             sta = []
             for tr in trs[2:-1]:
