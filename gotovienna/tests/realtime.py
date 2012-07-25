@@ -66,6 +66,13 @@ def test_departures_U2_3min_8min():
     assert_equal(u'Aspernstrasse', dep[0]['direction'])
     assert_equal(u'Karlsplatz', dep[0]['station'])
 
+def test_departures_U2_last():
+    dep = parser.parse_departures(load_data('underground/U2_last.htm'))
+    assert_equal(1, len(dep))
+    assert_equal(6, dep[0]['time'])
+    assert_equal(u'Aspernstrasse', dep[0]['direction'])
+    assert_equal(u'Rathaus', dep[0]['station'])
+
 def test_departures_lowfloor():
     dep = parser.parse_departures(load_data('tram/41_1min_11min_21min.htm'))
     assert_true(dep[0]['lowfloor'])

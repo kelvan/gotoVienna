@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- #BeginTemplate "/Templates/itip.dwt" --><!-- DW6 -->
+<head>
+<!-- #BeginEditable "doctitle" -->
+<title>Wiener Linien - i.tip-Abfahrtsanzeige</title>
+<!-- #EndEditable -->
+<meta http-equiv="content-type" content="text/html;charset=iso-8859-15" />
+<meta http-equiv="expires" content="0">
+<meta http-equiv="Cache-Control" content="max-age=0"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="robots" content="Index, Follow" />
+<!-- #BeginEditable "version" -->
+<meta name="date" content='2012-07-07'>
+<meta name="version" content="v2.0" />
+<!-- #EndEditable -->
+<!-- #BeginEditable "scripts" --><!-- #EndEditable --><!-- #BeginEditable "css" -->
+<link href="../css/itip.css" rel="stylesheet" type="text/css" />
+<!-- #EndEditable -->
+</head>
+<body topmargin="0" onLoad="javascript:window.setTimeout('location.reload()',30000);">
+<!-- #BeginEditable "doc_content" -->
+<form method="get" action="/itip/linienwahl/anzeige.php" name="mainform">
+	<input type="hidden" name="PHPSESSID" value="i8ll4u04lgojma571p8jo5efn6">
+	<div id="output">
+		<table cellpadding="0" cellspacing="0" class="output_header">
+			<tr>
+							<td colspan="2" nowrap align="center" valign="middle" class="output_box font160 rot fett">&nbsp;: U2&nbsp;</td>
+				<td nowrap align="center" valign="middle" colspan="2" class="output_box font160 fett rot">&nbsp;Rathaus&nbsp;
+									</td>
+						</tr>
+			<tr>
+				<td colspan="2" align="left" valign="middle" nowrap class="output_box"><b>&nbsp; : </b>
+											<input name="limitedMobilityCapable" type="checkbox" value="FALSE">
+										<br><br>
+					&nbsp;<b> : </b>&nbsp;
+					&nbsp;<select name="departureSizeTimeSlot" size="1" styleid="departureSizeTimeSlot">
+						<option value="10">10 </option><option value="20">20 </option><option value="30" selected>30 </option><option value="40">40 </option><option value="50">50 </option><option value="60">60 </option><option value="70">70 </option>					</select>&nbsp;
+				</td>
+				<td align="left" valign="middle" nowrap class="output_box">&nbsp;<span class="fett"></span><br>
+					<input type="radio" name="sortType" value="abfSort" checked="checked">
+					&nbsp;<br>
+					<input type="radio" name="sortType" value="zielAbfSort" >
+					&nbsp;<br>
+					<input type="radio" name="sortType" value="linieZielAbfSort" >
+					&nbsp;
+				</td>
+				<td align="center" class="output_box">
+					<table cellpadding="5" cellspacing="0">
+													<tr>
+																<td align="center" valign="middle"><button type="button" id="favoriten_add" onClick="change_fav(this.id,'lin','U2,24','')" class='button add'><img src="../image/favestar.png" width="15" height="14">&nbsp;</button></td>
+								
+							</tr>
+												<tr>
+							<td align="center" valign="middle"><button type="submit" class='button akt fett'></button></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+					<table width="100%" border="0" cellpadding="0" class="zusatztext font80">
+							<tr>
+					<td colspan="4" class="zusatztext">
+					Linie U2 - Gleis 2: ASPERNSTRASSE NÄCHSTER ZUG   6 MIN</td>
+				</tr>
+						</table>
+		        	<table width="100%" class="imagetable">
+				<tr>
+					<th width="10%" align="center">&nbsp;&nbsp;</th>
+					<th class="imagetable" width="55%" align="left">&nbsp;&nbsp;</th>
+					<th class="imagetable" width="15%" align="right">&nbsp;&nbsp;</th>
+										<th class="imagetable" width="10%" align="center">&nbsp;&nbsp;</th>
+				</tr>
+							        	<table width="100%" class="errortable">
+							<tr>
+								<td class="fett"></td>
+							</tr>
+						</table>
+									</table>
+					<div style="clear:both">&nbsp;</div>
+	</div>
+</form>
+
+<!-- #EndEditable -->
+</td>
+</tr>
+</table>
+</BODY>
+<!-- #EndTemplate -->
+</HTML>

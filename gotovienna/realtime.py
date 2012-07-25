@@ -24,6 +24,8 @@ from gotovienna import defaults
 
 DELTATIME_REGEX = re.compile('.*?(\d+).*?')
 ABSTIME_REGEX = re.compile('.*(\d{2}:\d{2}).*')
+# Linie U2 - Gleis 2: ASPERNSTRASSE N\xc4CHSTER ZUG   6 MIN
+ZUSATZTEXT_REGEX = re.compile('Linie ([\w\d]+) - Gleis \d: (\w+) N\xc4CHSTER ZUG   (\d+) MIN')
 
 class Departure(dict):
     def __init__(self, line, station, direction, time, lowfloor):
@@ -213,6 +215,7 @@ class ITipParser:
 
     def parse_departures(self, html):
         bs = BeautifulSoup(html)
+        dep = []
 
         # Check for error messages
         msg = bs.findAll('span', {'class': 'rot fett'})
@@ -221,19 +224,38 @@ class ITipParser:
             return []
         
         errtable = bs.find('table', {'class':'errortable'})
-        if errtable:
+        if errtable and clean_text(errtable.text):
             print errtable.text
             return []
+
+        station = clean_text(bs.table.tr.findAll('td')[-1].text)
+        
+        # zusatztext crap
+        zt = bs.find('td', {'class':'zusatztext'})
+        if zt:
+            ma = ZUSATZTEXT_REGEX.search(zt.text)
+            if ma:
+                line = ma.group(1)
+                direction = ma.group(2)
+                if direction == direction.upper():
+                    direction = direction.capitalize()
+                tim = int(ma.group(3))
+                d = Departure(line=line, direction=direction,
+                              lowfloor=True, station=station, time=tim)
+                dep.append(d)
+            else:
+                print zt.text
         
         table = bs.find('table', {'class':'imagetable'})
         if not table:
             print "table not found"
             return []
         
-        dep = []
-        trs = table.findAll('tr')
-        
-        station = clean_text(bs.table.tr.findAll('td')[-1].text)
+        if table.tbody:
+            trs = table.findAll('tr')
+        else:
+            # FIXME ugly :(
+            trs = [None]
         
         for tr in trs[1:]:
             tds = tr.findAll('td')
