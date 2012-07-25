@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><!-- #BeginTemplate "/Templates/itip.dwt" --><!-- DW6 --><head>
+<!-- #BeginEditable "doctitle" -->
+<title>Wiener Linien - i.tip-Abfahrtsanzeige</title>
+<!-- #EndEditable -->
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-15">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="Cache-Control" content="max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta name="robots" content="Index, Follow">
+<!-- #BeginEditable "version" -->
+<meta name="date" content="2012-07-07">
+<meta name="version" content="v2.0">
+<!-- #EndEditable -->
+<!-- #BeginEditable "scripts" --><!-- #EndEditable --><!-- #BeginEditable "css" -->
+<link href="U2_3min_8min_files/itip.css" rel="stylesheet" type="text/css">
+<!-- #EndEditable -->
+</head>
+<body topmargin="0" onload="javascript:window.setTimeout('location.reload()',30000);">
+<!-- #BeginEditable "doc_content" -->
+<form method="get" action="/itip/linienwahl/anzeige.php" name="mainform">
+	<input name="PHPSESSID" value="59aij3loc5lse5nbni4vc4o1a2" type="hidden">
+	<div id="output">
+		<table class="output_header" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+							<td colspan="2" class="output_box font160 rot fett" nowrap="nowrap" valign="middle" align="center">&nbsp;Linie: U2&nbsp;</td>
+				<td colspan="2" class="output_box font160 fett rot" nowrap="nowrap" valign="middle" align="center">&nbsp;Karlsplatz&nbsp;
+									</td>
+						</tr>
+			<tr>
+				<td colspan="2" class="output_box" nowrap="nowrap" valign="middle" align="left"><b>&nbsp;Nur Barrierefreie Fahrzeuge : </b>
+											<input name="limitedMobilityCapable" value="FALSE" type="checkbox">
+										<br><br>
+					&nbsp;<b>Vorschaufenster : </b>&nbsp;
+					&nbsp;<select name="departureSizeTimeSlot" size="1" styleid="departureSizeTimeSlot">
+						<option value="10">10 Minuten</option><option value="20">20 Minuten</option><option value="30" selected="selected">30 Minuten</option><option value="40">40 Minuten</option><option value="50">50 Minuten</option><option value="60">60 Minuten</option><option value="70">70 Minuten</option>					</select>&nbsp;
+				</td>
+				<td class="output_box" nowrap="nowrap" valign="middle" align="left">&nbsp;<span class="fett">Sortierung</span><br>
+					<input name="sortType" value="abfSort" checked="checked" type="radio">
+					nach Abfahrtzeit&nbsp;<br>
+					<input name="sortType" value="zielAbfSort" type="radio">
+					nach Ziel und Abfahrtzeit&nbsp;<br>
+					<input name="sortType" value="linieZielAbfSort" type="radio">
+					nach Linie, Ziel und Abfahrtzeit&nbsp;
+				</td>
+				<td class="output_box" align="center">
+					<table cellpadding="5" cellspacing="0">
+													<tbody><tr>
+																<td valign="middle" align="center"><button type="button" id="favoriten_add" onclick="change_fav(this.id,'lin','U2,21','http://www.wienerlinien.at/itip/')" class="button add"><img src="U2_3min_8min_files/favestar.png" height="14" width="15">&nbsp;Zu Favoriten hinzufügen</button></td>
+								
+							</tr>
+												<tr>
+							<td valign="middle" align="center"><button type="submit" class="button akt fett">Aktualisieren</button></td>
+						</tr>
+					</tbody></table>
+				</td>
+			</tr>
+		</tbody></table>
+		        	<table class="imagetable" width="100%">
+				<tbody><tr>
+					<th width="10%" align="center">&nbsp;Linie&nbsp;</th>
+					<th class="imagetable" width="55%" align="left">&nbsp;Ziel&nbsp;</th>
+					<th class="imagetable" width="15%" align="right">&nbsp;Abfahrt&nbsp;</th>
+										<th class="imagetable" width="10%" align="center">&nbsp;Barrierefrei&nbsp;</th>
+				</tr>
+										<tr>
+							<td class="imagetable" align="center">&nbsp;U2&nbsp;</td>
+							<td class="imagetable" align="left">&nbsp;U2 ASPERNSTRASSE&nbsp;</td>
+							<td class="imagetable" nowrap="nowrap" align="right">
+								&nbsp;in 3 min&nbsp;
+								- Gleis 2							</td>
+							<td class="imagetable" align="center"><img src="U2_3min_8min_files/RolliLeer.gif" width="30"></td></tr>						<tr>
+							<td class="imagetable" align="center">&nbsp;U2&nbsp;</td>
+							<td class="imagetable" align="left">&nbsp;U2 ASPERNSTRASSE&nbsp;</td>
+							<td class="imagetable" nowrap="nowrap" align="right">
+								&nbsp;in 8 min&nbsp;
+								- Gleis 2							</td>
+							<td class="imagetable" align="center"><img src="U2_3min_8min_files/RolliLeer.gif" width="30"></td></tr>				</tbody></table>
+					<div style="clear:both">&nbsp;</div>
+	</div>
+</form>
+
+<!-- #EndEditable -->
+
+<div style="background-image: url(&quot;resource://noscript_0.6747327741480655/icon32.png&quot;); background-repeat: no-repeat; background-position: 2px 2px; padding: 4px 4px 4px 40px; display: block; min-height: 32px; text-align: left;"><a href="http://www.wienerlinien.at/itip/linienwahl/location.reload%28%29">http://www.wienerlinien.at/itip/linienwahl/location.reload()</a><br><a href="http://www.wienerlinien.at/itip/">http://www.wienerlinien.at/itip/</a><br></div></body><!-- #EndTemplate --></html>

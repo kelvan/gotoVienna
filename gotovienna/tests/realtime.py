@@ -20,42 +20,75 @@ from gotovienna.realtime import *
 
 parser = ITipParser()
 
-stationbased = open(os.path.join(DATAPATH, 'stationbased.html'), 'r').read()
-line_station = open(os.path.join(DATAPATH, 'line_station.html'), 'r').read()
-errorpage = open(os.path.join(DATAPATH, 'errorpage.html'), 'r').read()
-nodepartures = open(os.path.join(DATAPATH, 'nodepartures.html'), 'r').read()
-lines = open(os.path.join(DATAPATH, 'lines.html'), 'r').read()
-stations1 = open(os.path.join(DATAPATH, 'stations1.html'), 'r').read()
-stations2 = open(os.path.join(DATAPATH, 'stations2.html'), 'r').read()
+def load_data(filename):
+    return open(os.path.join(DATAPATH, filename), 'r').read()
 
-parsed_lines = parser.parse_lines(lines)
+stationbased = load_data('stationbased.html')
+lines = load_data('lines.html')
 
 def test_lines():
+    parsed_lines = parser.parse_lines(lines)
     assert_is_instance(parsed_lines, dict)
     assert_true(parsed_lines)
 
 def test_line_amount():
-    assert_equal(104, len(parsed_lines.keys()))
+    parsed_lines = parser.parse_lines(lines)
+    assert_equal(102, len(parsed_lines.keys()))
 
 def test_line_link():
-    assert_equal('http://www.wienerlinien.at/itip/linienwahl/linie.php?lng=de&lng=de&linie=1', parsed_lines['1'])
+    parsed_lines = parser.parse_lines(lines)
+    assert_equal('http://www.wienerlinien.at/itip/linienwahl/linie.php?linie=1&', parsed_lines['1'])
 
 def test_line_links():
+    parsed_lines = parser.parse_lines(lines)
     assert_true(filter(lambda x: x.startswith('http://'), parsed_lines.values()))
 
-def test_stations1():
-    st1 = parser.parse_stations(stations1)
-    assert_true(st1.has_key(u'Gersthof, Herbeckstraße'))
-    assert_true(st1.has_key(u'Schottentor U'))
-    assert_equal(14, len(st1[u'Gersthof, Herbeckstraße']))
-    assert_equal(12, len(st1[u'Schottentor U']))
+def test_stations_66A():
+    st = parser.parse_stations(load_data('bus/66A_stations.htm'))
+    assert_true(st.has_key(u'Liesing S'))
+    assert_true(st.has_key(u'Reumannplatz U'))
+    assert_equal(29, len(st.values()[0]))
+    assert_equal(30, len(st.values()[1]))
 
-def test_stations2():
-    st2 = parser.parse_stations(stations2)
-    assert_true(st2.has_key(u'Stefan-Fadinger-Platz'))
-    assert_true(st2.has_key(u'Prater Hauptallee'))
-    assert_equal(31, len(st2[u'Stefan-Fadinger-Platz']))
-    assert_equal(30, len(st2[u'Prater Hauptallee']))
+def test_departures_U2_in_kuerze_6min():
+    dep = parser.parse_departures(load_data('underground/U2_in_kuerze_6min.htm'))
+    assert_equal(2, len(dep))
+    assert_equal(0, dep[0]['time'])
+    assert_equal(6, dep[1]['time'])
+    assert_equal(u'Aspernstrasse', dep[0]['direction'])
+    assert_equal(u'Karlsplatz', dep[0]['station'])
+
+def test_departures_U2_3min_8min():
+    dep = parser.parse_departures(load_data('underground/U2_3min_8min.htm'))
+    assert_equal(2, len(dep))
+    assert_equal(3, dep[0]['time'])
+    assert_equal(8, dep[1]['time'])
+    assert_equal(u'Aspernstrasse', dep[0]['direction'])
+    assert_equal(u'Karlsplatz', dep[0]['station'])
+
+def test_departures_lowfloor():
+    dep = parser.parse_departures(load_data('tram/41_1min_11min_21min.htm'))
+    assert_true(dep[0]['lowfloor'])
+    assert_false(dep[1]['lowfloor'])
+    assert_true(dep[2]['lowfloor'])
+
+def test_error_page():
+    errorpage = load_data('errorpage.html')
+    dep = parser.parse_departures(errorpage)
+    assert_equal(0, len(dep))
+
+def test_no_departures():
+    nodepartures = load_data('nodepartures.html')
+    dep = parser.parse_departures(nodepartures)
+    assert_equal(0, len(dep))
+
+def test_bus_stations():
+    st = parser.parse_stations(load_data('bus/66A_stations.htm'))
+    assert_equal(2, len(st.keys()))
+    assert_equal(29, len(st.values()[0]))
+    assert_equal(30, len(st.values()[1]))
+
+### departures_by_station
 
 def test_departures_by_station():
     dep = parser.parse_departures_by_station(stationbased)
@@ -82,24 +115,3 @@ def test_departures_by_station_datetime():
     assert_equal('59A', dep[-4]['line'])
     assert_equal('WLB', dep[-1]['line'])
     assert_equal(datetime(2000, 1, 1, 13, 5), dep[14]['departure'])
-
-def test_departures():
-    dep = parser.parse_departures(line_station)
-    assert_equal(0, dep[0]['time'])
-    assert_equal(10, dep[2]['time'])
-    assert_equal(6, len(dep))
-    assert_equal(u'Stefan-Fadinger-Platz', dep[0]['direction'])
-    assert_equal(u'Kärntner Ring, Oper', dep[0]['station'])
-
-def test_departures_lowfloor():
-    dep = parser.parse_departures(line_station)
-    assert_false(dep[1]['lowfloor'])
-    assert_true(dep[2]['lowfloor'])
-
-def test_error_page():
-    dep = parser.parse_departures(errorpage)
-    assert_equal(0, len(dep))
-
-def test_no_departures():
-    dep = parser.parse_departures(nodepartures)
-    assert_equal(0, len(dep))

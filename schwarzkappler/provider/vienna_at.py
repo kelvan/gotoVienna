@@ -14,10 +14,13 @@ class ViennaAt(Provider):
         
         cls.info = {}
         for i in range(2):
-            for line in p[i].b.text.split(', '):
-                if cls.info.has_key(line):
-                    cls.info[line].append({'reportDate': datetime.now().date() + timedelta(i)})
+            if p[i].b:
+                for line in p[i].b.text.split(', '):
+                    if cls.info.has_key(line):
+                        cls.info[line].append({'reportDate': datetime.now().date() + timedelta(i)})
+                else:
+                    cls.info[line] = [{'reportDate': datetime.now().date()}]
             else:
-                cls.info[line] = [{'reportDate': datetime.now().date()}]
+                print 'ParserError: no bold text found at "%s"' % p[i]
         
         cls.last_updated = datetime.now()

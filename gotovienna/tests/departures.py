@@ -14,17 +14,24 @@ realtime.datetime = datetime_static
 # </bananas>
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-from gotovienna.realtime import Departure
-from utils import sort_departures
+from gotovienna.realtime import Departure, ITipParser
+from gotovienna.utils import sort_departures
+
+DATAPATH = os.path.join(os.path.dirname(__file__), 'data')
+
+def load_data(filename):
+    return open(os.path.join(DATAPATH, filename), 'r').read()
 
 departures = [Departure('U2', 'Karlsplatz', 'Aspernstrasse', time(13, 37), True),
               Departure('U1', 'Karlsplatz', 'Reumannplatz', time(12, 24), False),
+              Departure('U4', 'Karlsplatz', 'Heiligenstadt', time(11, 56), True),
               Departure('U4', 'Karlsplatz', 'Huetteldorf', time(11, 42), False),
               Departure('U4', 'Karlsplatz', 'Heiligenstadt', 5, True),
               Departure('U2', 'Karlsplatz', 'Aspernstrasse', time(13, 38), True)]
 
 departures_sorted = [Departure('U4', 'Karlsplatz', 'Huetteldorf', time(11, 42), False),
                      Departure('U4', 'Karlsplatz', 'Heiligenstadt', 5, True),
+                     Departure('U4', 'Karlsplatz', 'Heiligenstadt', time(11, 56), True),
                      Departure('U1', 'Karlsplatz', 'Reumannplatz', time(12, 24), False),
                      Departure('U2', 'Karlsplatz', 'Aspernstrasse', time(13, 37), True),
                      Departure('U2', 'Karlsplatz', 'Aspernstrasse', time(13, 38), True)]
@@ -43,3 +50,4 @@ def test_ftime():
 def test_deltatime():
     for dep in departures:
         assert_is_instance(dep['time'], int)
+

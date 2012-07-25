@@ -17,14 +17,18 @@ class Schwarzkappler(Provider):
         
         cls.info = {}
         for div in divs:
-            line = div.h1.text
+            line = div.h1.text.strip()
             if line == '!':
                 # No reports
                 break
             mz = div.find('div', {'class':'meldung_zeit'}).b.text
             r = TIMEDELTA_REGEX.search(mz)
-            hours = r.group('hours')
-            minutes = r.group('minutes')
+            if r:
+                hours = r.group('hours')
+                minutes = r.group('minutes')
+            else:
+                print "time not found in:", mz
+                continue
             
             if hours and minutes:
                 dt = timedelta(hours=int(hours), minutes=int(minutes))

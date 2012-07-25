@@ -18,12 +18,12 @@ def load(p, typ):
                 else:
                     print 'Unexpected content in cache file'
                     print 'rebuilding cache'
-                    shutil.copy(p, p + '.bak')
+                    shutil.move(p, p + '.bak')
         except ValueError:
             # FIXME check if empty
             print 'Corrupt cache file'
             print 'rebuilding cache'
-            shutil.copy(p, p + '.bak')
+            shutil.move(p, p + '.bak')
 
     return None
 

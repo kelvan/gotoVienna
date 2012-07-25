@@ -14,3 +14,6 @@ def sort_departures(dep):
     d = sorted(dep, lambda x, y: cmp(x['departure'], y['departure']))
     #print map(lambda x: x['departure'], d)
     return d
+
+def clean_text(text):
+    return text.replace('&nbsp;', ' ').strip()

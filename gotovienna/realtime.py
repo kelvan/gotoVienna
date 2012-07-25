@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from gotovienna.BeautifulSoup import BeautifulSoup
-#from urllib2 import urlopen
+from urllib2 import HTTPError
 from urllib import quote_plus
 # Use urlopen proxy for fake user agent
 from UrlOpener import urlopen, loadCookie
@@ -13,7 +13,7 @@ from errors import LineNotFoundError, StationNotFoundError
 import cache
 from cache import Stations
 from time import sleep
-from utils import sort_departures
+from utils import sort_departures, clean_text
 try:
     from Levenshtein import distance
 except:
@@ -56,7 +56,6 @@ class Departure(dict):
 class ITipParser:
     def __init__(self):
         self._lines = cache.lines
-        
 
     def parse_stations(self, html):
         bs = BeautifulSoup(html)
@@ -65,14 +64,15 @@ class ITipParser:
 
         for i in range(2):
             trs = tables[i].findAll('tr')
-            direction = trs[0].find('th', {'colspan':'2'}).text.strip('&nbsp;').strip()
+            direction = clean_text(trs[0].text.replace('Fahrtrichtung', ''))
+            print direction 
             
             sta = []
             for tr in trs[2:-1]:
                 if tr.a:
-                    sta.append((tr.a.text, defaults.base_url + tr.a['href']))
+                    sta.append((clean_text(tr.a.text), defaults.base_url + tr.a['href']))
                 else:
-                    sta.append((tr.text.strip('&nbsp;'), None))
+                    sta.append((clean_text(tr.text), None))
 
             st[direction] = sta
         return st
@@ -103,7 +103,8 @@ class ITipParser:
 
         for line in lines:
             if line.a:
-                href = defaults.line_overview + line.a['href']
+                hr = line.a['href'].split('?', 1)[-1]
+                href = defaults.station_base + hr
                 if line.text:
                     l[line.text] = href
                 elif line.img:
@@ -118,6 +119,8 @@ class ITipParser:
         if not self._lines:
             print "Load lines"
             self._lines = self.parse_lines(urlopen(defaults.line_overview).read())
+            if not self._lines:
+                print "Error fetching lines"
 
         return self._lines
 
@@ -231,13 +234,26 @@ class ITipParser:
         dep = []
         trs = table.findAll('tr')
         
-        station = bs.table.tr.findAll('td')[-1].text.strip().strip('&nbsp;')
+        station = clean_text(bs.table.tr.findAll('td')[-1].text)
         
         for tr in trs[1:]:
             tds = tr.findAll('td')
-            d = {'line': tds[0].text.strip('&nbsp;'),
-                 'direction': tds[1].text.strip('&nbsp;'),
-                 'lowfloor': tds[3].img != None,
+            line = clean_text(tds[0].text)
+            direction = clean_text(tds[1].text)
+            
+            if direction.startswith(line):
+                direction = direction.lstrip(line).strip()
+                
+            if direction == direction.upper():
+                direction = direction.capitalize()
+            
+            lf_img = tds[-1].img
+            
+            lowfloor = lf_img and lf_img.has_key('alt')
+            
+            d = {'line': line,
+                 'direction': direction,
+                 'lowfloor': lowfloor,
                  'station': station}
 
             # parse time
@@ -245,17 +261,17 @@ class ITipParser:
             dts = DELTATIME_REGEX.search(tim)
             abs = ABSTIME_REGEX.search(tim)
             
-            if abs:
+            if tim.find(u'...in K\xfcrze&nbsp;') >= 0:
+                d['time'] = 0
+            elif abs:
                 d['time'] = calc_datetime(abs.group(1))
             elif tim.isdigit():
                 d['time'] = int(tim)
             elif dts:
                 # is timedelta
                 d['time'] = int(dts.group(1))
-            elif tim.find('rze...') >= 0:
-                d['time'] = 0
             else:
-                print "ERROR", tim
+                print "Error parsing time:", tim
                 continue
 
             dep.append(Departure(**d))
@@ -279,8 +295,13 @@ class ITipParser:
 
         while retry < tries:
             # http://www.wienerlinien.at/itip/linienwahl/anzeige.php?PHPSESSID=8ojk9788jlp69mbqtnqvqaqkg5&departureSizeTimeSlot=70&sortType=abfSort
-            urlopen(url)
-            html = urlopen(url + "&departureSizeTimeSlot=70").read()
+            try:
+                urlopen(url)
+                html = urlopen(url + "&departureSizeTimeSlot=70").read()
+            except HTTPError:
+                print "HTTPError at %s" % url
+                return []
+                
             dep = self.parse_departures(html)
 
             if dep:
@@ -291,12 +312,6 @@ class ITipParser:
                 return []
 
             sleep(0.5)
-
-    def get_departures_test(self, line, station):
-        """ replacement for get_departure
-            hide url in higher levels :)
-        """
-        raise NotImplementedError
 
 
 UBAHN, TRAM, BUS, NIGHTLINE, OTHER = range(5)
