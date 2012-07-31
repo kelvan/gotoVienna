@@ -225,10 +225,22 @@ class ITipParser:
         
         errtable = bs.find('table', {'class':'errortable'})
         if errtable and clean_text(errtable.text):
+            print "Errortable found"
             print errtable.text
             return []
 
-        station = clean_text(bs.table.tr.findAll('td')[-1].text)
+        if bs.table and bs.table.tr:
+            st_td = bs.table.tr.findAll('td')
+        
+            if st_td:
+                station = clean_text(st_td[-1].text)
+            else:
+                print "Unexpected Error: Stationname not found"
+                print "Debug:", st_td.encode('UTF-8')
+        else:
+            print "Unexpected Error: table or tr not found"
+            print bs
+            return []
         
         # zusatztext crap
         zt = bs.find('td', {'class':'zusatztext'})
@@ -251,11 +263,11 @@ class ITipParser:
             print "table not found"
             return []
         
-        if table.tbody:
-            trs = table.findAll('tr')
-        else:
-            # FIXME ugly :(
-            trs = [None]
+        if errtable:
+            print "Warning: Empty errortable found"
+            return dep
+        
+        trs = table.findAll('tr')
         
         for tr in trs[1:]:
             tds = tr.findAll('td')
@@ -278,11 +290,11 @@ class ITipParser:
                  'station': station}
 
             # parse time
-            tim = tds[2].text.strip('&nbsp;')
+            tim = clean_text(tds[2].text)
             dts = DELTATIME_REGEX.search(tim)
             abs = ABSTIME_REGEX.search(tim)
             
-            if tim.find(u'...in K\xfcrze&nbsp;') >= 0:
+            if tim.find(u'...in K\xfcrze') >= 0:
                 d['time'] = 0
             elif abs:
                 d['time'] = calc_datetime(abs.group(1))

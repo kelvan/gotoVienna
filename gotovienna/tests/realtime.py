@@ -79,6 +79,18 @@ def test_departures_lowfloor():
     assert_false(dep[1]['lowfloor'])
     assert_true(dep[2]['lowfloor'])
 
+def test_departures_tram():
+    dep = parser.parse_departures(load_data('tram/1_3min_9min_10min_24min.htm'))
+    assert_equal(4, len(dep))
+    assert_false(dep[0]['lowfloor'])
+    assert_true(dep[1]['lowfloor'])
+    assert_true(dep[2]['lowfloor'])
+    assert_false(dep[3]['lowfloor'])
+    assert_equal(3, dep[0]['time'])
+    assert_equal(9, dep[1]['time'])
+    assert_equal(10, dep[2]['time'])
+    assert_equal(24, dep[3]['time'])
+
 def test_error_page():
     errorpage = load_data('errorpage.html')
     dep = parser.parse_departures(errorpage)
