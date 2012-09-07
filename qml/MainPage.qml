@@ -34,19 +34,12 @@ Page {
     }
 
     function fillNearbyStations(lat, lon) {
-        nearbyStations = itip.get_nearby_stations(lat, lon);
+        itip.load_nearby_stations(lat, lon);
     }
 
     function showNearby() {
         console.log("show nearby")
-
-        var stations = nearbyStations;
-        stationSelectorModel.clear();
-        for (var idx in stations) {
-            stationSelectorModel.append({'name': stations[idx]});
-        }
-
-        stationSelector.open();
+        nearbySelector.open();
     }
 
     Text {
@@ -122,20 +115,18 @@ Page {
     }
 
     SelectionDialog {
-        id: stationSelector
+        id: nearbySelector
         titleText: 'Select nearby station'
 
-        model: ListModel {
-            id: stationSelectorModel
-        }
+        model: nearbyModel
 
         onAccepted: {
             realtimeResult.isStation = true
             realtimeResult.gline = ''
             realtimeResult.sourceUrl = ''
             gline.text = ''
-            gstation = stationSelectorModel.get(selectedIndex).name
-            realtimeResult.gstation = stationSelectorModel.get(selectedIndex).name
+            gstation = nearbyModel.get(selectedIndex).name
+            realtimeResult.gstation = nearbyModel.get(selectedIndex).name
             console.log('station to get: ' + realtimeResult.gstation)
         }
     }

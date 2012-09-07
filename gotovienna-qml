@@ -66,8 +66,21 @@ class Config(QObject):
     
     @Slot(result=bool)
     def clearCache(self):
-        print "TODO clear cache"
+        print "clear cache"
+        try:
+            for root, dirs, files in os.walk(defaults.cache_folder, topdown=False):
+                for name in files:
+                    os.remove(os.path.join(root, name))
+                for name in dirs:
+                    os.rmdir(os.path.join(root, name))
+        except:
+            return False
         return True
+        
+    @Slot(result=bool)
+    def checkClearedCache(self):
+        dirlst = os.listdir(defaults.cache_folder)
+        return bool(dirlst)
 
 class AboutInfo(QObject):
     def __init__(self):
@@ -129,7 +142,7 @@ class DepartureModel(QAbstractListModel):
         self.beginResetModel()
         self._data = dep
         self.endResetModel()
-
+        
 class FavoriteManager(QObject):
     def __init__(self):
         QObject.__init__(self)
@@ -182,11 +195,12 @@ class FavoriteManager(QObject):
         self._persist()
 
 class Gui(QObject):
-    def __init__(self, depModel):
+    def __init__(self, depModel, nearbyModel):
         QObject.__init__(self)
         self.itip = ITipParser()
         self.lines = []
         self.departureModel = depModel
+        self.nearbyModel = nearbyModel
 
         # Read line names in categorized/sorted order
         for _, lines in categorize_lines(self.itip.lines):
@@ -313,6 +327,9 @@ class Gui(QObject):
             print e.message
             return []
 
+    @Slot(float, float, result=str)
+    def load_nearby_stations(self, lat, lon):
+        self.nearbyModel.setStringList(get_nearby_stations(lat, lon))
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -322,9 +339,10 @@ if __name__ == '__main__':
     aboutInfo = AboutInfo()
     config = Config()
     departureModel = DepartureModel()
+    nearbyModel = QStringListModel()
 
     # instantiate the Python object
-    itip = Gui(departureModel)
+    itip = Gui(departureModel, nearbyModel)
 
     favManager = FavoriteManager()
 
@@ -334,6 +352,7 @@ if __name__ == '__main__':
     context.setContextProperty('aboutInfo', aboutInfo)
     context.setContextProperty('config', config)
     context.setContextProperty('resultModel', departureModel)
+    context.setContextProperty('nearbyModel', nearbyModel)
     context.setContextProperty('favManager', favManager)
 
     if os.path.abspath(__file__).startswith('/usr/bin/'):
