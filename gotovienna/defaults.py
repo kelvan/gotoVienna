@@ -25,7 +25,7 @@ favorites_file = path.expanduser('~/.gotovienna/favorites.json')
 # iTip
 
 base_url = 'http://www.wienerlinien.at/itip/linienwahl/'
-line_overview = 'http://www.wienerlinien.at/itip/linienwahl/auswahl.php?'
+line_overview = 'http://www.wienerlinien.at/itip/linienwahl/index.php?'
 station_base = 'http://www.wienerlinien.at/itip/linienwahl/linie.php?'
 stations = 'http://www.wienerlinien.at/itip/linienwahl/linie.php?linie=%s&'
 departures_by_station = 'http://m.qando.at/de/get_monitor.ft?stop=%s&submit=Anfordern'
