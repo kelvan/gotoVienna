@@ -18,7 +18,7 @@ try:
     from Levenshtein import distance
 except:
     print "Cannot import Levenshtein.distance, use fallback"
-    distance = lambda x, y: (y*1.0) / x
+    distance = lambda x, y: (len(y)*1.0) / len(x)
 
 from gotovienna import defaults
 
