@@ -10,7 +10,7 @@ __license__ = 'GNU General Public License v3 or later'
 from datetime import datetime
 
 from PySide.QtCore import QAbstractListModel, QModelIndex, QObject, Slot, Signal, Qt
-from PySide.QtGui import QApplication, QTextItem
+from PySide.QtGui import QApplication, QTextItem, QStringListModel
 from PySide.QtDeclarative import QDeclarativeView
 
 from gotovienna.utils import *
