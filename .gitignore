@@ -7,3 +7,6 @@
 build/
 .settings/
 .*project
+
+qml/qtc_packaging
+qml/qml.pro.user
