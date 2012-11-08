@@ -8,9 +8,7 @@ Page {
 
     ToolBarLayout {
         id: settingsTools
-        x: 0
-        y: 0
-        ToolIcon { iconId: "toolbar-back"; onClicked: { menu.close(); pageStack.pop(null,false); } }
+        ToolIcon { iconId: "toolbar-back"; onClicked: { pageStack.pop(null,false); } }
     }
 
     Flickable {
@@ -139,7 +137,7 @@ Page {
                     if (cleared) {
                         clearDialog.text = "Cache cleared"
                     } else {
-                        updateDialog.text = "[ClearError]:\nTry again later or send me an email:\n<gotovienna@logic.at>"
+                        clearDialog.text = "[ClearError]:\nTry again later or send me an email:\n<gotovienna@logic.at>"
                     }
                     clearDialog.open();
                 }
