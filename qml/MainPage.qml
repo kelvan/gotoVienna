@@ -96,17 +96,6 @@ Page {
         }
     }
 
-    PositionSource {
-        id: positionSource
-        updateInterval: 10000
-
-        active: true
-
-        onPositionChanged: {
-            fillNearbyStations(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude)
-        }
-    }
-
     SelectionDialog {
         id: nearbySelector
         titleText: 'Select nearby station'

@@ -27,14 +27,11 @@ PageStackWindow {
         id: positionSource
         updateInterval: 10000
 
-        onActiveChanged: {
-            if (config.getGpsEnabled()) {
-                positionSource.start()
-            } else {
-                positionSource.stop()
-            }
-        }
+        active: config.getGpsEnabled()
 
+        onPositionChanged: {
+            mainPage.fillNearbyStations(positionSource.position.coordinate.latitude, positionSource.position.coordinate.longitude)
+        }
     }
 
     ToolBarLayout {
@@ -53,10 +50,10 @@ PageStackWindow {
         }
 
         ToolIcon {
-              visible: mainPage.canRefresh
-              platformIconId: 'icon-m-toolbar-refresh'
-              anchors.centerIn: parent
-              onClicked: mainPage.refresh()
+            visible: mainPage.canRefresh
+            platformIconId: 'icon-m-toolbar-refresh'
+            anchors.centerIn: parent
+            onClicked: mainPage.refresh()
         }
 
     }
