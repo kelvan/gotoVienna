@@ -62,7 +62,7 @@ PageStackWindow {
     }
 
     Settings{id: settings}
-    MapView{id: map}
+    //MapView{id: map}
 
     Menu {
         id: menu

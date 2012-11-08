@@ -57,7 +57,14 @@ Rectangle {
         Text {
             color: 'white'
             font.pixelSize: 17
-            text: '\n' + aboutBox.copyright + '\n' + aboutBox.license
+            text: aboutBox.copyright
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        Text {
+            color: 'white'
+            font.pixelSize: 17
+            text: aboutBox.license
             anchors.horizontalCenter: parent.horizontalCenter
             horizontalAlignment: Text.AlignHCenter
         }

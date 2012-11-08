@@ -9,7 +9,7 @@ __license__ = 'GNU General Public License v3 or later'
 
 from datetime import datetime
 
-from PySide.QtCore import QAbstractListModel, QModelIndex, QObject, Slot, Signal, Qt
+from PySide.QtCore import QAbstractListModel, QModelIndex, QObject, Slot, Signal, Qt, Property
 from PySide.QtGui import QApplication, QTextItem, QStringListModel
 from PySide.QtDeclarative import QDeclarativeView
 
@@ -143,10 +143,18 @@ class DepartureModel(QAbstractListModel):
         self._data = dep
         self.endResetModel()
         
-class FavoriteManager(QObject):
-    def __init__(self):
-        QObject.__init__(self)
+class FavoriteModel(QAbstractListModel):
+    LINE_ROLE = Qt.UserRole + 1
+    DIRECTION_ROLE = Qt.UserRole + 2
+    STATION_ROLE = Qt.UserRole + 3
+    SOURCEURL_ROLE = Qt.UserRole + 4
+    ISSTATION_ROLE = Qt.UserRole + 5
+    NAME_ROLE = Qt.UserRole + 6
+
+    def __init__(self, parent=None):
+        super(FavoriteModel, self).__init__(parent)
         self._faves = []
+
         if os.path.exists(defaults.favorites_file):
             try:
                 self._faves = json.load(open(defaults.favorites_file, 'r'))
@@ -155,20 +163,52 @@ class FavoriteManager(QObject):
             except Exception, e:
                 print 'faves load error:', e
 
-    @Slot(result=int)
-    def getCount(self):
-        result = len(self._faves)
-        print 'getCount->', result
-        return result
+        self.keys = {}
+        self.keys[FavoriteModel.LINE_ROLE] = 'line'
+        self.keys[FavoriteModel.DIRECTION_ROLE] = 'direction'
+        self.keys[FavoriteModel.STATION_ROLE] = 'station'
+        self.keys[FavoriteModel.SOURCEURL_ROLE] = 'url'
+        self.keys[FavoriteModel.ISSTATION_ROLE] = 'isStation'
+        self.keys[FavoriteModel.NAME_ROLE] = 'name' 
+        self.setRoleNames(self.keys)
 
-    @Slot(int, result=unicode)
-    def getItem(self, index):
-        keys = ['gline', 'gdirection', 'gstation', 'sourceurl', 'isstation']
-        result = dict(zip(keys, self._faves[index]))
-        result['name'] = u'%(gline)s -> %(gdirection)s @ %(gstation)s' % result
-        result = json.dumps(result)
-        print 'getItem:', index, result
-        return result
+    #fsckd SelectionDialog has fucked up Model code
+    def _count(self):
+        return len(self._faves)
+ 
+    @Signal
+    def count_changed(self): pass
+ 
+    count = Property(int, _count, notify=count_changed)
+
+    @Slot(int, unicode, result=unicode)
+    def getString(self, index, roleString):
+        return self._faves[index][[k for k, v in self.keys.iteritems() if v == roleString][0] - (Qt.UserRole + 1)]
+
+    @Slot(int, unicode, result=bool)
+    def getBool(self, index, roleString):
+        return self._faves[index][[k for k, v in self.keys.iteritems() if v == roleString][0] - (Qt.UserRole + 1)]
+    #end of f00bar workaround
+
+    def rowCount(self, index):
+        return len(self._faves)
+
+    def data(self, index, role):
+        if not index.isValid():
+            return None
+
+        if index.row() > len(self._faves):
+            return None
+
+        favorite = self._faves[index.row()]
+
+        if self.keys.has_key(role):
+            if role == FavoriteModel.NAME_ROLE:
+                return u'{0} -> {1} @ {2}'.format(favorite[0], favorite[2], favorite[1])
+            else:
+                return favorite[self.keys[role - (Qt.UserRole + 1)]]
+        else:
+            return None
 
     def _persist(self):
         print 'persist:', self._faves, '->', defaults.favorites_file
@@ -188,10 +228,14 @@ class FavoriteManager(QObject):
     def toggleFavorite(self, gline, gdirection, gstation, sourceurl, isstation):
         k = (gline, gdirection, gstation, sourceurl, isstation)
         if k in self._faves:
+            self.beginRemoveRows(QModelIndex(), self._faves.index(k), self._faves.index(k))
             self._faves.remove(k)
+            self.endRemoveRows()
         else:
+            self.beginInsertRows(QModelIndex(), len(self._faves), len(self._faves))
             self._faves.append(k)
-
+            self.endInsertRows()
+        
         self._persist()
 
 class Gui(QObject):
@@ -344,7 +388,7 @@ if __name__ == '__main__':
     # instantiate the Python object
     itip = Gui(departureModel, nearbyModel)
 
-    favManager = FavoriteManager()
+    favModel = FavoriteModel()
 
     # expose the object to QML
     context = view.rootContext()
@@ -353,7 +397,7 @@ if __name__ == '__main__':
     context.setContextProperty('config', config)
     context.setContextProperty('resultModel', departureModel)
     context.setContextProperty('nearbyModel', nearbyModel)
-    context.setContextProperty('favManager', favManager)
+    context.setContextProperty('favModel', favModel)
 
     if os.path.abspath(__file__).startswith('/usr/bin/'):
         # Assume system-wide installation, QML from /usr/share/

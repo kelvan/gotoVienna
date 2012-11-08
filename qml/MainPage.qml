@@ -15,12 +15,6 @@ Page {
     property string gstation
 
     function showFavorites() {
-        favSelector.model.clear();
-        for (var i=0; i<favManager.getCount(); i++) {
-            var data = eval('(' + favManager.getItem(i) + ')');
-            favSelector.model.append(data);
-        }
-        favSelector.model.sync();
         favSelector.open();
     }
 
@@ -38,7 +32,6 @@ Page {
     }
 
     function showNearby() {
-        console.log("show nearby")
         nearbySelector.open();
     }
 
@@ -90,14 +83,14 @@ Page {
                 rightMargin: 10
             }
             platformIconId: {
-                if (favManager.isFavorite(realtimeResult.gline, realtimeResult.gdirection, realtimeResult.gstation, realtimeResult.sourceUrl, realtimeResult.isStation, increaseMeGently)) {
+                if (favModel.isFavorite(realtimeResult.gline, realtimeResult.gdirection, realtimeResult.gstation, realtimeResult.sourceUrl, realtimeResult.isStation, increaseMeGently)) {
                     'icon-m-toolbar-favorite-mark'
                 } else {
                     'icon-m-toolbar-favorite-unmark'
                 }
             }
             onClicked: {
-                favManager.toggleFavorite(realtimeResult.gline, realtimeResult.gdirection, realtimeResult.gstation, realtimeResult.sourceUrl, realtimeResult.isStation);
+                favModel.toggleFavorite(realtimeResult.gline, realtimeResult.gdirection, realtimeResult.gstation, realtimeResult.sourceUrl, realtimeResult.isStation);
                 increaseMeGently = increaseMeGently + 1;
             }
         }
@@ -182,14 +175,14 @@ Page {
         id: favSelector
         titleText: 'Your favorites'
 
-        model: ListModel {}
+        model: favModel
 
         onAccepted: {
-            realtimeResult.isStation = model.get(selectedIndex).isstation
-            realtimeResult.gline = model.get(selectedIndex).gline
-            realtimeResult.gdirection = model.get(selectedIndex).gdirection
-            realtimeResult.sourceUrl = model.get(selectedIndex).sourceurl
-            realtimeResult.gstation = model.get(selectedIndex).gstation
+            realtimeResult.isStation = model.getBool(favSelector.selectedIndex, 'isStation')
+            realtimeResult.gline = model.getString(favSelector.selectedIndex, 'line')
+            realtimeResult.gdirection = model.getString(favSelector.selectedIndex, 'direction')
+            realtimeResult.sourceUrl = model.getString(favSelector.selectedIndex, 'url')
+            realtimeResult.gstation = model.getString(favSelector.selectedIndex, 'station')
             realtimeResult.refresh()
         }
     }
