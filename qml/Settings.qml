@@ -11,6 +11,11 @@ Page {
         ToolIcon { iconId: "toolbar-back"; onClicked: { pageStack.pop(null,false); } }
     }
 
+
+    InfoDialog {
+        id:infoDialog
+    }
+
     Flickable {
         id: settingsContent
         anchors.fill: parent
@@ -75,10 +80,6 @@ Page {
                 }
             }
 
-            InfoDialog {
-                id:updateDialog
-            }
-
             SettingsHeader {
                 text: 'Station List'
             }
@@ -100,20 +101,16 @@ Page {
                     if (updateAvailable) {
                         var updated = config.updateStations();
                         if (updated !== '') {
-                            updateDialog.text = "Stations updated\nPlease restart app"
+                            infoDialog.text = "Stations updated\nPlease restart app"
                             txtLastUpdate.text = updated
                         } else {
-                            updateDialog.text = "[UpdateError]:\nTry again later or send me an email:\n<gotovienna@logic.at>"
+                            infoDialog.text = "[UpdateError]:\nTry again later or send me an email:\n<gotovienna@logic.at>"
                         }
                     } else {
-                        updateDialog.text = "No updates available";
+                        infoDialog.text = "No updates available";
                     }
-                    updateDialog.open();
+                    infoDialog.open();
                 }
-            }
-
-            InfoDialog {
-                id:clearDialog
             }
 
             SettingsHeader {
@@ -135,11 +132,11 @@ Page {
                 onClicked: {
                     var cleared = config.clearCache();
                     if (cleared) {
-                        clearDialog.text = "Cache cleared"
+                        infoDialog.text = "Cache cleared"
                     } else {
-                        clearDialog.text = "[ClearError]:\nTry again later or send me an email:\n<gotovienna@logic.at>"
+                        infoDialog.text = "[ClearError]:\nTry again later or send me an email:\n<gotovienna@logic.at>"
                     }
-                    clearDialog.open();
+                    infoDialog.open();
                 }
             }
 
