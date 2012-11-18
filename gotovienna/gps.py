@@ -6,4 +6,4 @@ def get_nearby_stations(lat, lon):
     conn = sqlite3.connect(defaults.sql_file)
     c = conn.cursor()
     c.execute(defaults.sql_gps_query, (lat - 0.004, lat + 0.004, lon - 0.005, lon + 0.005))
-    return map(lambda x: x[0], list(set(c.fetchall())))
+    return  map(lambda x: [x[0]], list(set(c.fetchall())))

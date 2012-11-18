@@ -102,6 +102,73 @@ class AboutInfo(QObject):
     def getLicense(self):
         return __license__
 
+class QmlDataModel(QAbstractListModel):
+    '''Base class for 2d qml datamodels'''
+    def __init__(self, keys, parent=None):
+        super(QmlDataModel, self).__init__(parent)
+        self._data = []
+        self.keys = {}
+        i = 1
+        for key in keys:
+            self.keys[Qt.UserRole + i] = key
+            i += 1
+
+        self.setRoleNames(self.keys)
+
+    def rowCount(self, index):
+        return len(self._data)
+
+    def indexIsValid(self, index, role):
+        if not index.isValid():
+            return False
+
+        if index.row() > len(self._data):
+            return False
+
+        if self.keys.has_key(role):
+            return True
+        else:
+            return False
+
+    def data(self, index, role):
+        if not self.indexIsValid(index, role):
+            return None
+        else:
+            return self._data[index.row()][role - (Qt.UserRole + 1)]
+
+    def setData(self, data):
+        self.beginResetModel()
+        self._data = data
+        self.endResetModel()
+
+class QmlSelectionDialogDataModel(QmlDataModel):
+    '''Base class for 2d qml datamodels for Seclection Dialogs
+    contains workaround for fsckd implementation'''
+
+    '''qml SelectionDialog requires a property count in order to display stuff
+    also the callback for a valid selection has no model data avaiable besides
+    the selected index, so the model has to provide data methods'''
+    def keyIndex(self, key):
+        return [k for k, v in self.keys.iteritems() if v == key][0]
+
+    def _count(self):
+        return len(self._data)
+
+    @Signal
+    def count_changed(self): pass
+
+    count = Property(int, _count, notify=count_changed)
+
+    @Slot(int, unicode, result=unicode)
+    def getString(self, index, roleString):
+        print u'{0}: {1}'.format(roleString,self._data[index][self.keyIndex(roleString) - (Qt.UserRole + 1)])
+        return self._data[index][self.keyIndex(roleString) - (Qt.UserRole + 1)]
+
+    @Slot(int, unicode, result=bool)
+    def getBool(self, index, roleString):
+        print u'{0}: {1}'.format(roleString,self._data[index][self.keyIndex(roleString) - (Qt.UserRole + 1)])
+        return self._data[index][self.keyIndex(roleString) - (Qt.UserRole + 1)]
+
 class DepartureModel(QAbstractListModel):
     LINE_ROLE = Qt.UserRole + 1
     DIRECTION_ROLE = Qt.UserRole + 2
@@ -142,79 +209,36 @@ class DepartureModel(QAbstractListModel):
         self.beginResetModel()
         self._data = dep
         self.endResetModel()
-        
-class FavoriteModel(QAbstractListModel):
-    LINE_ROLE = Qt.UserRole + 1
-    DIRECTION_ROLE = Qt.UserRole + 2
-    STATION_ROLE = Qt.UserRole + 3
-    SOURCEURL_ROLE = Qt.UserRole + 4
-    ISSTATION_ROLE = Qt.UserRole + 5
-    NAME_ROLE = Qt.UserRole + 6
 
+
+class FavoriteModel(QmlSelectionDialogDataModel):
     def __init__(self, parent=None):
-        super(FavoriteModel, self).__init__(parent)
-        self._faves = []
+        keys = ['line', 'direction', 'station', 'url', 'isStation', 'name']
+        super(FavoriteModel, self).__init__(keys, parent)
 
         if os.path.exists(defaults.favorites_file):
             try:
-                self._faves = json.load(open(defaults.favorites_file, 'r'))
-                self._faves = map(tuple, self._faves)
-                print 'faves loaded:', self._faves
+                self._data = json.load(open(defaults.favorites_file, 'r'))
+                self._data = map(tuple, self._data)
+                print 'faves loaded:', self._data
             except Exception, e:
                 print 'faves load error:', e
 
-        self.keys = {}
-        self.keys[FavoriteModel.LINE_ROLE] = 'line'
-        self.keys[FavoriteModel.DIRECTION_ROLE] = 'direction'
-        self.keys[FavoriteModel.STATION_ROLE] = 'station'
-        self.keys[FavoriteModel.SOURCEURL_ROLE] = 'url'
-        self.keys[FavoriteModel.ISSTATION_ROLE] = 'isStation'
-        self.keys[FavoriteModel.NAME_ROLE] = 'name' 
-        self.setRoleNames(self.keys)
-
-    #fsckd SelectionDialog has fucked up Model code
-    def _count(self):
-        return len(self._faves)
- 
-    @Signal
-    def count_changed(self): pass
- 
-    count = Property(int, _count, notify=count_changed)
-
-    @Slot(int, unicode, result=unicode)
-    def getString(self, index, roleString):
-        return self._faves[index][[k for k, v in self.keys.iteritems() if v == roleString][0] - (Qt.UserRole + 1)]
-
-    @Slot(int, unicode, result=bool)
-    def getBool(self, index, roleString):
-        return self._faves[index][[k for k, v in self.keys.iteritems() if v == roleString][0] - (Qt.UserRole + 1)]
-    #end of f00bar workaround
-
-    def rowCount(self, index):
-        return len(self._faves)
-
     def data(self, index, role):
-        if not index.isValid():
-            return None
-
-        if index.row() > len(self._faves):
-            return None
-
-        favorite = self._faves[index.row()]
-
-        if self.keys.has_key(role):
-            if role == FavoriteModel.NAME_ROLE:
+        if self.indexIsValid(index, role):
+            favorite = self._data[index.row()]
+            if role == self.keyIndex('name'):
                 return u'{0} -> {1} @ {2}'.format(favorite[0], favorite[2], favorite[1])
             else:
-                return favorite[self.keys[role - (Qt.UserRole + 1)]]
+                return favorite[role - (Qt.UserRole + 1)]
         else:
             return None
 
     def _persist(self):
-        print 'persist:', self._faves, '->', defaults.favorites_file
+        print 'persist:', self._data, '->', defaults.favorites_file
         try:
             fp = open(defaults.favorites_file, 'w')
-            json.dump(self._faves, fp)
+            json.dump(self._data, fp)
             fp.close()
         except Exception, e:
             print 'faves save error:', e
@@ -222,18 +246,18 @@ class FavoriteModel(QAbstractListModel):
     @Slot(unicode, unicode, unicode, unicode, bool, int, result=bool)
     def isFavorite(self, gline, gdirection, gstation, sourceurl, isstation, x):
         k = (gline, gdirection, gstation, sourceurl, isstation)
-        return (k in self._faves)
+        return (k in self._data)
 
     @Slot(unicode, unicode, unicode, unicode, bool)
     def toggleFavorite(self, gline, gdirection, gstation, sourceurl, isstation):
         k = (gline, gdirection, gstation, sourceurl, isstation)
-        if k in self._faves:
-            self.beginRemoveRows(QModelIndex(), self._faves.index(k), self._faves.index(k))
-            self._faves.remove(k)
+        if k in self._data:
+            self.beginRemoveRows(QModelIndex(), self._data.index(k), self._data.index(k))
+            self._data.remove(k)
             self.endRemoveRows()
         else:
-            self.beginInsertRows(QModelIndex(), len(self._faves), len(self._faves))
-            self._faves.append(k)
+            self.beginInsertRows(QModelIndex(), len(self._data), len(self._data))
+            self._data.append(k)
             self.endInsertRows()
         
         self._persist()
@@ -373,7 +397,7 @@ class Gui(QObject):
 
     @Slot(float, float, result=str)
     def load_nearby_stations(self, lat, lon):
-        self.nearbyModel.setStringList(get_nearby_stations(lat, lon))
+        self.nearbyModel.setData(get_nearby_stations(lat, lon))
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -383,7 +407,7 @@ if __name__ == '__main__':
     aboutInfo = AboutInfo()
     config = Config()
     departureModel = DepartureModel()
-    nearbyModel = QStringListModel()
+    nearbyModel = QmlSelectionDialogDataModel(['name'])
 
     # instantiate the Python object
     itip = Gui(departureModel, nearbyModel)
