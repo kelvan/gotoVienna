@@ -50,31 +50,35 @@ Page {
             Row {
                 anchors.left: parent.left
                 anchors.right: parent.right
-                Text {
-                    text: "Enable GPS"
-                    anchors.left: parent.left
-                    font.pixelSize: UIConstants.FONT_LARGE
-                    color: !theme.inverted ? UIConstants.COLOR_FOREGROUND : UIConstants.COLOR_INVERTED_FOREGROUND
-                    anchors.verticalCenter: parent.verticalCenter
+                Column {
+                    id: textColumn
+                    Text {
+                        text: "Enable GPS"
+                        font.pixelSize: UIConstants.FONT_LARGE
+                        color: !theme.inverted ? UIConstants.COLOR_FOREGROUND : UIConstants.COLOR_INVERTED_FOREGROUND
+                    }
                 }
-                Switch {
-                    id: gpsEnable
-                    anchors.right: parent.right
-                    checked: config.getGpsEnabled()
+                Column {
+                    width: parent.width - textColumn.width
+                    Switch {
+                        anchors.right: parent.right
+                        id: gpsEnable
+                        checked: config.getGpsEnabled()
 
-                    onCheckedChanged: {
-                        var gps = config.setGpsEnabled(checked);
-                        if (gps !== '') {
-                            // Unable to set config
-                            console.log(gps);
-                            checked=!checked;
-                        } else {
-                            positionSource.active = checked;
-                        }
-                        if (checked) {
-                            positionSource.start();
-                        } else {
-                            positionSource.stop();
+                        onCheckedChanged: {
+                            var gps = config.setGpsEnabled(checked);
+                            if (gps !== '') {
+                                // Unable to set config
+                                console.log(gps);
+                                checked=!checked;
+                            } else {
+                                positionSource.active = checked;
+                            }
+                            if (checked) {
+                                positionSource.start();
+                            } else {
+                                positionSource.stop();
+                            }
                         }
                     }
                 }
@@ -144,15 +148,13 @@ Page {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 Text {
-                    anchors.left: parent.left
-                    text: "Last updated:"
+                    text: "Last updated: "
                     font.pixelSize: UIConstants.FONT_LSMALL
                     color: !theme.inverted ? UIConstants.COLOR_FOREGROUND : UIConstants.COLOR_INVERTED_FOREGROUND
                     anchors.verticalCenter: parent.verticalCenter
                 }
                 Text {
                     id: txtLastUpdate
-                    anchors.right: parent.right
                     text: config.getLastUpdate()
                     font.pixelSize: UIConstants.FONT_LSMALL
                     color: !theme.inverted ? UIConstants.COLOR_FOREGROUND : UIConstants.COLOR_INVERTED_FOREGROUND
