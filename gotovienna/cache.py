@@ -6,9 +6,10 @@ except ImportError:
     import simplejson as json
 import shutil
 import defaults
-import realtime
 
 def load(p, typ):
+    """ Load json data from p and check if type typ
+    """
     if path.exists(p):
         try:
             with open(p, 'r') as f:
@@ -24,16 +25,17 @@ def load(p, typ):
             print 'Corrupt cache file'
             print 'rebuilding cache'
             shutil.move(p, p + '.bak')
-
+    
     return None
 
 class Lines(dict):
     def __init__(self):
         self.load()
 
-    def __setitem__(self, *args, **kwargs):
-        s = dict.__setitem__(self, *args, **kwargs)
-        self.save()
+    def update(self, *args, **kwargs):
+        s = dict.update(self, *args, **kwargs)
+        # FIXME session problem if lines not loaded on startup
+        #self.save()
         return s
 
     def save(self):
@@ -60,13 +62,21 @@ class Stations(dict):
 
         self.current_line = line
         if line in Stations.stations:
-            self.update(Stations.stations[line])
+            self.update(Stations.stations[line], save=False)
         # FIXME maybe cause problems in the future, race conditions
         Stations.stations[line] = self
 
-    def __setitem__(self, *args, **kwargs):
-        u = dict.__setitem__(self, *args, **kwargs)
-        Stations.save()
+    def update(self, *args, **kwargs):
+        save = True
+        if kwargs.has_key('save'):
+            save = kwargs['save']
+            del(kwargs['save'])
+
+        u = dict.update(self, *args, **kwargs)
+        if save:
+            pass
+            #FIXME session fuckup
+            #Stations.save()
         return u
 
     @classmethod
@@ -78,8 +88,6 @@ class Stations(dict):
     def load(cls):
         s = load(defaults.cache_stations, dict)
         if s:
-            print "load stations from cache"
             cls.stations = s
         else:
-            print "load stations from internet"
             cls.stations = {}

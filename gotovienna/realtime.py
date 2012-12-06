@@ -11,7 +11,7 @@ import re
 import collections
 from errors import LineNotFoundError, StationNotFoundError
 import cache
-from cache import Stations
+from cache import Stations, Lines
 from time import sleep
 from utils import sort_departures, clean_text
 try:
@@ -89,7 +89,7 @@ class ITipParser:
 
         if not st:
             urlopen(defaults.stations % name)
-            st = self.parse_stations(urlopen(defaults.stations % name).read())
+            st.update(self.parse_stations(urlopen(defaults.stations % name).read()))
 
         return st
 
@@ -119,7 +119,8 @@ class ITipParser:
         """
         if not self._lines:
             print "Load lines"
-            self._lines = self.parse_lines(urlopen(defaults.line_overview).read())
+            self._lines.update(self.parse_lines(urlopen(defaults.line_overview).read()))
+            #self._lines = self.parse_lines(urlopen(defaults.line_overview).read())
             if not self._lines:
                 print "Error fetching lines"
 

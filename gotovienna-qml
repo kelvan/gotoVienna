@@ -272,7 +272,6 @@ class Gui(QObject):
 
         # Read line names in categorized/sorted order
         for _, lines in categorize_lines(self.itip.lines):
-            print lines
             self.lines.extend(lines)
 
         self.current_line = ''
@@ -361,7 +360,6 @@ class Gui(QObject):
             self.current_departures = []
             try:
                 stations = get_nearby_stations(lat, lon)
-                print stations
                 for station in stations:
                     try:
                         self.current_departures += self.itip.get_departures_by_station(station)
