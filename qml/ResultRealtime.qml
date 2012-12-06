@@ -106,11 +106,10 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 Text {
                     id: dep
-                    // FIXME strange int float transformation appears
                     text: model.time
                     anchors.right: parent.right
                     anchors.rightMargin: UIConstants.DEFAULT_MARGIN
-                    font.italic: lowfloor
+                    font.italic: model.lowfloor
                     font.bold: true
                     font.pixelSize: UIConstants.FONT_XLARGE
                     font.family: ExtrasConstants.FONT_FAMILY_LIGHT

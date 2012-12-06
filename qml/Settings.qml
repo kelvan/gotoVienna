@@ -24,13 +24,6 @@ Page {
         //contentHeight: content_column.height + 2 * UIConstants.DEFAULT_MARGIN
         flickableDirection: Flickable.VerticalFlick
 
-        Component.onCompleted: {
-            var updateAvailable = config.checkStationsUpdate();
-            if (updateAvailable) {
-                btnUpdate.color = "green"
-            }
-        }
-
         Column {
             id: content_column
             spacing: UIConstants.DEFAULT_MARGIN
@@ -95,9 +88,9 @@ Page {
                 width: parent.width * .7
 
                 Component.onCompleted: {
-                    if (config.checkStationsUpdate()) {
-                        btnUpdate.color = "green"
-                    }
+//                     if (config.checkStationsUpdate()) {
+//                         btnUpdate.text = "Update stations (new)"
+//                     }
                 }
 
                 onClicked: {
@@ -128,9 +121,9 @@ Page {
                 width: parent.width * .7
 
                 Component.onCompleted: {
-                    if (config.checkClearedCache()) {
-                        btnClearCache.color = "green"
-                    }
+//                     if (config.checkClearedCache()) {
+//                         btnClearCache.color = "green"
+//                     }
                 }
 
                 onClicked: {
