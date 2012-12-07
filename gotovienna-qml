@@ -428,7 +428,17 @@ if __name__ == '__main__':
         # Assume test from source directory, use relative path
         view.setSource(os.path.join(os.path.dirname(__file__), 'qml/main.qml'))
 
-    view.showFullScreen()
+    if '--windowed' in sys.argv:
+        desktop = app.desktop()
+        if desktop.height() < 1000:
+            FACTOR = .8
+            view.scale(FACTOR, FACTOR)
+            size = view.size()
+            size *= FACTOR
+            view.resize(size)
+        view.show()
+    else:
+        view.showFullScreen()
 
     sys.exit(app.exec_())
 

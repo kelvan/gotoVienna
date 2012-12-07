@@ -93,8 +93,8 @@ Rectangle {
                     margins: -30
                 }
                 onClicked: {
-                    buttonFeedback.start()
                     inputLine.text = ''
+                    buttonFeedback.start()
                 }
             }
         }
@@ -177,9 +177,9 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if( inputElement.isCandidate) {
-                        buttonFeedback.start()
+                    if (inputElement.isCandidate) {
                         inputLine.text += modelData
+                        buttonFeedback.start()
                     }
                 }
             }
