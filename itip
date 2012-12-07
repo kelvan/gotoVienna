@@ -49,12 +49,14 @@ def show_schwarzkappler_warnings():
                 t = '%d minutes ago' % minutes
         
         if warning.has_key('station'):
-            warns.append('%s(%s)' % (warning['station'], t))
+            warns.append('%s (%s)' % (warning['station'], t))
         else:
-            warns.append('%s(%s)' % ('generic', t))
+            warns.append('%s (%s)' % ('generic', t))
 
     if warns:
-        print inred('Schwarzkappler alert:'), ', '.join(warns)
+        print inred('Schwarzkappler alerts')
+        for warn in warns:
+            print ' ', warn
     else:
         print ingreen('No schwarzkappler warnings')
 
